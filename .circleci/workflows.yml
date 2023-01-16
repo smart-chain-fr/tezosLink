@@ -1,0 +1,63 @@
+version: 2.1
+orbs:
+  helm: circleci/helm@2.0.1
+
+parameters:
+
+########################################################
+################## DO NOT EDIT #########################
+########################################################
+  charts:
+    type: boolean
+    description: This is the directory of the charts
+    default: false 
+
+########################################################
+
+###################################################################
+################          COMMANDS          #######################
+###################################################################
+
+jobs:
+
+  package-helm-chart:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - helm/install-helm-client
+      - run:
+          name: Helm dependency build
+          command: helm dependency build helm-charts
+      - run:
+          name: Helm lint
+          command: helm lint helm-charts
+      - run:
+          name: Install Chart Releaser
+          command: |
+            cd /tmp
+            curl -sSL https://github.com/helm/chart-releaser/releases/download/v1.2.1/chart-releaser_1.2.1_linux_amd64.tar.gz | tar xzf -
+            mv cr ~/bin/cr
+            cr help
+      - add_ssh_keys:
+          fingerprints:
+            - "e6:6b:41:5b:4f:27:66:8e:06:be:f3:70:5a:73:db:3b"
+      - run:
+          name: Install Chart Releaser
+          command: |
+            git config user.email "devops@smart-chain.fr"
+            git config user.name "CircleCI Job"
+            helm package helm-charts --destination .deploy
+            cr upload -o smart-chain-fr -r tezosGanon -p .deploy
+            git checkout gh-pages
+            cr index -i ./index.yaml -p .deploy -o smart-chain-fr -r tezosGanon -c https://smart-chain-fr.github.io/tezosLink/
+            git add index.yaml
+            git commit -m "Automatic commit from CircleCI [skip ci]"
+            git push origin gh-pages
+
+workflows:
+  version: 2
+  deploy-helm-chart:
+    when: <<pipeline.parameters.charts>>
+    jobs:
+      - package-helm-chart
