@@ -1,1 +1,58 @@
 namespace: tezoslink
+
+front:
+  replicas: 1
+  image:
+    pullPolicy: Always
+    repository: "rg.fr-par.scw.cloud/tezosganon/p1-front"
+    version: 0.0.2
+  resources:
+    requests:
+      cpu: 200m
+      memory: 800Mi
+    limits:
+      memory: 1Gi
+
+ingressFront:
+    host: front.tezoslink.smart-chain.fr
+    tls:
+      hosts: 
+      - front.tezoslink.smart-chain.fr
+      secretName: front-tls
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod 
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+api:
+  replicas: 1
+  image:
+    pullPolicy: Always
+    repository: "rg.fr-par.scw.cloud/tezosganon/p1-api"
+    version: 0.0.3
+  resources:
+    requests:
+      cpu: 200m
+      memory: 400Mi
+    limits:
+      memory: 800Mi
+  env:
+    - name: DATABASE_USERNAME
+      value: "tz-backend"
+    - name: DATABASE_PASSWORD
+      value: "Titi123!"
+    - name : DATABASE_URL
+      value: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
+
+ingressApi:
+    host: api.tezoslink.smart-chain.fr
+    tls:
+      hosts: 
+      - api.tezoslink.smart-chain.fr
+      secretName: api-tls
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod 
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
