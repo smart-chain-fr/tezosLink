@@ -4,8 +4,8 @@ front:
   replicas: 1
   image:
     pullPolicy: Always
-    repository: "rg.fr-par.scw.cloud/tezosganon/p1-front"
-    version: 0.0.2
+    repository: "rg.fr-par.scw.cloud/tezoslink/frontend"
+    version: 0.0.1
   resources:
     requests:
       cpu: 200m
@@ -29,8 +29,8 @@ api:
   replicas: 1
   image:
     pullPolicy: Always
-    repository: "rg.fr-par.scw.cloud/tezosganon/p1-api"
-    version: 0.0.3
+    repository: "rg.fr-par.scw.cloud/tezoslink/api"
+    version: 0.0.1
   resources:
     requests:
       cpu: 200m

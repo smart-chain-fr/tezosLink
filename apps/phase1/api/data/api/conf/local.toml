@@ -1,0 +1,10 @@
+env = "dev"
+debug = true
+networks = ["MAINNET","CARTHAGENET"]
+
+[migration]
+path = "file://./data/migrations"
+
+[jwt]
+signkey = "dFcgNAqajhoQPqyOivx-n2VWt5KpSPkuPxLJKbnUPXYFcFONkuvFO_XWMg153otv"
+
