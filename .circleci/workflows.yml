@@ -38,7 +38,6 @@ jobs:
             cd /tmp
             curl -sSL https://github.com/helm/chart-releaser/releases/download/v1.2.1/chart-releaser_1.2.1_linux_amd64.tar.gz | tar xzf -
             mv cr ~/bin/cr
-            cr help
       - add_ssh_keys:
           fingerprints:
             - "e6:6b:41:5b:4f:27:66:8e:06:be:f3:70:5a:73:db:3b"
@@ -48,9 +47,9 @@ jobs:
             git config user.email "devops@smart-chain.fr"
             git config user.name "CircleCI Job"
             helm package helm-charts --destination .deploy
-            cr upload -o smart-chain-fr -r tezosLink -p .deploy
+            cr upload -o smart-chain-fr -r tezoslink -p .deploy
             git checkout gh-pages
-            cr index -i ./index.yaml -p .deploy -o smart-chain-fr -r tezosLink -c https://smart-chain-fr.github.io/tezosLink/
+            cr index -i ./index.yaml -p .deploy -o smart-chain-fr -r tezoslink -c https://smart-chain-fr.github.io/tezosLink/
             git add index.yaml
             git commit -m "Automatic commit from CircleCI [skip ci]"
             git push origin gh-pages
