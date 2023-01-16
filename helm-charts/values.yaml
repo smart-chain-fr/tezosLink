@@ -4,7 +4,7 @@ front:
   replicas: 1
   image:
     pullPolicy: Always
-    repository: "rg.fr-par.scw.cloud/tezoslink/frontend"
+    repository: "rg.fr-par.scw.cloud/tezoslink/p1-frontend"
     version: 0.0.1
   resources:
     requests:
@@ -29,7 +29,7 @@ api:
   replicas: 1
   image:
     pullPolicy: Always
-    repository: "rg.fr-par.scw.cloud/tezoslink/api"
+    repository: "rg.fr-par.scw.cloud/tezoslink/p1-api"
     version: 0.0.1
   resources:
     requests:
