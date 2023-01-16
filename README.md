@@ -1,4 +1,4 @@
-# Ganon Community Kubernetes Helm Charts
+# TezosLink Community Kubernetes Helm Charts
 
 ## Introduction
 
@@ -16,8 +16,8 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 |  bitnami/postgresql | 12.1.5  |
 |  bitnami/kube-prometheus | 8.3.2  |
 |  tezos-k8s | x.x.x  |
-|  tezosganon-proxy | x.x.x  |
-|  tezosganon-api | x.x.x  |
+|  tezoslink-proxy | x.x.x  |
+|  tezoslink-api | x.x.x  |
 
 ### Prerequisites
 
@@ -25,7 +25,7 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 2. Create the following namespace for the PostgreSQL database :
 
 ```console
-kubectl create namespace tzganon-postgresql
+kubectl create namespace tezoslink-postgresql
 ```
 
 ### PostgreSQL database deployment
@@ -33,7 +33,7 @@ kubectl create namespace tzganon-postgresql
 1. create the following secret for the postgresql root user and for the api user :
 
 ```console
-kubectl create secret generic -n tzganon-postgresql tzganon-postgresql `
+kubectl create secret generic -n tezoslink-postgresql tezoslink-postgresql `
     --from-literal=admin-password='Insert-a-strong-password' `
     --from-literal=tz-backend-password='Insert-a-strong-password'
 ```
@@ -42,11 +42,11 @@ kubectl create secret generic -n tzganon-postgresql tzganon-postgresql `
 
 ```
 helm repo add my-repo https://charts.bitnami.com/bitnami
-helm upgrade -i tzganon-postgresql bitnami/postgresql --version <refere to the release version section above> `
-    --create-namespace --namespace tzganon-postgresql `
+helm upgrade -i tezoslink-postgresql bitnami/postgresql --version <refere to the release version section above> `
+    --create-namespace --namespace tezoslink-postgresql `
     --set global.postgresql.auth.username="tz-backend" `
-    --set global.postgresql.auth.database="tzganon" `
-    --set global.postgresql.auth.existingSecret="tzganon-postgresql" `
+    --set global.postgresql.auth.database="tezoslink" `
+    --set global.postgresql.auth.existingSecret="tezoslink-postgresql" `
     --set global.postgresql.auth.secretKeys.adminPasswordKey="admin-password" `
     --set global.postgresql.auth.secretKeys.userPasswordKey="tz-backend-password"
 ```
@@ -64,6 +64,6 @@ helm upgrade -i kube-prometheus bitnami/kube-prometheus --version <refere to the
 ### Tezos-k8s deployment
 
 ```console
-helm repo add grafana https://smart-chain-fr.github.io/tezosGanon/
+helm repo add grafana https://smart-chain-fr.github.io/tezosLink/
 ```
 
