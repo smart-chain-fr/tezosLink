@@ -48,9 +48,9 @@ jobs:
             git config user.email "devops@smart-chain.fr"
             git config user.name "CircleCI Job"
             helm package helm-charts --destination .deploy
-            cr upload -o smart-chain-fr -r tezosGanon -p .deploy
+            cr upload -o smart-chain-fr -r tezosLink -p .deploy
             git checkout gh-pages
-            cr index -i ./index.yaml -p .deploy -o smart-chain-fr -r tezosGanon -c https://smart-chain-fr.github.io/tezosLink/
+            cr index -i ./index.yaml -p .deploy -o smart-chain-fr -r tezosLink -c https://smart-chain-fr.github.io/tezosLink/
             git add index.yaml
             git commit -m "Automatic commit from CircleCI [skip ci]"
             git push origin gh-pages
