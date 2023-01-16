@@ -1,4 +1,22 @@
-apiVersion: v1
-kind: Namespace
+---
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.namespace }}-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.namespace }}-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.namespace }}-api
+    spec:
+      containers:
+      - name: {{ .Values.namespace }}-api
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
