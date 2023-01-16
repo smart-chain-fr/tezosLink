@@ -1,0 +1,66 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.namespace }}-front
+  namespace: {{ .Values.namespace }}
+  annotations: 
+{{toYaml .Values.ingressFront.annotations | indent 4 }}
+spec:
+  tls:
+  - hosts: {{ .Values.ingressFront.tls.hosts }}
+    secretName: {{ .Values.ingressFront.tls.secretName }}
+  rules:
+  - host: {{ .Values.ingressFront.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.namespace }}-front
+            port:
+              number: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.namespace }}-front
+  namespace: {{ .Values.namespace }}
+  labels:
+spec:
+  ports:
+    - port: 8080
+      name: http
+      targetPort: 8080
+  selector:
+    app: {{ .Values.namespace }}-front
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.namespace }}-front
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.namespace }}-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.namespace }}-front
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.namespace }}-front
+    spec:
+      imagePullSecrets:
+      - name: docker-pull-secret
+      containers:
+      - name: {{ .Values.namespace }}-front
+        imagePullPolicy: {{ .Values.front.image.pullPolicy }}
+        image: "{{ .Values.front.image.repository }}:{{ .Values.front.image.version }}"
+        resources:
+{{toYaml .Values.front.resources | indent 10}}
+        env:
+{{toYaml .Values.front.env | indent 10}}
+        
