@@ -16,6 +16,6 @@ WORKDIR /home/proxy
 COPY ./bin/proxy .
 COPY ./data/proxy ./data
 
-EXPOSE $API_PORT
+EXPOSE $SERVER_PORT
 
 CMD ["sh", "-c", "./proxy --conf ./data/conf/$ENV.toml"]
