@@ -1,0 +1,33 @@
+debug = true
+networks = ["MAINNET","CARTHAGENET"]
+[tezos]
+
+
+[proxy]
+readTimeout = 5
+writeTimeout = 30
+idleTimeout = 120
+whitelistedMethods = [
+  "/chains/main/blocks(.*?)",
+]
+blockedMethods = [
+  "(.*?)context/contracts$",
+  "/monitor(.*?)",
+  "/network(.*?)",
+]
+dontCache = [
+  "(.*?)/head/(.*?)",
+  "(.*?)/head",
+  "/chains/main/blocks$",
+]
+rateLimitPeriod = 100
+rateLimitCount = 1000000
+blockchainRequestsCacheMaxItems = 2000
+projectsCacheMaxItems = 2000
+cacheMaxMetricItems = 2000
+routineDelaySeconds = 5
+whitelistedRolling = [
+  "(.*?)/head/(.*?)",
+  "(.*?)/head",
+  "(.*?)/injection/operation",
+]

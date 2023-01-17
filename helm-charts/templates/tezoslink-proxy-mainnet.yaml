@@ -1,0 +1,66 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.namespace }}-proxy
+  namespace: {{ .Values.namespace }}
+  annotations: 
+{{toYaml .Values.ingressProxyMainnet.annotations | indent 4 }}
+spec:
+  tls:
+  - hosts: {{ .Values.ingressProxyMainnet.tls.hosts }}
+    secretName: {{ .Values.ingressProxyMainnet.tls.secretName }}
+  rules:
+  - host: {{ .Values.ingressProxyMainnet.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.namespace }}-proxy-mainnet
+            port:
+              number: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.namespace }}-proxy-mainnet
+  namespace: {{ .Values.namespace }}
+  labels:
+spec:
+  ports:
+    - port: 8001
+      name: http
+      targetPort: 8001
+  selector:
+    app: {{ .Values.namespace }}-proxy-mainnet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.namespace }}-proxy-mainnet
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.namespace }}-proxy-mainnet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.namespace }}-proxy-mainnet
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.namespace }}-proxy-mainnet
+    spec:
+      imagePullSecrets:
+      - name: docker-pull-secret
+      containers:
+      - name: {{ .Values.namespace }}-proxy-mainnet
+        imagePullPolicy: {{ .Values.proxyMainnet.image.pullPolicy }}
+        image: "{{ .Values.proxyMainnet.image.repository }}:{{ .Values.proxyMainnet.image.version }}"
+        resources:
+{{toYaml .Values.proxyMainnet.resources | indent 10}}
+        env:
+{{toYaml .Values.proxyMainnet.env | indent 10}}
+        
