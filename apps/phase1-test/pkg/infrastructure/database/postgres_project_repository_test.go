@@ -15,7 +15,7 @@ func TestPostgresProjectRepository_FindByUUID_Unit(t *testing.T) {
 
 	pgr := NewPostgresProjectRepository(pg)
 	creationDate := time.Now().Truncate(time.Millisecond).UTC()
-	expectedProject := model.NewProject(1, "New Project", "A_KEY", creationDate, "CARTHAGENET")
+	expectedProject := model.NewProject(1, "New Project", "A_KEY", creationDate, "LIMANET")
 	_, err := pgr.Save(expectedProject.Title, expectedProject.UUID, creationDate, expectedProject.Network)
 	if err != nil {
 		t.Fatal(err)
@@ -45,8 +45,8 @@ func TestPostgresProjectRepository_FindAll_Unit(t *testing.T) {
 	creationDate := time.Now().Truncate(time.Millisecond).UTC()
 
 	pgr := NewPostgresProjectRepository(pg)
-	expectedFirstProject := model.NewProject(1, "New Project", "A_KEY", creationDate, "CARTHAGENET")
-	expectedSecondProject := model.NewProject(2, "New Project 2", "A_SECOND_KEY", creationDate.Add(2*time.Second).Truncate(time.Millisecond), "CARTHAGENET")
+	expectedFirstProject := model.NewProject(1, "New Project", "A_KEY", creationDate, "LIMANET")
+	expectedSecondProject := model.NewProject(2, "New Project 2", "A_SECOND_KEY", creationDate.Add(2*time.Second).Truncate(time.Millisecond), "LIMANET")
 	_, _ = pgr.Save(expectedFirstProject.Title, expectedFirstProject.UUID, creationDate, expectedFirstProject.Network)
 	_, _ = pgr.Save(expectedSecondProject.Title, expectedSecondProject.UUID, creationDate.Add(2*time.Second).Truncate(time.Millisecond), expectedSecondProject.Network)
 

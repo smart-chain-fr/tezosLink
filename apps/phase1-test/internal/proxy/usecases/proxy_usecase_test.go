@@ -58,7 +58,7 @@ func TestProxyUsecase_Proxy_Unit(t *testing.T) {
 		t.Fatal("could not parse conf", err)
 	}
 	prj := pkgmodel.NewProject(123, "DUMMY_TITLE", "DUMMY_UUID", time.Now(), "MAINNET")
-	prjTestnet := pkgmodel.NewProject(124, "DUMMY_TITLE_TESTNET", "DUMMY_UUID_TESTNET", time.Now(), "CARTHAGENET")
+	prjTestnet := pkgmodel.NewProject(124, "DUMMY_TITLE_TESTNET", "DUMMY_UUID_TESTNET", time.Now(), "LIMANET")
 	localURL := "127.0.0.1"
 
 	projectNotFound := errors.New("project not found")

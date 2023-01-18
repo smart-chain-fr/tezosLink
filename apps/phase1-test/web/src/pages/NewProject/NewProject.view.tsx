@@ -32,7 +32,7 @@ export const NewProjectView = ({ handleSubmitForm, loading  }: NewPostViewProps)
                     return (
                         <div>
                             <Select
-                                options={['MAINNET', 'CARTHAGENET']}
+                                options={['MAINNET', 'LIMANET']}
                                 defaultOption={networkValue}
                                 selectCallback={(e: string) => setNetwork(e)}
                             />

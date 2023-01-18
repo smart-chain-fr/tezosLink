@@ -40,8 +40,8 @@ func (pu *ProjectUsecase) CreateProject(name string, network string) (*pkgmodel.
 	if !isNetworkAllowed(network, pu.networks) {
 		return nil, modelerrors.ErrInvalidNetwork
 	}
-	// this proxy can handle only network MAINNET and CARTHAGENET
-	//if network != "MAINNET" && network != "CARTHAGENET" {
+	// this proxy can handle only network MAINNET and LIMANET
+	//if network != "MAINNET" && network != "LIMANET" {
 	//	return nil, modelerrors.ErrInvalidNetwork
 	//}
 	creationDate := time.Now().UTC()

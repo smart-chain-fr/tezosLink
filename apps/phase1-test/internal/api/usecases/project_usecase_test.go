@@ -15,11 +15,11 @@ func TestProjectUsecase_CreateProject_Unit(t *testing.T) {
 	if err != nil {
 		t.Fatal("could not parse conf", err)
 	}
-	p := pkgmodel.NewProject(123, "A PROJECT", "AN_UUID", time.Now().UTC(), "CARTHAGENET")
+	p := pkgmodel.NewProject(123, "A PROJECT", "AN_UUID", time.Now().UTC(), "LIMANET")
 
 	// Given
 	title := "A PROJECT"
-	network := "CARTHAGENET"
+	network := "LIMANET"
 
 	mockProjectRepository := &mockProjectRepository{}
 	mockProjectRepository.
@@ -46,7 +46,7 @@ func TestProjectUsecase_CreateProject_InvalidNetwork_Unit(t *testing.T) {
 	if err != nil {
 		t.Fatal("could not parse conf", err)
 	}
-	p := pkgmodel.NewProject(123, "A PROJECT", "AN_UUID", time.Now().UTC(), "CARTHAGENET")
+	p := pkgmodel.NewProject(123, "A PROJECT", "AN_UUID", time.Now().UTC(), "LIMANET")
 
 	// Given
 	title := "A PROJECT"
@@ -72,7 +72,7 @@ func TestProjectUsecase_CreateProject_InvalidNetwork_Unit(t *testing.T) {
 
 func TestProjectUsecase_FindProjectAndMetrics_Unit(t *testing.T) {
 	// Given
-	p := pkgmodel.NewProject(123, "A PROJECT", "AN_UUID", time.Now().UTC(), "CARTHAGENET")
+	p := pkgmodel.NewProject(123, "A PROJECT", "AN_UUID", time.Now().UTC(), "LIMANET")
 	str := "2014-11-12T11:45:26.371Z"
 	now, err := time.Parse(time.RFC3339, str)
 	if err != nil {

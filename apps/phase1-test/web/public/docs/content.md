@@ -15,8 +15,8 @@ Use one of these endpoints as your Tezos client provider.
 
 |NETWORK|DESCRIPTION|URL                                              |
 |-------|-----------|-------------------------------------------------|
-|Mainnet| JSON/RPC  |https://mainnet.tezoslink.io/v1/<YOUR_PROJECT_ID>|
-|Carthagenet| JSON/RPC  |https://carthagenet.tezoslink.io/v1/<YOUR_PROJECT_ID>|
+|Mainnet| JSON/RPC  |https://mainnet.proxy.tezoslink.smart-chain.fr/v1/<YOUR_PROJECT_ID>|
+|Limanet| JSON/RPC  |https://testnet.proxy.tezoslink.smart-chain.fr/v1/<YOUR_PROJECT_ID>|
 
 ## Make requests
 

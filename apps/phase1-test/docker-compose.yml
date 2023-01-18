@@ -39,7 +39,7 @@ services:
       - "8002:8002"
     environment:
       ENV: local
-      TEZOS_NETWORK: CARTHAGENET
+      TEZOS_NETWORK: LIMANET
       SERVER_PORT: 8002
     restart: on-failure
     depends_on:

@@ -1,6 +1,6 @@
 env = "dev"
 debug = true
-networks = ["MAINNET","CARTHAGENET"]
+networks = ["MAINNET","LIMANET"]
 
 [migration]
 path = "file://./data/migrations"
