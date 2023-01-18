@@ -72,6 +72,8 @@ proxyMainnet:
       value: "rolling-node.poc-tzk8s.svc.cluster.local"
     - name: TEZOS_ROLLING_PORT
       value: "8732"
+    - name: TEZOS_NETWORK
+      value: "MAINNET"
 
 proxyTestnet:
   replicas: 1
@@ -100,6 +102,8 @@ proxyTestnet:
       value: "rolling-node.poc-tzk8s-limanet.svc.cluster.local"
     - name: TEZOS_ROLLING_PORT
       value: "8732"
+    - name: TEZOS_NETWORK
+      value: "LIMANET"
 
 ingressApi:
     host: api.tezoslink.smart-chain.fr
