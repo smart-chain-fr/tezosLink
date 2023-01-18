@@ -129,7 +129,7 @@ ingressProxyMainnet:
       nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 
-ingressProxyTesnet:
+ingressProxyTestnet:
     host: testnet.proxy.tezoslink.smart-chain.fr
     tls:
       hosts: 
