@@ -30,7 +30,7 @@ api:
   image:
     pullPolicy: Always
     repository: "rg.fr-par.scw.cloud/tezoslink/p1-api"
-    version: 0.0.1
+    version: 0.1.0
   resources:
     requests:
       cpu: 200m
@@ -50,7 +50,7 @@ proxyMainnet:
   image:
     pullPolicy: Always
     repository: "rg.fr-par.scw.cloud/tezoslink/p1-proxy"
-    version: 0.0.9
+    version: 0.1.0
   resources:
     requests:
       cpu: 200m
@@ -80,7 +80,7 @@ proxyTestnet:
   image:
     pullPolicy: Always
     repository: "rg.fr-par.scw.cloud/tezoslink/p1-proxy"
-    version: 0.0.10
+    version: 0.1.0
   resources:
     requests:
       cpu: 200m
