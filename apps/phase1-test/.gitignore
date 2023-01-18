@@ -1,0 +1,20 @@
+# General
+.DS_Store
+
+# Project
+bin/*
+**/node_modules
+**/dist
+web/build
+
+# IDE
+.idea/
+.vscode/
+
+# Terragrunt
+**/.terragrunt-cache
+
+# Terraform
+**/.terraform
+**/*.tfstate
+**/*.tfstate.backup

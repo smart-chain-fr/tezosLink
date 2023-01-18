@@ -98,7 +98,7 @@ export const Home = () => (
             <HomeBuiltArgText>
               Our architecture supports the workload required by your project, by scaling up Tezos nodes when we see an
               increase of requests. The infrastructure is open-sourced in our{' '}
-              <a href="https://github.com/octo-technology/tezos-link" target="_blank">
+              <a href="https://github.com/smart-chain-fr/tezosLink" target="_blank">
                 Github project
               </a>
             </HomeBuiltArgText>
@@ -160,7 +160,7 @@ export const Home = () => (
         <img alt="logo" src="/images/logo.svg" />
         <div>
           <p>About Tezos Link</p>
-          <a href="https://github.com/octo-technology/tezos-link" target="_blank">
+          <a href="https://github.com/smart-chain-fr/tezosLink" target="_blank">
             Github
           </a>
           <a href="mailto:beta@octo.com" target="_blank">
