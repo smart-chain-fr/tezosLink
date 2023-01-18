@@ -1,0 +1,66 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.namespace }}-proxy
+  namespace: {{ .Values.namespace }}
+  annotations: 
+{{toYaml .Values.ingressProxyTestnet.annotations | indent 4 }}
+spec:
+  tls:
+  - hosts: {{ .Values.ingressProxyTestnet.tls.hosts }}
+    secretName: {{ .Values.ingressProxyTestnet.tls.secretName }}
+  rules:
+  - host: {{ .Values.ingressProxyTestnet.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.namespace }}-proxy-testnet
+            port:
+              number: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.namespace }}-proxy-testnet
+  namespace: {{ .Values.namespace }}
+  labels:
+spec:
+  ports:
+    - port: 8001
+      name: http
+      targetPort: 8001
+  selector:
+    app: {{ .Values.namespace }}-proxy-testnet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.namespace }}-proxy-testnet
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.namespace }}-proxy-testnet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.namespace }}-proxy-testnet
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.namespace }}-proxy-testnet
+    spec:
+      imagePullSecrets:
+      - name: docker-pull-secret
+      containers:
+      - name: {{ .Values.namespace }}-proxy-testnet
+        imagePullPolicy: {{ .Values.proxyTestnet.image.pullPolicy }}
+        image: "{{ .Values.proxyTestnet.image.repository }}:{{ .Values.proxyTestnet.image.version }}"
+        resources:
+{{toYaml .Values.proxyTestnet.resources | indent 10}}
+        env:
+{{toYaml .Values.proxyTestnet.env | indent 10}}
+        
