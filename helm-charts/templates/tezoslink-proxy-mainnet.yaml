@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.namespace }}-proxy
+  name: {{ .Values.namespace }}-proxy-mainnet
   namespace: {{ .Values.namespace }}
   annotations: 
 {{toYaml .Values.ingressProxyMainnet.annotations | indent 4 }}
