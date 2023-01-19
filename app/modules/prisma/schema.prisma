@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id        Int      @default(autoincrement()) @id
+  title      String @db.VarChar(255)
+  uuid      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  network  String @db.VarChar(255)
+  Metrics Metrics[]
+  @@map("app_projects")
+}
+
+model Metrics {
+  id        Int      @default(autoincrement()) @id
+  path String @db.VarChar(255)
+  uuid      String   @unique @db.VarChar(255)
+  remote_address  String @db.VarChar(255)
+  date_requested  DateTime 
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId Int 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("app_metrics")
+}
