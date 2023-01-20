@@ -5,7 +5,7 @@ front:
   image:
     pullPolicy: Always
     repository: "rg.fr-par.scw.cloud/tezoslink/p1-frontend"
-    version: 0.0.4
+    version: 0.0.6
   resources:
     requests:
       cpu: 200m

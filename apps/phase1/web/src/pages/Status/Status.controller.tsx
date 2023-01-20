@@ -14,8 +14,8 @@ export const Status = () => {
 
   useEffect(() => {
     setDate(new Date(Date.now()).toLocaleString())
-    const mainnetProxyUrl = 'mainnet.proxy.tezoslink.smart-chain.fr'
-    const carthagenetProxyUrl = 'testnet.proxy.tezoslink.smart-chain.fr'
+    const mainnetProxyUrl = 'https://mainnet.proxy.tezoslink.smart-chain.fr'
+    const carthagenetProxyUrl = 'https://testnet.proxy.tezoslink.smart-chain.fr'
 
     axios.get(mainnetProxyUrl + '/health').catch((error: any) => {
       console.error(error)
