@@ -17,11 +17,11 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   network  String @db.VarChar(255)
-  Metrics Metrics[]
+  Metrics Metric[]
   @@map("app_projects")
 }
 
-model Metrics {
+model Metric {
   id        Int      @default(autoincrement()) @id
   path String @db.VarChar(255)
   uuid      String   @unique @db.VarChar(255)
