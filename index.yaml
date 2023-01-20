@@ -12,6 +12,15 @@ entries:
     version: 0.0.1
   tezoslink:
   - apiVersion: v2
+    appVersion: 0.1.3
+    created: "2023-01-20T11:08:57.909263671Z"
+    description: Deploys Tezos RPC nodes
+    digest: 7408ca74d245618cae0ef913fb7f566ea507a6dd2a398e42e9f36000acaf1976
+    name: tezoslink
+    urls:
+    - https://github.com/smart-chain-fr/tezosLink/releases/download/tezoslink-0.1.3/tezoslink-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: 0.1.2
     created: "2023-01-20T10:40:28.592413062Z"
     description: Deploys Tezos RPC nodes
@@ -128,4 +137,4 @@ entries:
     urls:
     - https://github.com/smart-chain-fr/tezosLink/releases/download/tezoslink-0.0.1/tezoslink-0.0.1.tgz
     version: 0.0.1
-generated: "2023-01-20T10:40:28.592479184Z"
+generated: "2023-01-20T11:08:57.909409185Z"
