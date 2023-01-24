@@ -1,0 +1,62 @@
+{
+  "validation_messages": {
+    "field_required": "Ce champ est obligatoire.",
+    "invalid_email": "L'adresse email n'est pas valide."
+  },
+  "navigation_menu": {
+    "office": {
+      "files_in_progress": "Dossiers en cours",
+      "documents_to_validate": "Documents à valider",
+      "files_to_store": "Dossiers à ranger",
+      "archived_files": "Dossiers archivés"
+    },
+    "admin": {
+      "collaborator_management": "Gestion des collaborateurs",
+      "document_settings": "Paramétrage documents"
+    },
+    "super_admin": {
+      "office_management": "Gestion office",
+      "dashboard": "Dashboard",
+      "document_settings": "Paramétrage documents",
+      "administrators": "Administrateurs"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Home"
+    },
+    "login": {
+      "errors": {
+        "login_failed": "Saisissez un e-mail et un mot de passe valides."
+      }
+    },
+    "reset_password": {
+      "errors": {
+        "error_send_mail": "Une erreur est survenue lors de l'envoi du mail."
+      }
+    },
+    "change_password": {
+      "errors": {
+        "invalid_email": "Ce lien de changement de mot de passe est invalide.",
+        "error_change_password": "Une erreur est survenue lors du changement de mot de passe.",
+        "password_missmatch": "Les mots de passe ne correspondent pas.",
+        "bad_code": "Ce lien de changement de mot de passe est invalide.",
+        "no_code": "Ce lien de changement de mot de passe est invalide.",
+        "expired_code": "Ce lien de changement de mot de passe est expiré."
+      }
+    },
+    "sign_up": {
+      "errors": {
+        "error_in_register": "Une erreur est survenue lors de l'inscription.",
+        "invalid_email": "L'adresse email n'est pas valide.",
+        "user_already_exist": "Un utilisateur avec cette adresse email existe déjà.",
+        "office_already_exist": "Un office avec ce numéro CRPCEN existe déjà.",
+        "password_missmatch": "Les mots de passe ne correspondent pas."
+      }
+    }
+  },
+  "toasts": {
+    "copy_success": "Copié !",
+    "an_error_occured": "Une erreur est survenue"
+  }
+}

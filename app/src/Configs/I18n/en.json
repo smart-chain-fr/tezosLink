@@ -1,0 +1,62 @@
+{
+  "validation_messages": {
+    "field_required": "This field is required.",
+    "invalid_email": "The email address is not valid."
+  },
+  "navigation_menu": {
+    "office": {
+      "files_in_progress": "Files in progress",
+      "documents_to_validate": "Documents to validate",
+      "files_to_store": "Files to store",
+      "archived_files": "Archived files"
+    },
+    "admin": {
+      "collaborator_management": "Collaborator management",
+      "document_settings": "Document settings"
+    },
+    "super_admin": {
+      "office_management": "Office management",
+      "dashboard": "Dashboard",
+      "document_settings": "Document settings",
+      "administrators": "Administrators"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Home"
+    },
+    "login": {
+      "errors": {
+        "login_failed": "Enter a valid email and password."
+      }
+    },
+    "reset_password": {
+      "errors": {
+        "error_send_mail": "An error occurred while sending the reset link."
+      }
+    },
+    "change_password": {
+      "errors": {
+        "invalid_email": "This link is not valid.",
+        "error_change_password": "An error occurred while changing the password.",
+        "password_missmatch": "The passwords do not match.",
+        "bad_code": "This link is not valid.",
+        "no_code": "This link is not valid.",
+        "expired_code": "This link has expired."
+      }
+    },
+    "sign_up": {
+      "errors": {
+        "error_in_register": "An error occurred while signing up.",
+        "invalid_email": "The email address is not valid.",
+        "user_already_exist": "This email address is already used.",
+        "office_already_exist": "This CRPCEN is already used.",
+        "password_missmatch": "The passwords do not match."
+      }
+    }
+  },
+  "toasts": {
+    "copy_success": "Copied!",
+    "an_error_occured": "An error occurred"
+  }
+}
