@@ -1,0 +1,13 @@
+.dockerignore
+.gitignore
+.eslintrc.json
+docker-compose*
+package-lock.json
+dockerfile*
+README.md
+node_modules
+.git
+.gitignore
+LICENSE
+.vscode
+.next
