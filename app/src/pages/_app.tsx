@@ -1,4 +1,3 @@
-import type { AppProps } from 'next/app'
 import '@/index.scss'
 import type { NextPage } from 'next';
 import type { AppType, AppProps } from 'next/app';
