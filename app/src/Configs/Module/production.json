@@ -1,0 +1,195 @@
+{
+  "app": "Not.IT",
+  "theme": {
+    "colors": {
+      "primary": "string",
+      "secondary": "string"
+    }
+  },
+  "modules": {
+    "Theme": {
+      "enabled": true
+    },
+    "Logo": {
+      "enabled": true
+    },
+    "Header": {
+      "enabled": true
+    },
+    "Footer": {
+      "enabled": true
+    },
+    "pages": {
+      "Home": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/",
+            "labelKey": "home"
+          }
+        }
+      },
+      "FilesInProgress": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/dossiers-en-cours",
+            "labelKey": "Dossiers en cours"
+          }
+        }
+      },
+      "DocumentsToValidate": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/documents-a-valider",
+            "labelKey": "Documents à valider"
+          }
+        }
+      },
+      "FilesToStore": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/dossiers-a-ranger",
+            "labelKey": "Dossiers à ranger"
+          }
+        }
+      },
+      "ArchivedFiles": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/dossiers-archives",
+            "labelKey": "Dossiers archivés"
+          }
+        }
+      },
+      "OfficeManagement": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/gestion-office",
+            "labelKey": "Gestion office"
+          }
+        }
+      },
+      "Dashboard": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/dashboard",
+            "labelKey": "Dashboard"
+          }
+        }
+      },
+      "DocumentSettings": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/parametrage-documents",
+            "labelKey": "Parametrage documents"
+          }
+        }
+      },
+      "Administrators": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/administrateurs",
+            "labelKey": "Administrateurs"
+          }
+        }
+      },
+      "CollaboratorManagement": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/gestion-collaborateur",
+            "labelKey": "Gestion Collaborateur"
+          }
+        }
+      },
+      "MyAccount": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/mon-compte",
+            "labelKey": "Mon compte"
+          }
+        }
+      },
+      "AnchorMonitoring": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/monitoring-ancrage",
+            "labelKey": "Monitoring ancrage"
+          }
+        }
+      },
+      "SwitchAccount": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/changer-de-compte",
+            "labelKey": "Changer de compte"
+          }
+        }
+      },
+      "Login": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/connexion",
+            "labelKey": "Connection"
+          }
+        }
+      },
+      "SignUp": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/inscription",
+            "labelKey": "Inscription"
+          }
+        }
+      },
+      "ResetPassword": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/reset-mot-de-passe",
+            "labelKey": "Réinitialisation mot de passe"
+          }
+        }
+      },
+      "ChangePassword": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/change-mot-de-passe",
+            "labelKey": "Changement de mot de passe"
+          }
+        }
+      },
+      "Logout": {
+        "enabled": true,
+        "props": {
+          "path": {
+            "pathname": "/deconnexion",
+            "labelKey": "Déconnexion"
+          }
+        }
+      },
+      "Administration": {
+        "enabled": true,
+        "labelKey": "Administration"
+      },
+      "Office": {
+        "enabled": true,
+        "labelKey": "Office"
+      }
+    }
+  }
+}
