@@ -17,10 +17,12 @@ type IProps = {
 type IState = {};
 
 export default class Module extends React.Component<IProps, IState> {
-    private router : AppRouterInstance = useRouter();
 	public override render(): React.ReactNode | null {
+		// const router : AppRouterInstance = useRouter();
+
+		//TO DO : Find a way to navigate with the next Router
 		if (!this.props.from.enabled) {
-            if (this.props.isPage) this.router.push("/");
+            // if (this.props.isPage) router.push("/");
             return null;
         }
 		return <>{this.props.children}</>;
