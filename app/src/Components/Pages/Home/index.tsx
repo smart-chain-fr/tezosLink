@@ -1,5 +1,7 @@
 
+import HomeBuilt from "@/Components/Elements/HomeBuilt";
 import HomeGetStarted from "@/Components/Elements/HomeGetStarted";
+import HomeHead from "@/Components/Elements/HomeHead";
 import HomeMetrics from "@/Components/Elements/HomeMetrics";
 import HomePanels from "@/Components/Elements/HomePanels";
 import HomeTrusted from "@/Components/Elements/HomeTrusted";
@@ -12,6 +14,8 @@ export default class Home extends BasePage {
 		return (
 			<DefaultTemplate title={"HomePage"}>
 				<div className={classes["root"]}>
+                    <HomeHead/>
+                    <HomeBuilt/>
                     <HomeTrusted/>
                     <HomeMetrics/>
                     <HomePanels/>
