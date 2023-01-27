@@ -1,0 +1,12 @@
+@import "@/Themes/constants.scss";
+
+.HomeBuilt {
+  background-color: $backgroundColor2;
+  text-align: center;
+}
+
+.HomeSection {
+  width: 90vw;
+  max-width: 1280px;
+  margin: 100px auto 20px auto;
+}
