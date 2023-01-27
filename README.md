@@ -4,12 +4,27 @@
 
 ## Introduction
 
-[Helm](https://helm.sh) must be installed to use the charts.
-Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
-
 ## Architecture
 
+## Requirements
+
+### Hardware
+
+### Tools
+
+You need the following tools to install tezos-link :
+
+- Helm CLI : [Helm Installation](https://helm.sh/docs/intro/install/)
+- Kubectl : [Kubectl Installation](https://kubernetes.io/docs/tasks/tools/)
+
 ## Deployments
+
+The installation of tezos-link is composed of several different Helm charts :
+
+- [Bitnami PostgreSQL](https://artifacthub.io/packages/helm/bitnami/postgresql)
+- [tezos-k8s](https://tezos-k8s.xyz/)
+- [Bitnami Prometheus](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
+- tezos-link Helm charts
 
 ### Release version
 
@@ -21,26 +36,26 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 |  tezoslink-proxy | x.x.x  |
 |  tezoslink-api | x.x.x  |
 
-### Prerequisites
+### tezos-link installation
 
-1. Connect to your kubernetes cluster
-2. Create the following namespace for the PostgreSQL database :
+1. Connect to your kubernetes cluster via kubectl command
+2. Create the following namespace :
 
 ```console
-kubectl create namespace tezoslink-postgresql
+kubectl create namespace tezos-link
 ```
 
-### PostgreSQL database deployment
+3. Deploy the Bitnami PostgreSQL Helm chart :
 
-1. create the following secret for the postgresql root user and for the api user :
+3.1 create the following secret for the postgresql root user and for the api user :
 
 ```console
-kubectl create secret generic -n tezoslink-postgresql tezoslink-postgresql `
+kubectl create secret generic -n tezos-link tezos-link-postgresql `
     --from-literal=admin-password='Insert-a-strong-password' `
-    --from-literal=tz-backend-password='Insert-a-strong-password'
+    --from-literal=tezos-link-backend-password='Insert-a-strong-password'
 ```
 
-2. Deploy the PostgreSQL helm chart provided by [bitnami](https://artifacthub.io/packages/helm/bitnami/postgresql)
+3.2 Deploy the PostgreSQL helm chart provided by bitnami :
 
 ```
 helm repo add my-repo https://charts.bitnami.com/bitnami
@@ -52,9 +67,8 @@ helm upgrade -i tezoslink-postgresql bitnami/postgresql --version <refere to the
     --set global.postgresql.auth.secretKeys.adminPasswordKey="admin-password" `
     --set global.postgresql.auth.secretKeys.userPasswordKey="tz-backend-password"
 ```
-### Prometheus deployment
 
-1. Install Prometheus helm chart provided by [bitnami](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
+3.3 Deploy Prometheus helm chart provided by bitnami :
 
 ```
 helm upgrade -i kube-prometheus bitnami/kube-prometheus --version <refere to the release version section above>  `
