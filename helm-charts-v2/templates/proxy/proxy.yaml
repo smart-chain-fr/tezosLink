@@ -20,15 +20,21 @@ spec:
         - name: proxy-mainnet
           image: "{{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}"
           imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          resources: {{- toYaml .Values.proxy.resources | nindent 12 }}
+          env:
+          {{- range $key, $val := .Values.proxy.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
           ports:
             - name: http
-              containerPort: 3000
+              containerPort: 8001
               protocol: TCP
           {{- if .Values.proxy.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: {{ .Values.proxy.livenessProbe.path }}
-              port: http
+              port: {{ .Values.proxy.livenessProbe.port }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.proxy.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.proxy.livenessProbe.periodSeconds }}
@@ -40,7 +46,7 @@ spec:
           readinessProbe:
             httpGet:
               path: {{ .Values.proxy.readinessProbe.path }}
-              port: http
+              port: {{ .Values.proxy.readinessProbe.port }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.proxy.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.proxy.readinessProbe.periodSeconds }}

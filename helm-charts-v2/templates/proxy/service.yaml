@@ -29,7 +29,7 @@ spec:
   ports:
     - name: http
       port: {{ .Values.proxy.service.ports.http }}
-      targetPort: 3000
+      targetPort: 8001
       {{- if and .Values.proxy.service.nodePorts.http (or (eq .Values.proxy.service.type "NodePort") (eq .Values.proxy.service.type "LoadBalancer")) }}
       nodePort: {{ .Values.proxy.service.nodePorts.http }}
       {{- end }}

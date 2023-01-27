@@ -1,5 +1,4 @@
 global:
-
   ## @param nameOverride String to partially override `tezoslink.name` template with a string (will prepend the release name)
   ##
   nameOverride: ""
@@ -15,13 +14,22 @@ global:
 proxy:
   enabled : true
   replicaCount: 1
-  network: mainnet
+  network: "mainnet"
   image:
-    repository: nginx
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.1.0"
   
+  env:
+    DATABASE_USERNAME: "tz-backend"
+    DATABASE_PASSWORD: "Titi123!"
+    DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
+    ARCHIVE_NODES_URL: "archive-node.poc-tzk8s.svc.cluster.local"
+    TEZOS_ARCHIVE_PORT: "8732"
+    ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
+    TEZOS_ROLLING_PORT: "8732"
+    TEZOS_NETWORK: "mainnet"
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
@@ -34,7 +42,7 @@ proxy:
     ##
     automountServiceAccountToken: true
   
-   ## Proxy Service
+  ## Proxy Service
   ##
   service:
     ## @param proxy.service.type Kubernetes service type
@@ -43,7 +51,7 @@ proxy:
     ## @param proxy.service.ports.http proxy service port
     ##
     ports:
-      http: 3000
+      http: 8001
     ## @param proxy.service.clusterIP Specific cluster IP when service type is cluster IP. Use `None` for headless service
     ## e.g:
     ## clusterIP: None
@@ -104,7 +112,7 @@ proxy:
   ##
   podSecurityContext:
     enabled: true
-    runAsUser: 10000
+    runAsUser: 1000
   ## Prometheus proxy containers' Security Context (only main container)
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param proxy.containerSecurityContext.enabled Enable container security context
@@ -133,8 +141,9 @@ proxy:
   ##
   livenessProbe:
     enabled: true
-    path: /
-    initialDelaySeconds: 30
+    path: /health
+    port: 8001
+    initialDelaySeconds: 5
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 6
@@ -150,9 +159,24 @@ proxy:
   ##
   readinessProbe:
     enabled: true
-    path: /
+    path: /health
+    port: 8001
     initialDelaySeconds: 5
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 6
     successThreshold: 1
+  
+  ## Resource requests and limits
+  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+  ## choice for the user. This also increases chances charts run on environments with little
+  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  ## @param resources.limits The resources limits for the container
+  ## @param resources.requests The requested resources for the container
+  ##
+  resources:
+    limits: {}
+    requests:
+      cpu: 100m
+      memory: 256Mi
