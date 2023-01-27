@@ -1,6 +1,0 @@
-{
-  "app": "not.IT",
-  "api": {
-    "notIT": "http://localhost:1337/api"
-  }
-}
