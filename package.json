@@ -2,9 +2,29 @@
   "name": "tezoslink",
   "version": "1.0.0",
   "description": "tezosLink project",
-  "main": "index.js",
+  "_moduleAliases": {
+    "@Api": "./dist/api",
+    "@RpcGateway": "./dist/rpc-gateway",
+    "@Pages": "./dist/pages",
+    "@Services": "./dist/common/services",
+    "@Entries": "./dist/common/entries",
+    "@Common": "./dist/common/common",
+    "@Config": "./dist/common/config",
+    "@Entities": "./dist/common/entities",
+    "@System": "./dist/common/system"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "next build && tsc",
+    "rpc-gateway:start": "node ./dist/entries/RpcGateway.js",
+    "api:start": "node ./dist/entries/Api.js",
+    "web:start": "node ./dist/entries/Web.js",
+    "dev": "nodemon -V",
+    "rpc-gateway:dev": "nodemon -V --exec 'tsc && npm run rpc-gateway:start'",
+    "api:dev": "nodemon -V --exec 'tsc && npm run api:start'",
+    "web:dev": "nodemon -V --exec 'npm run build && npm run web:start'",
+    "build:test": "tsc && mocha ./dist/entries/Test.js",
+    "format": "prettier --write src",
+    "migrate": ""
   },
   "repository": {
     "type": "git",
@@ -17,16 +37,27 @@
   },
   "homepage": "https://github.com/smart-chain-fr/tezosLink#readme",
   "dependencies": {
-    "tslib": "^2.4.1",
-    "typedi": "^0.10.0",
-    "typescript": "^4.9.4",
-    "module-alias": "^2.2.2",
-    "reflect-metadata": "^0.1.13",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "dotenv": "^16.0.3"
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "module-alias": "^2.2.2",
+    "next": "^13.1.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.1",
+    "typedi": "^0.10.0",
+    "typescript": "^4.9.4"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18"
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.16",
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "nodemon": "^2.0.20"
   }
 }
