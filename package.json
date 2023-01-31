@@ -6,9 +6,9 @@
     "@Api": "./dist/api",
     "@RpcGateway": "./dist/rpc-gateway",
     "@Pages": "./dist/pages",
+    "@Common": "./dist/common",
     "@Services": "./dist/common/services",
     "@Entries": "./dist/common/entries",
-    "@Common": "./dist/common/common",
     "@Config": "./dist/common/config",
     "@Entities": "./dist/common/entities",
     "@System": "./dist/common/system"
