@@ -15,8 +15,8 @@
   },
   "scripts": {
     "build": "next build && tsc",
-    "rpc-gateway:start": "node ./dist/entries/RpcGateway.js",
     "api:start": "node ./dist/entries/Api.js",
+    "rpc-gateway:start": "node ./dist/entries/RpcGateway.js",
     "web:start": "node ./dist/entries/Web.js",
     "dev": "nodemon -V",
     "rpc-gateway:dev": "nodemon -V --exec 'tsc && npm run rpc-gateway:start'",

@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import Server from "../common/system/ExpressServer";
+import Server from "@System/ExpressServer";
 import { Response, Request } from "express";
 
 @Service()

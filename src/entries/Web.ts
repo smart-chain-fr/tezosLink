@@ -2,7 +2,7 @@ import "module-alias/register";
 import "reflect-metadata";
 import dotenv from "dotenv";
 import { Container } from "typedi";
-import NextServer from "../common/system/NextJs";
+import NextServer from "@Common/system/NextJs";
 
 dotenv.config();
 

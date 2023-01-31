@@ -2,8 +2,8 @@ import "module-alias/register";
 import "reflect-metadata";
 import dotenv from "dotenv";
 import { Container } from "typedi";
-import ExpressServer from "../common/system/ExpressServer";
-import routes from "../api";
+import ExpressServer from "@Common/system/ExpressServer";
+import routes from "@Api/index";
 import cors from "cors";
 import bodyParser from "body-parser";
 
