@@ -1,14 +1,14 @@
+
+import { type Response, type Request } from "express";
+import { Controller, Get } from "@ControllerPattern/index";
 import { Service } from "typedi";
-import Server from "../common/system/ExpressServer";
-import { Response, Request } from "express";
+
+@Controller()
 @Service()
 export default class Page2 {
-  constructor(server: Server) {
-    server.getRouter().get("/page2", (req, res) => this.get(req, res));
-  }
 
-  private get(req: Request, res: Response) {
-    res.send("Hello World Page2!");
-    console.log(req.query);
-  }
+	@Get("/page2")
+	protected get(req: Request, res: Response) {
+		res.send("Hello World Page2!");
+	}
 }

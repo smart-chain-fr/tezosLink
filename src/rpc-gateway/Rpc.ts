@@ -1,14 +1,14 @@
+
+import { type Response, type Request } from "express";
+import { Controller, Get } from "@ControllerPattern/index";
 import { Service } from "typedi";
-import Server from "../common/system/ExpressServer";
-import { Response, Request } from "express";
+
+@Controller()
 @Service()
 export default class Rpc {
-  constructor(server: Server) {
-    server.getRouter().get("/", (req, res) => this.get(req, res));
-  }
 
-  private get(req: Request, res: Response) {
-    res.send("Hello World Rpc!");
-    console.log(req.query);
-  }
+	@Get("/")
+	protected get(req: Request, res: Response) {
+		res.send("Hello World Rpc!");
+	}
 }

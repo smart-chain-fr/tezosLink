@@ -11,7 +11,8 @@
     "@Entries": "./dist/common/entries",
     "@Config": "./dist/common/config",
     "@Entities": "./dist/common/entities",
-    "@System": "./dist/common/system"
+    "@System": "./dist/common/system",
+    "@ControllerPattern": "./dist/common/system/controller-pattern"
   },
   "scripts": {
     "build": "next build && tsc",

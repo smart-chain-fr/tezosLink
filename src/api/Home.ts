@@ -1,15 +1,14 @@
-import { Service } from "typedi";
-import Server from "@System/ExpressServer";
-import { Response, Request } from "express";
 
+import { type Response, type Request } from "express";
+import { Controller, Get } from "@ControllerPattern/index";
+import { Service } from "typedi";
+
+@Controller()
 @Service()
 export default class Home {
-  constructor(server: Server) {
-    server.getRouter().get("/", (req, res) => this.get(req, res));
-  }
 
-  private get(req: Request, res: Response) {
-    res.send("Hello World Massi!");
-    console.log(req.query);
-  }
+	@Get("/")
+	protected get(req: Request, res: Response) {
+		res.send("Hello World Massi!");
+	}
 }

@@ -1,19 +1,11 @@
 import express, { Express, Router } from "express";
-import { RequestHandlerParams } from "express-serve-static-core";
 import { Service } from "typedi";
-
-interface IConfig {
-	label: string;
-	port: number;
-	rootUrl: string;
-	middlwares: RequestHandlerParams[];
-}
+import ServerInterface, { IConfig } from "./ServerInterface";
 
 @Service()
-export default class ExpressServer {
+export default class ExpressServer implements ServerInterface {
 	private router: Express = express();
 	private subRouter: Router = express.Router();
-	constructor() {}
 
 	public getRouter(): Router {
 		return this.subRouter;
@@ -24,7 +16,16 @@ export default class ExpressServer {
 		this.router.use(config.rootUrl, this.subRouter);
 
 		this.router.listen(config.port, () => {
-			console.log(`${config.label} Service listening on port ${config.port}`);
+			console.table(
+				[
+					{
+						"Entry label": config.label,
+						Port: config.port,
+						"Root url": config.rootUrl,
+					},
+				],
+				["Entry label", "Port", "Root url"],
+			);
 		});
 		return this;
 	}
