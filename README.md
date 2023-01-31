@@ -21,10 +21,10 @@ You need the following tools to install tezos-link :
 
 The installation of tezos-link is composed of several different Helm charts :
 
+- [Tezos-k8s](https://tezos-k8s.xyz/)
 - [Bitnami PostgreSQL](https://artifacthub.io/packages/helm/bitnami/postgresql)
-- [tezos-k8s](https://tezos-k8s.xyz/)
-- [Bitnami Prometheus](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
 - tezos-link Helm charts
+- [Bitnami Prometheus](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
 
 ### Release version
 
@@ -35,6 +35,15 @@ The installation of tezos-link is composed of several different Helm charts :
 |  tezos-k8s | x.x.x  |
 |  tezoslink-proxy | x.x.x  |
 |  tezoslink-api | x.x.x  |
+
+
+### Tezos-k8s deployment
+
+```console
+helm repo add tezos-node https://github.com/oxheadalpha/tezos-k8s
+```
+
+
 
 ### tezos-link installation
 
@@ -76,10 +85,3 @@ helm upgrade -i kube-prometheus bitnami/kube-prometheus --version <refere to the
     --set alertmanager.enabled="false" `
     --set blackboxExporter.enabled="false"
 ```
-
-### Tezos-k8s deployment
-
-```console
-helm repo add grafana https://smart-chain-fr.github.io/tezosLink/
-```
-
