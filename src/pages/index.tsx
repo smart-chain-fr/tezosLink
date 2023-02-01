@@ -1,18 +1,5 @@
-import Link from 'next/link'
+import Home from "@Components/Layouts/Home"
 
-export default function Home() {
-  return (
-    <ul>
-      <li style={{color: "blue"}}>
-        <Link href="/a" as="/a">
-          a
-        </Link>
-      </li>
-      <li>
-        <Link href="/b" as="/b">
-          b
-        </Link>
-      </li>
-    </ul>
-  )
+export default function Route() {
+    return <Home/>
 }

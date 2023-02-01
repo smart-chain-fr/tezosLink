@@ -46,6 +46,9 @@
     "baseUrl": ".", /* Base directory to resolve non-absolute module names. */
     "paths": {
       "@Api/*": ["src/api/*"],
+      "@Assets/*": ["src/assets/*"],
+      "@Components/*": ["src/components/*"],
+      "@Themes/*": ["src/themes/*"],
       "@RpcGateway/*": ["src/rpc-gateway/*"],
       "@Page/*": ["src/pages/*"],
       "@Services/*": ["src/common/services/*"],
