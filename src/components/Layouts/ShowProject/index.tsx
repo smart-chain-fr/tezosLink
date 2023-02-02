@@ -30,6 +30,8 @@ class SignInProject extends BasePage<IProps, IState> {
         }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
+        this.checkUuid = this.checkUuid.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
     }
 
     public override render(): JSX.Element {
@@ -42,6 +44,7 @@ class SignInProject extends BasePage<IProps, IState> {
                             errorMsg={this.state.errorMsg}
                             inputStatus={this.state.inputStatus}
                             onChange={this.handleChangeInput}
+                            onBlur={this.handleBlur}
                             type="text"
                             icon={LoginIcon}
                             name="uuid"
@@ -56,24 +59,30 @@ class SignInProject extends BasePage<IProps, IState> {
     private handleChangeInput(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({projectUuid: event.target.value})
         if (this.state.inputStatus !== 'neutral') {
-            if (event.target.value === "") {
-                this.setState({errorMsg: "Project ID is required", inputStatus: 'error'});
-            } else if (event.target.value.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')) {
-                this.setState({errorMsg: "", inputStatus: 'success'});
-            } else {
-                this.setState({errorMsg: "Must be a valid UUID", inputStatus: 'error'});
-            }
+            this.checkUuid(event.target.value);
         }
     }
 
     private handleSubmit() {
-        if (this.state.projectUuid === "") {
-            this.setState({errorMsg: "Project ID is required", inputStatus: 'error'});
-        } else if (!this.state.projectUuid.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')) {
-                this.setState({errorMsg: "Must be a valid UUID", inputStatus: 'error'});
-        } else {
+        if (this.checkUuid(this.state.projectUuid)) {
             this.props.router.push('/dashboard/' + this.state.projectUuid + "?ft=false");
         }
+    }
+
+    private handleBlur() {
+        this.checkUuid(this.state.projectUuid);
+    }
+
+    private checkUuid(uuid: string) : boolean {
+        if (uuid === "") {
+            this.setState({errorMsg: "Project ID is required", inputStatus: 'error'});
+        } else if (uuid.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')) {
+            this.setState({errorMsg: "", inputStatus: 'success'});
+            return true;
+        } else {
+            this.setState({errorMsg: "Must be a valid UUID", inputStatus: 'error'});
+        }
+        return false;
     }
 }
 

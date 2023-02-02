@@ -35,6 +35,7 @@ class NewProject extends BasePage<IProps, IState> {
         }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
         this.checkName = this.checkName.bind(this);
         this.handleChangeSelector = this.handleChangeSelector.bind(this);
     }
@@ -54,6 +55,7 @@ class NewProject extends BasePage<IProps, IState> {
                             inputStatus={this.state.inputStatus}
                             errorMsg={this.state.errorMsg}
                             onChange={this.handleChangeInput}
+                            onBlur={this.handleBlur}
                             type="text"
                             icon={icon}
                             name="title"
@@ -66,6 +68,10 @@ class NewProject extends BasePage<IProps, IState> {
     }
     private handleChangeSelector(option: string | undefined) {
         if (option !== undefined) this.setState({network: option})
+    }
+
+    private handleBlur() {
+        this.checkName(this.state.name);
     }
     
     private handleChangeInput(event: React.ChangeEvent<HTMLInputElement>) {

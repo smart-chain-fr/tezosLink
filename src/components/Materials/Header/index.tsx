@@ -43,7 +43,7 @@ export default class Header extends React.Component<IProps, IState> {
           </Link>
         </div>
         <div className={classes["button"]}>
-          <Link href="/see-my-project">
+          <Link href="/show-project">
             <Button color="transparent" text="MY PROJECT" icon={LoginIcon} />
           </Link>
           <Link href="/new-project">

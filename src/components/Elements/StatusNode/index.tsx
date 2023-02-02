@@ -6,7 +6,7 @@ type IProps = {
   network: string,
 }
 
-export default function StatusNodeService(props: IProps) {
+export default function StatusNode(props: IProps) {
   return <div className={classes["StatusViewHeader"]}>
   {(props.nodeArchiveStatus && props.nodeRollingStatus) ? <div className={classes["StatusViewIndicatorGreen"]} /> : <div className={classes["StatusViewIndicatorRed"]} />}
     <div className={classes["StatusViewTitle"]}>Nodes RPC services for {props.network} are {(props.nodeArchiveStatus && props.nodeRollingStatus) ? 'online' : 'offline'}.</div>

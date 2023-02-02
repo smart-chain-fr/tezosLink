@@ -33,7 +33,7 @@ interface IProps extends WithRouterProps {}
 class Drawer extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
-            this.state = { Links: [{name: "See my project", link: "/see-my-project", icon: LoginIcon },
+            this.state = { Links: [{name: "See my project", link: "/show-project", icon: LoginIcon },
                 {name: "Create", link: "/new-project", icon: PlusCardIcon },
                 {name: "Status", link: "/status", icon: CardsIcon },
                 {name: "Documentation", link: "/documentation", icon: DocsIcon },

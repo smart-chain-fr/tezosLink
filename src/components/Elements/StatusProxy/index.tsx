@@ -6,7 +6,7 @@ type IProps = {
   date: string
 }
 
-export default function StatusProxyService(props: IProps) {
+export default function StatusProxy(props: IProps) {
   return <div className={classes["StatusViewHeader"]}>
     {props.proxyStatus ? <div className={classes["StatusViewIndicatorGreen"]} /> : <div className={classes["StatusViewIndicatorRed"]} />}
     <div className={classes["StatusViewTitle"]}>Proxy service for {props.network} is {props.proxyStatus ? 'online' : 'offline'}.</div>

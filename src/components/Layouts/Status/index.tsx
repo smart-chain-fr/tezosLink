@@ -1,5 +1,5 @@
-import StatusNodeService from "./StatusNodeService";
-import StatusProxyService from "./StatusProxyService";
+import StatusNode from "../../Elements/StatusNode";
+import StatusProxy from "../../Elements/StatusProxy";
 import BasePage from "@Components/Layouts/Base";
 import DefaultTemplate from "@Components/LayoutTemplates/DefaultTemplate"
 import classes from "./classes.module.scss";
@@ -22,13 +22,13 @@ export default class Status extends BasePage<IProps> {
 				<div className={classes["root"]}>
 					<div className={classes["content"]}>
 						<h2>Services status</h2>
-						<StatusProxyService proxyStatus={this.props.MainnetProxyStatus}
+						<StatusProxy proxyStatus={this.props.MainnetProxyStatus}
 							network={"Mainnet"} date={this.props.Date} />
-						<StatusNodeService nodeArchiveStatus={this.props.MainnetArchiveStatus}
+						<StatusNode nodeArchiveStatus={this.props.MainnetArchiveStatus}
 							nodeRollingStatus={this.props.MainnetRollingStatus} network={"Mainnet"} />
-						<StatusProxyService proxyStatus={this.props.TestnetProxyStatus}
+						<StatusProxy proxyStatus={this.props.TestnetProxyStatus}
 							network={this.props.TestnetName} date={this.props.Date} />
-						<StatusNodeService nodeArchiveStatus={this.props.TestnetArchiveStatus}
+						<StatusNode nodeArchiveStatus={this.props.TestnetArchiveStatus}
 							nodeRollingStatus={this.props.TestnetRollingStatus} network={this.props.TestnetName} />
 					</div>
 				</div>
