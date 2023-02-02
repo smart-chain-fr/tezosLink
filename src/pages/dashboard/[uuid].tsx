@@ -80,9 +80,10 @@ export const getServerSideProps: GetServerSideProps<IProps> = async (context) =>
                             { date: "2023-01-31", value: 8 },
                             ],
             rpcUsage: [{ id: "1", label: "/chains/block/head", value: 2 },
-            { id: "2", label: "/chains/block/network/head", value: 5 }],
+            { id: "2", label: "/chains/block/network/head", value: 5 },
+            { id: "5", label: "/chains/block/network/", value: 3 }],
             rpcTotalCount: 7,
-            lastRequests: ["/chains/<chains_id>", "/network", "monitor/active_chains"]
+            lastRequests: ["/chains/<chains_id>", "/network", "monitor/active_chains","/chains/head", "/node/chains/head"]
       }
   }
 }
