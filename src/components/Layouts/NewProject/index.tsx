@@ -8,6 +8,7 @@ import icon from "@Assets/icons/user.svg"
 import InputField from "../../Elements/InputField"
 import { Button } from "@Components/Elements/Button";
 import SignUpIcon from "@Assets/icons/sign-up.svg"
+import Project from "src/front/Api/Project";
 
 interface IProps {}
 type IState = {
@@ -81,12 +82,9 @@ class NewProject extends BasePage<IProps, IState> {
         }
     }
 
-
-    private handleSubmit() {
-        const uuid : string = "db3ac6b2-adfa-4094-8b92-5ff82fe2d18a";
-        // TO DO post create project
-        // return uuid
+    private async handleSubmit() {
         if (this.checkName(this.state.name)) {
+            const uuid : string = await (await Project.getInstance().postProject({title: this.state.name, network: this.state.network})).uuid;
             this.props.router.push("/dashboard/" + uuid + "?ft=true");
         }
     }

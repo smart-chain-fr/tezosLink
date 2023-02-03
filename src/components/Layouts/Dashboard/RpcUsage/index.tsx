@@ -8,14 +8,13 @@ import Card from "@Components/Elements/Card";
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type RPCUsage = {
-  id: string
   label: string
   value: number
 }
 
 type IProps = {
   rpcUsage: RPCUsage[],
-  rpcTotalCount: number
+  rpcTotalCount: number | undefined
 }
 
 type IState = {

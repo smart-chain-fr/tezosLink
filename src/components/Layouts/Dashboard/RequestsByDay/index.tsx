@@ -8,7 +8,7 @@ const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 
 type requestByDay = {
-    date: string,
+    date: Date,
     value: number
 }
 
@@ -78,7 +78,7 @@ export default class RequestsByDay extends React.Component<IProps, IState> {
                     name: 'Nb of request',
                     type: 'line',
                     data: this.props.requestsByDays.map(rq => {
-                        return { x: new Date(rq.date).getTime(), y: rq.value }
+                        return { x: rq.date.getTime(), y: rq.value }
                     })
                 }
             ],

@@ -14,18 +14,16 @@ type IState = {
 }
 
 type requestByDay = {
-    date: string,
+    date: Date,
     value: number
 }
 
 type RPCUsage = {
-    id: string
     label: string
     value: number
 }
 
 type IProps = {
-    id: number,
     network: string,
     title: string,
     uuid: string,
@@ -33,7 +31,7 @@ type IProps = {
     requestByDays: requestByDay[],
     lastRequests: string[],
     rpcUsage: RPCUsage[],
-    rpcTotalCount: number
+    rpcTotalCount?: number | undefined
 }
 
 export default class Dashboard extends BasePage<IProps, IState> {
