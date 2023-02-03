@@ -11,32 +11,33 @@ export default class ProjectRepository {
 	}
 
 	public async findMany(query?: QueryService<Partial<ProjectEntity>>): Promise<ProjectEntity[]> {
-        
-		return (await this.model.findMany({ // WIP -- Prisma query pagniation
-			orderBy: {
+        const data = Object.assign({}, query);
+        console.log(data?.query);
+		return (this.model.findMany({ // WIP -- Prisma custom queries & pagniation
+            orderBy: {  
 				createdAt: "desc",
 			},
-		})) as ProjectEntity[];
+		})) as Promise<ProjectEntity[]>;
 	}
-	public async findOne(_uuid: string): Promise<Partial<ProjectEntity | null>> {
-        if(!_uuid) throw new Error("Uuid is undefined");
-		return (await this.model.findUnique({
-			where: {
-				uuid: _uuid,
-			},
-		})) as Partial<ProjectEntity | null>;
+	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
+        const data = Object.assign({}, projectEntity);
+        if(!data) throw new Error("Project not found");
+		return (this.model.findUnique({
+			where: data
+		})) as Promise<Partial<ProjectEntity>>;
 	}
 
 	public async create(projectEntity: Partial<ProjectEntity>): Promise<ProjectEntity> {
 		const data = Object.assign({}, projectEntity);
+        if(!data) throw new Error("Error while creating project");
 		data.uuid = uuidv4();
-		return (await this.model.create({
+		return (this.model.create({
 			data: {
 				uuid: data.uuid!,
 				title: data.title!,
 				network: data.network!,
 			},
-		})) as ProjectEntity;
+		})) as Promise<ProjectEntity> ;
 	}
 }
 

@@ -1,19 +1,14 @@
 import { StRoute } from "./StRoute";
 import { Response } from "express";
+import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
+
 
 type IResponseData = {} | string | number | boolean | null | unknown;
 
-export enum HttpCodes {
-	SUCCESS = 200,
-	CREATED = 201,
-	BAD_REQUEST = 400,
-	INTERNAL_ERROR = 500,
-	UNKNOWN_ERROR = 520,
-	NOT_IMPLEMENTED = 501,
-}
 
 export default abstract class BaseController {
 	public expressRoutes!: StRoute[];
+	public httpCode: typeof HttpCodes = HttpCodes;
 
 	protected httpSuccess(response: Response, responseData: IResponseData = null) {
 		return this.httpResponse(response, HttpCodes.SUCCESS, responseData);

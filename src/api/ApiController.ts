@@ -7,11 +7,7 @@ import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 
 @Service()
 export default abstract class ApiController extends BaseController {
-	public httpCode: typeof HttpCodes = HttpCodes;
 
-	/**
-	 * If limit === -1 means no limit
-	 */
 	protected buildQueryAsObject<Q = any>(request: Request): QueryService<Q> {
 		try {
 			const query: Q = JSON.parse((request.query["q"] as string) ?? (request.query["query"] as string) ?? "{}");

@@ -15,8 +15,8 @@ export default class ProjectService {
 		return ObjectHydrate.hydrate<Partial<ProjectEntity>>(new ProjectEntity(), projects);
 	}
 
-    public async findOne(projectEntity: Partial<ProjectEntity>) {
-        const project = await this.projectRepository.findOne(projectEntity.uuid!);
+    public async findByUUID(projectEntity: Partial<ProjectEntity>) {
+        const project = await this.projectRepository.findOne(projectEntity);
         if (!project) throw new Error("Project not found");
         return ObjectHydrate.hydrate<Partial<ProjectEntity>>(new ProjectEntity(), project);
     }
