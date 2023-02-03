@@ -14,7 +14,6 @@ export default abstract class ApiController extends BaseController {
 	 */
 	protected buildQueryAsObject<Q = any>(request: Request): QueryService<Q> {
 		try {
-            console.log(request);
 			const query: Q = JSON.parse((request.query["q"] as string) ?? (request.query["query"] as string) ?? "{}");
 			const page = ~~(request.query["page"] ?? 0);
 			const limit = ~~(request.query["limit"] ?? 0);

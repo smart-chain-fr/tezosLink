@@ -10,7 +10,7 @@ export default class ProjectService {
 	}
 
 	public async find(query: QueryService<Partial<ProjectEntity>>) {
-		const projects = await this.projectRepository.findMany();
+		const projects = await this.projectRepository.findMany(query);
 		if (!projects) throw new Error("Projects are undefined");
 		return ObjectHydrate.hydrate<Partial<ProjectEntity>>(new ProjectEntity(), projects);
 	}
