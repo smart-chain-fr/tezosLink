@@ -6,6 +6,7 @@ import ExpressServer from "@Common/system/ExpressServer";
 import routes from "@Api/index";
 import cors from "cors";
 import bodyParser from "body-parser";
+import TezosLink from "@Common/databases/TezosLink";
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const label = process.env["API_LABEL"] ?? "Unknown Service";
 
 if (!port) throw new Error(`process.env Port is undefined`);
 if (!rootUrl) throw new Error(`process.env RootUrl is undefined`);
-
+Container.get(TezosLink).connect();
 Container.get(ExpressServer).init({
 	label,
 	port: parseInt(port),
