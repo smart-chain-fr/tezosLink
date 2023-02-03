@@ -1,35 +1,48 @@
 import classes from "./classes.module.scss"
+import React from "react"
+import Card from "@Components/Elements/Card";
 
 type IProps = {
     lastRequests : string[]
 }
 
-export default function LastRequests(props: IProps): JSX.Element {
+export default class LastRequests extends React.Component<IProps> {
 
-    const showRequests = (request: string, isFirst: boolean) => {
+    public constructor(props: IProps) {
+        super(props);
+        this.renderContent = this.renderContent.bind(this);
+    }
+
+    public override render() {
+        return <div className={classes["root"]}>
+                <Card   title="Last Request"
+                        content={<this.renderContent/>}
+                        data={this.props.lastRequests && this.props.lastRequests.length > 0}/>
+            </div>
+    }
+
+    private showRequests(request: string, isFirst: boolean) {
         const stringLength = isFirst ? 40 : 60
         if (request.length > stringLength) {
-          return request.substring(0, stringLength) + '...'
+            return request.substring(0, stringLength) + '...'
         }
         return request;
-      }
+    }
 
-    return <div className={classes["root"]}>
-        <div className={classes["title"]}>Last Requests</div>
-        {props.lastRequests && props.lastRequests.length > 0 ? (
+    private renderContent() : JSX.Element {
+        return (<>
             <div className={classes["list"]}>
-                {props.lastRequests.slice(0, 5).map((request: string, index: number) => {
+                {this.props.lastRequests.slice(0, 5).map((request: string, index: number) => {
                     return (
                         <div className={classes["item"]} key={index}>
                             <div className={classes["tooltip"]} data-tooltip={request}>
-                                {showRequests(request, index === 0)}
+                                {this.showRequests(request, index === 0)}
                             </div>
                         </div>
                     )
                 })}
             </div>
-        ) : (
-            <div className={classes["no-data"]}>No data</div>
-        )}
-    </div>
+        </>)
+
+    }
 }

@@ -70,7 +70,7 @@ export default class Dashboard extends BasePage<IProps, IState> {
                         <LastRequests lastRequests={this.props.lastRequests} />
                     </div>
                 </div>
-                {this.state.showModal && <ModalCreatedProject firstTime={true} uuid={this.props.uuid} closeModal={this.closeModal} />}
+                {this.state.showModal && <ModalCreatedProject uuid={this.props.uuid} closeModal={this.closeModal} />}
             </DefaultTemplate>
         );
     }

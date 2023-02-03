@@ -4,6 +4,7 @@ import React from 'react';
 // Dynamic import mandatory to avoid the error : window undefined
 // https://stackoverflow.com/questions/68596778/next-js-window-is-not-defined
 import dynamic from 'next/dynamic'
+import Card from "@Components/Elements/Card";
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type RPCUsage = {
@@ -64,16 +65,17 @@ export default class RpcUsage extends React.Component<IProps, IState>{
       series: this.props.rpcUsage.map(element => element.value),
       componentMount: false
     };
+    this.renderContent = this.renderContent.bind(this);
   }
-
-
 
   public override render() {
     return (<div className={classes["root"]}>
-      <div className={classes["title"]}>rpc usage</div>
-      {
-        this.props.rpcUsage.length > 0 ? (
-          <>
+        <Card title="rpc usage" content={<this.renderContent />} data={this.props.rpcUsage.length > 0} />
+    </div>)
+  }
+
+  private renderContent() : JSX.Element {
+    return <>
             <div className={classes["container"]}>
               {this.state.componentMount === true &&
                 <Chart options={this.state.options}
@@ -85,11 +87,6 @@ export default class RpcUsage extends React.Component<IProps, IState>{
               }
             </div>
           </>
-        ) : (
-          <div className={classes["no-data"]}>No data</div>
-        )
-      }
-    </div>)
   }
 
   override componentDidMount(): void {
