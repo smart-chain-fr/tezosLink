@@ -11,7 +11,7 @@ from its ashes with an upgrade. It come along with a new dashboard with the some
 
 ## Requirements
 
-### Cloud
+### For a deployment on Cloud
 
 #### Hardware
 (à completer à la fin du projet)
@@ -57,11 +57,23 @@ helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
 ```
 
 2. Install the node : 
-Before installing the node, you need to choose some pararmeters according to your needs 
+Before installing the node, you need to choose some pararmeters according to your needs. They are initialised in the values.yml, located in tezos-k8s/charts/tezos
+
 2.1. The Tezos node version
+It's the current version of Tezos, you'll like to install. It can be any version, just make sure it's officially available.
+The variable name is : 
+
 2.2. The protocol
+According to 
+
+
+
 2.3. The historical mode
+
+
 2.4. The network 
+
+
 2.5. The snapshots datasources 
 
 
