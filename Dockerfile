@@ -21,7 +21,7 @@ FROM node:19-alpine AS production
 
 WORKDIR tezosLink/
 
-RUN adduser -D nextjs --uid 10000 && chown -R nextjs tezosLink/
+RUN adduser -D nextjs --uid 10000 && chown -R nextjs .
 
 COPY --from=builder --chown=nextjs tezosLink/node_modules ./node_modules
 COPY --from=builder --chown=nextjs tezosLink/public ./public
