@@ -79,13 +79,6 @@ commands:
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME
             chmod +x ${HOME}/trivy
-  # load-keys:
-  #   description: Loads the private key to login
-  #   steps:
-  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createAsset/inputs/key.json
-  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createCollectionAndAsset/inputs/key.json
-  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getAsset/inputs/key.json
-  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getCollection/inputs/key.json
 
 
 jobs:
@@ -292,17 +285,6 @@ jobs:
               --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
               --set namespace=$NAMESPACE-<<parameters.env>> 
               --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
-  load-test:
-    machine: true
-    resource_class: smart-chain-fr/scaleway-runners
-    parameters:
-      mode:
-        type: string 
-        default: ''
-    steps:
-      - checkout
-      - load-keys
-      - run: cd devops/load-testing/ && ./run-tests.sh <<parameters.mode>>
 
 
 workflows:
@@ -524,36 +506,6 @@ workflows:
             - validate-prod-deploy
           context:
             - production
-
-  load-test-consistent-load:
-    when: 
-      and: 
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
-    jobs:
-      - start-consistent-load-test:
-          type: approval
-      - load-test:
-          mode: consistentLoad
-          filters:
-            <<: *filters-stg
-          context:
-            - application-segmentation-2
-  
-  load-test-stress-test:
-    when: 
-      and: 
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
-    jobs:
-      - start-stress-test:
-          type: approval
-      - load-test:
-          mode: stressTest
-          filters:
-            <<: *filters-stg
-          context:
-            - application-segmentation-2
 
 
   default: 
