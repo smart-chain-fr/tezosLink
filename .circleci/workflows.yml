@@ -17,7 +17,7 @@ parameters:
   dockerfile-location:
     type: string
     description: Location of the Dockerfile from the root of the repo
-    default: /
+    default: .
 
   project-helm-values:
     type: string
