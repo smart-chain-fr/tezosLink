@@ -5,178 +5,349 @@ global:
   
   ## @param fullnameOverride String to fully override `tezoslink.fullname` template with a string
   ##
-  fullnameOverride: ""
+  fullnameOverride: "jhgjg"
 
   ## @param namespaceOverride String to fully override helpers.namespace
   ##
-  namespaceOverride: ""
+  namespaceOverride: "hjfjfj"
 
 proxy:
-  enabled : true
-  replicaCount: 1
-  network: "mainnet"
-  image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.1.0"
-  
-  env:
-    DATABASE_USERNAME: "tz-backend"
-    DATABASE_PASSWORD: "Titi123!"
-    DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
-    ARCHIVE_NODES_URL: "archive-node.poc-tzk8s.svc.cluster.local"
-    TEZOS_ARCHIVE_PORT: "8732"
-    ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
-    TEZOS_ROLLING_PORT: "8732"
-    TEZOS_NETWORK: "mainnet"
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-    ## @param Automount service account token for the server service account
+  testnet:
+    enabled : true
+    replicaCount: 1
+    network: "mainnet"
+    image:
+      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "0.1.0"
+    
+    env:
+      DATABASE_USERNAME: "tz-backend"
+      DATABASE_PASSWORD: "Titi123!"
+      DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
+      ARCHIVE_NODES_URL: "archive-node.poc-tzk8s.svc.cluster.local"
+      TEZOS_ARCHIVE_PORT: "8732"
+      ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
+      TEZOS_ROLLING_PORT: "8732"
+      TEZOS_NETWORK: "mainnet"
+    serviceAccount:
+      # Specifies whether a service account should be created
+      create: true
+      # Annotations to add to the service account
+      annotations: {}
+      # The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name: ""
+      ## @param Automount service account token for the server service account
+      ##
+      automountServiceAccountToken: true
+    
+    ## Proxy Service
     ##
-    automountServiceAccountToken: true
-  
-  ## Proxy Service
-  ##
-  service:
-    ## @param proxy.service.type Kubernetes service type
+    service:
+      ## @param proxy.service.type Kubernetes service type
+      ##
+      type: ClusterIP
+      ## @param proxy.service.ports.http proxy service port
+      ##
+      ports:
+        http: 8001
+      ## @param proxy.service.clusterIP Specific cluster IP when service type is cluster IP. Use `None` for headless service
+      ## e.g:
+      ## clusterIP: None
+      ##
+      clusterIP: ""
+      ## @param proxy.service.nodePorts.http Kubernetes Service nodePort
+      ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+      ## e.g:
+      ## nodePort: 30080
+      ##
+      nodePorts:
+        http: ""
+      ## @param proxy.service.loadBalancerIP `loadBalancerIP` if service type is `LoadBalancer`
+      ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+      ##
+      loadBalancerIP: ""
+      ## @param proxy.service.loadBalancerSourceRanges Address that are allowed when svc is `LoadBalancer`
+      ## Set the LoadBalancer service type to internal only
+      ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+      ## e.g:
+      ## loadBalancerSourceRanges:
+      ## - 10.10.10.0/24
+      ##
+      loadBalancerSourceRanges: []
+      ## @param proxy.service.externalTrafficPolicy Enable client source IP preservation
+      ## Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints
+      ## There are two available options: Cluster (default) and Local.
+      ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+      ##
+      externalTrafficPolicy: Cluster
+      ## @param proxy.service.healthCheckNodePort Specifies the health check node port (numeric port number) for the service if `externalTrafficPolicy` is set to Local.
+      ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+      ##
+      healthCheckNodePort: ""
+      ## @param proxy.service.annotations Additional annotations for proxy service
+      ##
+      annotations: {}
+      ## @param proxy.service.extraPorts Extra ports to expose (normally used with the `sidecar` value)
+      ##
+      extraPorts: []
+      ## @param proxy.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+      ## If "ClientIP", consecutive client requests will be directed to the same Pod
+      ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+      ##
+      sessionAffinity: None
+      ## @param proxy.service.sessionAffinityConfig Additional settings for the sessionAffinity
+      ## sessionAffinityConfig:
+      ##   clientIP:
+      ##     timeoutSeconds: 300
+      ##
+      sessionAffinityConfig: {}
+    
+    ## Proxy pods' Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param proxy.podSecurityContext.enabled Enable pod security context
+    ## @param proxy.podSecurityContext.runAsUser User ID for the container
+    ## @param proxy.podSecurityContext.fsGroup Group ID for the container filesystem
     ##
-    type: ClusterIP
-    ## @param proxy.service.ports.http proxy service port
+    podSecurityContext:
+      enabled: true
+      runAsUser: 1000
+    ## Prometheus proxy containers' Security Context (only main container)
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+    ## @param proxy.containerSecurityContext.enabled Enable container security context
+    ## @param proxy.containerSecurityContext.capabilities.drop [array] Linux Kernel capabilities which should be dropped
+    ## @param proxy.containerSecurityContext.runAsNonRoot Force the container to run as a non root user
+    ## @param proxy.containerSecurityContext.allowPrivilegeEscalation Switch privilegeEscalation possibility on or off
+    ## @param proxy.containerSecurityContext.readOnlyRootFilesystem Mount / (root) as a readonly filesystem
     ##
-    ports:
-      http: 8001
-    ## @param proxy.service.clusterIP Specific cluster IP when service type is cluster IP. Use `None` for headless service
-    ## e.g:
-    ## clusterIP: None
+    containerSecurityContext:
+      enabled: true
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+    
+    ## Configure extra options for liveness probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param operator.livenessProbe.enabled Turn on and off liveness probe
+    ## @param operator.livenessProbe.initialDelaySeconds Delay before liveness probe is initiated
+    ## @param operator.livenessProbe.periodSeconds How often to perform the probe
+    ## @param operator.livenessProbe.timeoutSeconds When the probe times out
+    ## @param operator.livenessProbe.failureThreshold Minimum consecutive failures for the probe
+    ## @param operator.livenessProbe.successThreshold Minimum consecutive successes for the probe
     ##
-    clusterIP: ""
-    ## @param proxy.service.nodePorts.http Kubernetes Service nodePort
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
-    ## e.g:
-    ## nodePort: 30080
+    livenessProbe:
+      enabled: true
+      path: /health
+      port: 8001
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    ## Configure extra options for readiness probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param operator.readinessProbe.enabled Turn on and off readiness probe
+    ## @param operator.readinessProbe.initialDelaySeconds Delay before readiness probe is initiated
+    ## @param operator.readinessProbe.periodSeconds How often to perform the probe
+    ## @param operator.readinessProbe.timeoutSeconds When the probe times out
+    ## @param operator.readinessProbe.failureThreshold Minimum consecutive failures for the probe
+    ## @param operator.readinessProbe.successThreshold Minimum consecutive successes for the probe
     ##
-    nodePorts:
-      http: ""
-    ## @param proxy.service.loadBalancerIP `loadBalancerIP` if service type is `LoadBalancer`
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+    readinessProbe:
+      enabled: true
+      path: /health
+      port: 8001
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    
+    ## Resource requests and limits
+    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+    ## choice for the user. This also increases chances charts run on environments with little
+    ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+    ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    ## @param resources.limits The resources limits for the container
+    ## @param resources.requests The requested resources for the container
     ##
-    loadBalancerIP: ""
-    ## @param proxy.service.loadBalancerSourceRanges Address that are allowed when svc is `LoadBalancer`
-    ## Set the LoadBalancer service type to internal only
-    ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
-    ## e.g:
-    ## loadBalancerSourceRanges:
-    ## - 10.10.10.0/24
+    resources:
+      limits: {}
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  mainnet:
+    enabled : true
+    replicaCount: 1
+    network: "mainnet"
+    image:
+      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "0.1.0"
+    
+    env:
+      DATABASE_USERNAME: "tz-backend"
+      DATABASE_PASSWORD: "Titi123!"
+      DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
+      ARCHIVE_NODES_URL: "archive-node.poc-tzk8s.svc.cluster.local"
+      TEZOS_ARCHIVE_PORT: "8732"
+      ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
+      TEZOS_ROLLING_PORT: "8732"
+      TEZOS_NETWORK: "mainnet"
+    serviceAccount:
+      # Specifies whether a service account should be created
+      create: true
+      # Annotations to add to the service account
+      annotations: {}
+      # The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name: ""
+      ## @param Automount service account token for the server service account
+      ##
+      automountServiceAccountToken: true
+    
+    ## Proxy Service
     ##
-    loadBalancerSourceRanges: []
-    ## @param proxy.service.externalTrafficPolicy Enable client source IP preservation
-    ## Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints
-    ## There are two available options: Cluster (default) and Local.
-    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    service:
+      ## @param proxy.service.type Kubernetes service type
+      ##
+      type: ClusterIP
+      ## @param proxy.service.ports.http proxy service port
+      ##
+      ports:
+        http: 8001
+      ## @param proxy.service.clusterIP Specific cluster IP when service type is cluster IP. Use `None` for headless service
+      ## e.g:
+      ## clusterIP: None
+      ##
+      clusterIP: ""
+      ## @param proxy.service.nodePorts.http Kubernetes Service nodePort
+      ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+      ## e.g:
+      ## nodePort: 30080
+      ##
+      nodePorts:
+        http: ""
+      ## @param proxy.service.loadBalancerIP `loadBalancerIP` if service type is `LoadBalancer`
+      ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+      ##
+      loadBalancerIP: ""
+      ## @param proxy.service.loadBalancerSourceRanges Address that are allowed when svc is `LoadBalancer`
+      ## Set the LoadBalancer service type to internal only
+      ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+      ## e.g:
+      ## loadBalancerSourceRanges:
+      ## - 10.10.10.0/24
+      ##
+      loadBalancerSourceRanges: []
+      ## @param proxy.service.externalTrafficPolicy Enable client source IP preservation
+      ## Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints
+      ## There are two available options: Cluster (default) and Local.
+      ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+      ##
+      externalTrafficPolicy: Cluster
+      ## @param proxy.service.healthCheckNodePort Specifies the health check node port (numeric port number) for the service if `externalTrafficPolicy` is set to Local.
+      ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+      ##
+      healthCheckNodePort: ""
+      ## @param proxy.service.annotations Additional annotations for proxy service
+      ##
+      annotations: {}
+      ## @param proxy.service.extraPorts Extra ports to expose (normally used with the `sidecar` value)
+      ##
+      extraPorts: []
+      ## @param proxy.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+      ## If "ClientIP", consecutive client requests will be directed to the same Pod
+      ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+      ##
+      sessionAffinity: None
+      ## @param proxy.service.sessionAffinityConfig Additional settings for the sessionAffinity
+      ## sessionAffinityConfig:
+      ##   clientIP:
+      ##     timeoutSeconds: 300
+      ##
+      sessionAffinityConfig: {}
+    
+    ## Proxy pods' Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param proxy.podSecurityContext.enabled Enable pod security context
+    ## @param proxy.podSecurityContext.runAsUser User ID for the container
+    ## @param proxy.podSecurityContext.fsGroup Group ID for the container filesystem
     ##
-    externalTrafficPolicy: Cluster
-    ## @param proxy.service.healthCheckNodePort Specifies the health check node port (numeric port number) for the service if `externalTrafficPolicy` is set to Local.
-    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    podSecurityContext:
+      enabled: true
+      runAsUser: 1000
+    ## Prometheus proxy containers' Security Context (only main container)
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+    ## @param proxy.containerSecurityContext.enabled Enable container security context
+    ## @param proxy.containerSecurityContext.capabilities.drop [array] Linux Kernel capabilities which should be dropped
+    ## @param proxy.containerSecurityContext.runAsNonRoot Force the container to run as a non root user
+    ## @param proxy.containerSecurityContext.allowPrivilegeEscalation Switch privilegeEscalation possibility on or off
+    ## @param proxy.containerSecurityContext.readOnlyRootFilesystem Mount / (root) as a readonly filesystem
     ##
-    healthCheckNodePort: ""
-    ## @param proxy.service.annotations Additional annotations for proxy service
+    containerSecurityContext:
+      enabled: true
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+    
+    ## Configure extra options for liveness probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param operator.livenessProbe.enabled Turn on and off liveness probe
+    ## @param operator.livenessProbe.initialDelaySeconds Delay before liveness probe is initiated
+    ## @param operator.livenessProbe.periodSeconds How often to perform the probe
+    ## @param operator.livenessProbe.timeoutSeconds When the probe times out
+    ## @param operator.livenessProbe.failureThreshold Minimum consecutive failures for the probe
+    ## @param operator.livenessProbe.successThreshold Minimum consecutive successes for the probe
     ##
-    annotations: {}
-    ## @param proxy.service.extraPorts Extra ports to expose (normally used with the `sidecar` value)
+    livenessProbe:
+      enabled: true
+      path: /health
+      port: 8001
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    ## Configure extra options for readiness probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param operator.readinessProbe.enabled Turn on and off readiness probe
+    ## @param operator.readinessProbe.initialDelaySeconds Delay before readiness probe is initiated
+    ## @param operator.readinessProbe.periodSeconds How often to perform the probe
+    ## @param operator.readinessProbe.timeoutSeconds When the probe times out
+    ## @param operator.readinessProbe.failureThreshold Minimum consecutive failures for the probe
+    ## @param operator.readinessProbe.successThreshold Minimum consecutive successes for the probe
     ##
-    extraPorts: []
-    ## @param proxy.service.sessionAffinity Session Affinity for Kubernetes service, can be "None" or "ClientIP"
-    ## If "ClientIP", consecutive client requests will be directed to the same Pod
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+    readinessProbe:
+      enabled: true
+      path: /health
+      port: 8001
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    
+    ## Resource requests and limits
+    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+    ## choice for the user. This also increases chances charts run on environments with little
+    ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+    ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    ## @param resources.limits The resources limits for the container
+    ## @param resources.requests The requested resources for the container
     ##
-    sessionAffinity: None
-    ## @param proxy.service.sessionAffinityConfig Additional settings for the sessionAffinity
-    ## sessionAffinityConfig:
-    ##   clientIP:
-    ##     timeoutSeconds: 300
-    ##
-    sessionAffinityConfig: {}
-  
-  ## Proxy pods' Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param proxy.podSecurityContext.enabled Enable pod security context
-  ## @param proxy.podSecurityContext.runAsUser User ID for the container
-  ## @param proxy.podSecurityContext.fsGroup Group ID for the container filesystem
-  ##
-  podSecurityContext:
-    enabled: true
-    runAsUser: 1000
-  ## Prometheus proxy containers' Security Context (only main container)
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-  ## @param proxy.containerSecurityContext.enabled Enable container security context
-  ## @param proxy.containerSecurityContext.capabilities.drop [array] Linux Kernel capabilities which should be dropped
-  ## @param proxy.containerSecurityContext.runAsNonRoot Force the container to run as a non root user
-  ## @param proxy.containerSecurityContext.allowPrivilegeEscalation Switch privilegeEscalation possibility on or off
-  ## @param proxy.containerSecurityContext.readOnlyRootFilesystem Mount / (root) as a readonly filesystem
-  ##
-  containerSecurityContext:
-    enabled: true
-    capabilities:
-      drop:
-      - ALL
-    runAsNonRoot: true
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
-  
-  ## Configure extra options for liveness probe
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param operator.livenessProbe.enabled Turn on and off liveness probe
-  ## @param operator.livenessProbe.initialDelaySeconds Delay before liveness probe is initiated
-  ## @param operator.livenessProbe.periodSeconds How often to perform the probe
-  ## @param operator.livenessProbe.timeoutSeconds When the probe times out
-  ## @param operator.livenessProbe.failureThreshold Minimum consecutive failures for the probe
-  ## @param operator.livenessProbe.successThreshold Minimum consecutive successes for the probe
-  ##
-  livenessProbe:
-    enabled: true
-    path: /health
-    port: 8001
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-  ## Configure extra options for readiness probe
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param operator.readinessProbe.enabled Turn on and off readiness probe
-  ## @param operator.readinessProbe.initialDelaySeconds Delay before readiness probe is initiated
-  ## @param operator.readinessProbe.periodSeconds How often to perform the probe
-  ## @param operator.readinessProbe.timeoutSeconds When the probe times out
-  ## @param operator.readinessProbe.failureThreshold Minimum consecutive failures for the probe
-  ## @param operator.readinessProbe.successThreshold Minimum consecutive successes for the probe
-  ##
-  readinessProbe:
-    enabled: true
-    path: /health
-    port: 8001
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-  
-  ## Resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## choice for the user. This also increases chances charts run on environments with little
-  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
-  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  ## @param resources.limits The resources limits for the container
-  ## @param resources.requests The requested resources for the container
-  ##
-  resources:
-    limits: {}
-    requests:
-      cpu: 100m
-      memory: 256Mi
+    resources:
+      limits: {}
+      requests:
+        cpu: 100m
+        memory: 256Mi

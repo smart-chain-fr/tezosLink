@@ -54,7 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the name of the service account to use
 */}}
 {{- define "helpers.serviceAccountName" -}}
-{{- default (include "helpers.fullname" .) .Values.proxy.serviceAccount.name }}
+{{- default (include "helpers.fullname" .root) .scope.serviceAccount.name }}
 {{- end }}
 
 {{/*
