@@ -11,10 +11,12 @@ from its ashes with an upgrade. It come along with a new dashboard with the some
 
 ## Requirements
 
-### Hardware
+### Cloud
+
+#### Hardware
 (à completer à la fin du projet)
 
-### Tools
+#### Tools
 
 You need the following tools to install tezos-link :
 
@@ -25,37 +27,45 @@ You need the following tools to install tezos-link :
 You need :
 - minikube : [Minikube](https://minikube.sigs.k8s.io/docs/)
 
-
 ## Deployments
 
 The installation of TezosLink is composed of several different Helm charts :
 
 - [Tezos-k8s](https://tezos-k8s.xyz/)
 - [Bitnami PostgreSQL](https://artifacthub.io/packages/helm/bitnami/postgresql)
-- tezos-link Helm charts
+- tezos-link Helm charts (WIP)
 - [Bitnami Prometheus](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
 
 ### Release version
 
 | Helm charts  | Version  |
 |---|---|
-|  bitnami/postgresql | 12.1.5  |
-|  bitnami/kube-prometheus | 8.3.2  |
 |  tezos-k8s | x.x.x  |
 |  tezoslink-proxy | x.x.x  |
+|  bitnami/postgresql | 12.1.5  |
 |  tezoslink-api | x.x.x  |
+|  bitnami/kube-prometheus | 8.3.2  |
 
 
 ### Tezos-k8s deployment
+TezosLink is based on Tezos node. Thanks to the Oxhead Alpha Community, who provide a clean Helm chart to deploy a node on Tezos, depending on your needs. To do so, you have to : 
+
+1. Add the Helm chart repository to your local Helm installation:
 
 ```console
 helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
 ```
 
+2. Install the node : 
+Before installing the node, you need to choose some pararmeters according to your needs 
+2.1. The Tezos node version
+2.2. The protocol
+2.3. The historical mode
+2.4. The network 
+2.5. The snapshots datasources 
 
 
-
-### tezos-link installation
+### Tezos-link installation
 
 1. Connect to your kubernetes cluster via kubectl command
 2. Create the following namespace :
