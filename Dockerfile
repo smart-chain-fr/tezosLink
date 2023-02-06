@@ -10,26 +10,26 @@ RUN yarn install --frozen-lockfile
 # Rebuild the source code only when needed
 FROM node:19-alpine AS builder
 
-WORKDIR /
+WORKDIR tezosLink/
 
 COPY . .
-COPY --from=deps /node_modules ./node_modules
+COPY --from=deps tezosLink/node_modules ./node_modules
 RUN yarn build
 
 # Production image, copy all the files and run next
 FROM node:19-alpine AS production
 
-WORKDIR /
+WORKDIR tezosLink/
 
-RUN adduser -D nextjs --uid 10000 && chown -R nextjs /app
+RUN adduser -D nextjs --uid 10000 && chown -R nextjs tezosLink/
 
-COPY --from=builder --chown=nextjs /node_modules ./node_modules
-COPY --from=builder --chown=nextjs /public ./public
-COPY --from=builder --chown=nextjs /src ./src
-COPY --from=builder --chown=nextjs /.next ./.next
+COPY --from=builder --chown=nextjs tezosLink/node_modules ./node_modules
+COPY --from=builder --chown=nextjs tezosLink/public ./public
+COPY --from=builder --chown=nextjs tezosLink/src ./src
+COPY --from=builder --chown=nextjs tezosLink/.next ./.next
 
-COPY --from=builder --chown=nextjs /package.json ./package.json
-COPY --from=builder --chown=nextjs /next.config.js ./next.config.js
+COPY --from=builder --chown=nextjs tezosLink/package.json ./package.json
+COPY --from=builder --chown=nextjs tezosLink/next.config.js ./next.config.js
 
 USER nextjs
 
