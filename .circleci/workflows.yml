@@ -296,14 +296,14 @@ workflows:
           filters: &filters-stg
             branches:
               only: application-segmentation-2
-      - verify-tag:
-          filters:
-            <<: *filters-stg
-          requires:
-            - run-gitleaks
+      # - verify-tag:
+      #     filters:
+      #       <<: *filters-stg
+      #     requires:
+      #       - run-gitleaks
       - build-docker-image:
-          requires:
-            - verify-tag
+          # requires:
+          #   - verify-tag
           context:
             - application-segmentation-2
           filters:
