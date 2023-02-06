@@ -42,7 +42,7 @@ parameters:
 ########################################################
 ################## DO NOT EDIT #########################
 ########################################################
-  app:
+  src:
     type: boolean
     description: This is the directory of the app, used to trigger app build & deploy
     default: false 
@@ -290,7 +290,7 @@ jobs:
 workflows:
   version: 2
   build-scan-push-deploy-stg:
-    when: <<pipeline.parameters.app>>
+    when: <<pipeline.parameters.apsrcp>>
     jobs:
       - run-gitleaks:
           filters: &filters-stg

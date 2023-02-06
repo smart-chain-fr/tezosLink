@@ -19,7 +19,7 @@ workflows:
           base-revision: <<pipeline.git.branch>>
           config-path: .circleci/workflows.yml
           mapping: |
-#            app/.* app true
+            src/.* src true
             devops/.* devops true
-            .gitleaksignore app true
+            .gitleaksignore src true
             .gitleaksignore devops true
