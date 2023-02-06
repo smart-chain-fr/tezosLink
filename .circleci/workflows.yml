@@ -512,7 +512,7 @@ workflows:
     when: 
       and: 
         - not: <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
+        - not: <<pipeline.parameters.src>>
     jobs: 
       - default:
           filters: 
