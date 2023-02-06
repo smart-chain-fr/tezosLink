@@ -3,7 +3,7 @@ FROM node:19-alpine AS deps
 
 WORKDIR tezosLink/
 
-COPY package.json yarn.lock ./
+COPY package.json  ./
 
 RUN yarn install --frozen-lockfile
 
