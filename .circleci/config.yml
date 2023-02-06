@@ -13,6 +13,7 @@ workflows:
           filters:
             branches:
               only:
+                - application-segmentation-2
                 - staging 
                 - main
                 - preprod

@@ -17,7 +17,7 @@ parameters:
   dockerfile-location:
     type: string
     description: Location of the Dockerfile from the root of the repo
-    default: app
+    default: /
 
   project-helm-values:
     type: string
@@ -79,13 +79,13 @@ commands:
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME
             chmod +x ${HOME}/trivy
-  load-keys:
-    description: Loads the private key to login
-    steps:
-      - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createAsset/inputs/key.json
-      - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createCollectionAndAsset/inputs/key.json
-      - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getAsset/inputs/key.json
-      - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getCollection/inputs/key.json
+  # load-keys:
+  #   description: Loads the private key to login
+  #   steps:
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createAsset/inputs/key.json
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createCollectionAndAsset/inputs/key.json
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getAsset/inputs/key.json
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getCollection/inputs/key.json
 
 
 jobs:
@@ -313,7 +313,7 @@ workflows:
       - run-gitleaks:
           filters: &filters-stg
             branches:
-              only: staging
+              only: application-segmentation-2
       - verify-tag:
           filters:
             <<: *filters-stg
@@ -323,7 +323,7 @@ workflows:
           requires:
             - verify-tag
           context:
-            - staging
+            - application-segmentation-2
           filters:
             <<: *filters-stg
       - scan-docker-image:
@@ -332,7 +332,7 @@ workflows:
           requires:
             - build-docker-image
           context:
-            - staging
+            - application-segmentation-2
           filters:
             <<: *filters-stg
       - scan-docker-image:
@@ -341,14 +341,14 @@ workflows:
           requires:
             - build-docker-image
           context:
-            - staging
+            - application-segmentation-2
           filters:
             <<: *filters-stg
       - push-docker-image:
           requires:
             - scan-docker-image
           context:
-            - staging
+            - application-segmentation-2
           filters:
             <<: *filters-stg
       - deploy:
@@ -359,7 +359,7 @@ workflows:
           requires:
             - push-docker-image
           context:
-            - staging
+            - application-segmentation-2
 
   build-scan-push-deploy-ppd:
     when: <<pipeline.parameters.app>>
@@ -473,7 +473,7 @@ workflows:
           filters:
             <<: *filters-stg
           context:
-            - staging
+            - application-segmentation-2
           requires:
             - run-gitleaks
 
@@ -538,7 +538,7 @@ workflows:
           filters:
             <<: *filters-stg
           context:
-            - staging
+            - application-segmentation-2
   
   load-test-stress-test:
     when: 
@@ -553,7 +553,7 @@ workflows:
           filters:
             <<: *filters-stg
           context:
-            - staging
+            - application-segmentation-2
 
 
   default: 
@@ -566,6 +566,6 @@ workflows:
           filters: 
             branches:
               only: 
-                - staging 
+                - application-segmentation-2 
                 - main
                 - preprod
