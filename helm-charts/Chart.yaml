@@ -1,4 +1,0 @@
-apiVersion: v2
-name: tezoslink
-version: 0.1.3
-description: "Deploys Tezos RPC nodes"
