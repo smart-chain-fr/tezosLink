@@ -1,7 +1,7 @@
 # Install dependencies only when needed
 FROM node:19-alpine AS deps
 
-WORKDIR .
+WORKDIR tezosLink/
 
 COPY package.json yarn.lock ./
 
