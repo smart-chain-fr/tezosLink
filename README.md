@@ -6,6 +6,7 @@
 
 ## Architecture
 
+
 ## Requirements
 
 ### Hardware
@@ -40,8 +41,9 @@ The installation of tezos-link is composed of several different Helm charts :
 ### Tezos-k8s deployment
 
 ```console
-helm repo add tezos-node https://github.com/oxheadalpha/tezos-k8s
+helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
 ```
+
 
 
 
