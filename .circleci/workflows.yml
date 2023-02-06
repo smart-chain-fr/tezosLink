@@ -6,12 +6,12 @@ orbs:
 parameters:
   project-name:
     type: string
-    description: Name of the global project, it will be used for the container registry, example -> minteed (has frontend and backend modules)
-    default: minteed
+    description: Name of the global project, it will be used for the container registry, example -> tezosLink (has frontend and backend modules)
+    default: tezosLink
 
   project-module:
     type: string
-    description: Name of the app or module of the project, it will be used for the container registry, for example minteed has a front and back app, example -> front
+    description: Name of the app or module of the project, it will be used for the container registry, for example tezosLink has a front and back app, example -> front
     default: back
 
   dockerfile-location:
@@ -22,7 +22,7 @@ parameters:
   project-helm-values:
     type: string
     description: Index of values in the helm chart file, example -> testApp
-    default: minteedBack
+    default: tezosLinkBack
 
   stg-devops-path:
     type: string
@@ -176,12 +176,12 @@ jobs:
           name: Save image
           command: > 
               docker save 
-              -o workspace/minteed-back.tar 
+              -o workspace/tezosLink-back.tar 
               rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG
       - persist_to_workspace:
           root: workspace
           paths:
-            - minteed-back.tar
+            - tezosLink-back.tar
   
   scan-docker-image:
     parameters:
@@ -206,7 +206,7 @@ jobs:
                 name: Run Trivy
                 command: >
                     ${HOME}/trivy image 
-                    --input /tmp/workspace/minteed-back.tar
+                    --input /tmp/workspace/tezosLink-back.tar
                     -o trivy-output.html 
                     -t "@devops/security/trivy/html.tpl" 
                     -f template 
@@ -221,7 +221,7 @@ jobs:
                 name: Run Trivy
                 command: > 
                   ${HOME}/trivy image 
-                  --input /tmp/workspace/minteed-back.tar
+                  --input /tmp/workspace/tezosLink-back.tar
                   <<parameters.args>>
       
   push-docker-image:
@@ -246,7 +246,7 @@ jobs:
           command: docker login rg.fr-par.scw.cloud -u nologin -p $SCW_SECRET_KEY
       - run: 
           name: Load docker image from workspace
-          command: docker load -i /tmp/workspace/minteed-back.tar
+          command: docker load -i /tmp/workspace/tezosLink-back.tar
       - run:
           name: Push image
           command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG
