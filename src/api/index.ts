@@ -1,10 +1,8 @@
 import { Container } from "typedi";
-import Home from "./Home";
-import Page2 from "./Page2";
+import ProjectController from "./ProjectController";
 
 export default {
     start: () => {
-        Container.get(Home);
-        Container.get(Page2);
+        Container.get(ProjectController);
     }
 }
