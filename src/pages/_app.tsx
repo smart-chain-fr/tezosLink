@@ -1,4 +1,4 @@
-import '/src/index.scss'
+import '@Front/index.scss'
 import type { NextPage } from 'next';
 import type { AppType, AppProps } from 'next/app';
 import type { ReactElement, ReactNode } from 'react';
