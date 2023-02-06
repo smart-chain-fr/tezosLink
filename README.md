@@ -3,6 +3,8 @@
 # TezosLink Community Kubernetes Helm Charts
 
 ## Introduction
+TezosLink provides a cutting-edge gateway to access the Tezos Network for DApps and bring the Tezos Link back
+from its ashes with an upgrade. It come along with a new dashboard with the some key metrics to facilitate TezosLink usage and monitoring. With a turnkey solution and via Tezos K8s, it allows you to deploy a Tezos Node on a select cloud provider (AWS, GCP, Azure, Scaleway)
 
 ## Architecture
 
