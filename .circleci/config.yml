@@ -5,21 +5,16 @@ orbs:
     
 setup: true 
 
-
 workflows:
   setup-workflow:
     jobs:
       - path-filtering/filter:
           filters:
             branches:
-              only:
-                - staging 
+              only: 
                 - main
-                - preprod
+                - ganon-phase2-devops
           base-revision: <<pipeline.git.branch>>
           config-path: .circleci/workflows.yml
           mapping: |
-            app/.* app true
-            devops/.* devops true
-            .gitleaksignore app true
-            .gitleaksignore devops true
+            helm-charts/.* charts true

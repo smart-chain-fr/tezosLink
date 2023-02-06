@@ -1,0 +1,33 @@
+debug = true
+networks = ["MAINNET","LIMANET"]
+[tezos]
+
+
+[proxy]
+readTimeout = 1
+writeTimeout = 5
+idleTimeout = 120
+whitelistedMethods = [
+  "/chains/main/blocks(.*?)",
+  "/mockserver/status"
+]
+blockedMethods = [
+  "(.*?)context/contracts$",
+  "/monitor(.*?)",
+  "/network(.*?)",
+]
+dontCache = [
+  "(.*?)/head/(.*?)",
+  "/chains/main/blocks$",
+]
+rateLimitPeriod = 100
+rateLimitCount = 1000000
+blockchainRequestsCacheMaxItems = 2000
+projectsCacheMaxItems = 1000
+cacheMaxMetricItems = 100
+routineDelaySeconds = 60
+whitelistedRolling = [
+  "(.*?)/head/(.*?)",
+  "(.*?)/head",
+  "(.*?)/injection/operation",
+]

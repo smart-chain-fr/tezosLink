@@ -1,0 +1,12 @@
+# pull official base image
+FROM node:10.19.0-slim
+
+# set working directory
+WORKDIR /app
+
+# install app dependencies
+COPY . .
+RUN yarn install
+
+# start app
+CMD ["yarn", "start"]
