@@ -59,7 +59,7 @@ helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
 2. Install the node : 
 Before installing the node, you need to choose some pararmeters according to your needs. They are initialised in the values.yml, located in tezos-k8s/charts/tezos
 
-2.1. The Tezos node version
+2.1. The Tezos node version. 
 It's the current version of Tezos, you'll like to install. It can be any version, just make sure it's officially available.
 The variable name is : 
 
