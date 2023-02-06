@@ -344,7 +344,7 @@ workflows:
             - application-segmentation-2
 
   build-scan-push-deploy-ppd:
-    when: <<pipeline.parameters.app>>
+    when: <<pipeline.parameters.src>>
     jobs:
       - run-gitleaks:
           filters: &filters-ppd
@@ -393,7 +393,7 @@ workflows:
             - production
 
   build-scan-push-deploy-prd:
-    when: <<pipeline.parameters.app>>
+    when: <<pipeline.parameters.src>>
     jobs:
       - run-gitleaks:
           filters: &filters-prd
