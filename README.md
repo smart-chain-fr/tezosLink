@@ -4,7 +4,7 @@
 
 ## Introduction
 TezosLink provides a cutting-edge gateway to access the Tezos Network for DApps and bring the Tezos Link back
-from its ashes with an upgrade. It come along with a new dashboard with the some key metrics to facilitate TezosLink usage and monitoring. With a turnkey solution and via Tezos K8s, it allows you to deploy a Tezos Node on a select cloud provider (AWS, GCP, Azure, Scaleway)
+from its ashes with an upgrade. It come along with a new dashboard with the some key metrics to facilitate TezosLink usage and monitoring. With a turnkey solution and via Tezos K8s, it allows you to deploy a Tezos Node on a select cloud provider (AWS, GCP, Azure, Scaleway).
 
 ## Architecture
 
@@ -12,6 +12,7 @@ from its ashes with an upgrade. It come along with a new dashboard with the some
 ## Requirements
 
 ### Hardware
+(à completer à la fin du projet)
 
 ### Tools
 
@@ -20,9 +21,14 @@ You need the following tools to install tezos-link :
 - Helm CLI : [Helm Installation](https://helm.sh/docs/intro/install/)
 - Kubectl : [Kubectl Installation](https://kubernetes.io/docs/tasks/tools/)
 
+### For a deployment on your local workspace
+You need :
+- minikube : [Minikube](https://minikube.sigs.k8s.io/docs/)
+
+
 ## Deployments
 
-The installation of tezos-link is composed of several different Helm charts :
+The installation of TezosLink is composed of several different Helm charts :
 
 - [Tezos-k8s](https://tezos-k8s.xyz/)
 - [Bitnami PostgreSQL](https://artifacthub.io/packages/helm/bitnami/postgresql)
