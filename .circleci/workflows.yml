@@ -109,14 +109,14 @@ jobs:
       - run:
           name: Verify if TAG is in Chart.yaml
           command: |
-            if [ -z "$TAG" ]
+            if [ -z "1" ]
             then
               echo "Tag is either null or missformed (check documentation)"
               exit 1
             fi
       - run: 
-          name: Tag is $TAG
-          command: echo $TAG
+          name: Tag is 1
+          command: echo 1
       - setup_remote_docker:
           version: 20.10.12
           docker_layer_caching: true
@@ -125,7 +125,7 @@ jobs:
           command: docker login rg.fr-par.scw.cloud/$NAMESPACE -u nologin -p $SCW_SECRET_KEY
       - run:
           name: Check if TAG already exists in registry
-          command: docker manifest inspect rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG && exit 1 || echo 'TAG is available'
+          command: docker manifest inspect rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1 && exit 1 || echo 'TAG is available'
       - run:
           when: on_fail
           command: echo 'Please review your tag'
@@ -153,24 +153,24 @@ jobs:
       - run: 
           name: Create persistent workspace
           command: mkdir -p workspace
-      - run:
-          name: Extract TAG from Chart.yaml
-          command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
-      - run: 
-          name: Display Tag
-          command: echo You are building version $TAG
+      # - run:
+      #     name: Extract TAG from Chart.yaml
+      #     command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
+      # - run: 
+      #     name: Display Tag
+      #     command: echo You are building version 1
       - run:
           name: Build image
           command: > 
               docker build 
-              --tag rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG 
+              --tag rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1 
               <<pipeline.parameters.dockerfile-location>> | while read line; do echo "$(date +%T) > $line"; done;
       - run: 
           name: Save image
           command: > 
               docker save 
               -o workspace/tezosLink-back.tar 
-              rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG
+              rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
       - persist_to_workspace:
           root: workspace
           paths:
@@ -230,7 +230,7 @@ jobs:
           command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
       - run: 
           name: Display Tag
-          command: echo You are pushing version $TAG
+          command: echo You are pushing version 1
       - setup_remote_docker:
           version: 20.10.12
           docker_layer_caching: true
@@ -242,7 +242,7 @@ jobs:
           command: docker load -i /tmp/workspace/tezosLink-back.tar
       - run:
           name: Push image
-          command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG
+          command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
 
   deploy:
     parameters:
@@ -264,14 +264,14 @@ jobs:
           name: Extract TAG from Chart.yaml
           command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
       - run: 
-          name: Tag is $TAG
-          command: echo $TAG
+          name: Tag is 1
+          command: echo 1
       - run:
           name: Login to SCW registry
           command: docker login rg.fr-par.scw.cloud/$NAMESPACE -u nologin -p $SCW_SECRET_KEY
       - run:
           name: Verify if tag exists in registry 
-          command: docker manifest inspect rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG
+          command: docker manifest inspect rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
       - kubernetes/install-kubeconfig:
           kubeconfig: KUBECONFIG_DATA
       - helm/install-helm-client
@@ -282,7 +282,7 @@ jobs:
               $NAMESPACE-<<parameters.env>> ./devops -i -f devops/<<parameters.env>>.values.yaml 
               -n $NAMESPACE-<<parameters.env>> 
               --create-namespace 
-              --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
+              --set << pipeline.parameters.project-helm-values >>.image.tag=1 
               --set namespace=$NAMESPACE-<<parameters.env>> 
               --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
 
