@@ -13,7 +13,7 @@ FROM node:19-alpine AS builder
 WORKDIR /
 
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /node_modules ./node_modules
 RUN yarn build
 
 # Production image, copy all the files and run next
