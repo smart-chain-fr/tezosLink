@@ -131,7 +131,13 @@ We have two options:
 a. either we clone the Tezos-K8s Repository and change the values according to our needs:
 
 ```console
+git clone https://github.com/oxheadalpha/tezos-k8s.git
 cd tezos-k8s
+```
+
+We can access to tezos-k8s/charts/tezos/values.yml, to update the varaibles. And just run : 
+
+```console
 helm install <installation_name> charts/tezos --namespace <namespace> --create-namespace
 ```
 
