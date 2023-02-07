@@ -5,7 +5,6 @@ orbs:
     
 setup: true 
 
-
 workflows:
   setup-workflow:
     jobs:
@@ -13,13 +12,14 @@ workflows:
           filters:
             branches:
               only:
+                - application-segmentation-2
                 - staging 
                 - main
                 - preprod
           base-revision: <<pipeline.git.branch>>
           config-path: .circleci/workflows.yml
           mapping: |
-            app/.* app true
+            src/.* src true
             devops/.* devops true
-            .gitleaksignore app true
+            .gitleaksignore src true
             .gitleaksignore devops true

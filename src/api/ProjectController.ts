@@ -25,10 +25,7 @@ export default class ProjectController extends ApiController {
 
 	@Get("/project")
 	protected async get(req: Request, res: Response) {
-		console.log("req @ the controller"+ req)
 		let query = this.buildQueryAsObject<Partial<ProjectEntity>>(req);
-		console.log("Query @ the controller"+ query)
-
 		try {
 			await validateOrReject(QueryService.createFrom<Partial<ProjectEntity>>(query), { forbidUnknownValues: true, skipMissingProperties: true  });
 		} catch (error) {

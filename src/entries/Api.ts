@@ -10,9 +10,9 @@ import TezosLink from "@Common/databases/TezosLink";
 
 dotenv.config();
 
-const port = process.env["API_PORT"];
-const rootUrl = process.env["API_ROOT_URL"];
-const label = process.env["API_LABEL"] ?? "Unknown Service";
+const port = process.env["NEXT_PUBLIC_API_PORT"];
+const rootUrl = process.env["NEXT_PUBLIC_API_ROOT_URL"];
+const label = process.env["NEXT_PUBLIC_API_LABEL"] ?? "Unknown Service";
 
 if (!port) throw new Error(`process.env Port is undefined`);
 if (!rootUrl) throw new Error(`process.env RootUrl is undefined`);
