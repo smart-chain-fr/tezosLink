@@ -108,7 +108,14 @@ nodes:
           metrics_addr: [ "0.0.0.0:9932" ]
 ```
 
-* The network 
+* The network :  
+The network refers to either the testnet or the mainnet. Note that the mainnet's name stills the same even if the protocol changes. The testnet must change according to one of the Tezos testnets in live. We decide to deploy a testnet and the mainnet :  
+
+```console
+node_config_network:
+  chain_name: mainnet
+  chain_name: limanet
+```
 
 
 * The snapshots datasources 
