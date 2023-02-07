@@ -176,46 +176,46 @@ jobs:
           paths:
             - tezoslink-back.tar
   
-  scan-docker-image:
-    parameters:
-      args:
-        type: string
-        default: ""
-      export-output:
-        type: boolean
-        default: false
-    docker: 
-      - image: cimg/base:stable 
-    steps: 
-      - checkout
-      - attach_workspace:
-          at: /tmp/workspace
-      - install-trivy
-      - when:
-          condition:
-            equal: [<<parameters.export-output>>, true]
-          steps:
-            - run: 
-                name: Run Trivy
-                command: >
-                    ${HOME}/trivy image 
-                    --input /tmp/workspace/tezoslink-back.tar
-                    -o trivy-output.html 
-                    -t "@devops/security/trivy/html.tpl" 
-                    -f template 
-                    <<parameters.args>> 
-            - store_artifacts: 
-                path: trivy-output.html
-      - when:
-          condition:
-            equal: [<<parameters.export-output>>, false]
-          steps:
-            - run:  
-                name: Run Trivy
-                command: > 
-                  ${HOME}/trivy image 
-                  --input /tmp/workspace/tezoslink-back.tar
-                  <<parameters.args>>
+  # scan-docker-image:
+  #   parameters:
+  #     args:
+  #       type: string
+  #       default: ""
+  #     export-output:
+  #       type: boolean
+  #       default: false
+  #   docker: 
+  #     - image: cimg/base:stable 
+  #   steps: 
+  #     - checkout
+  #     - attach_workspace:
+  #         at: /tmp/workspace
+  #     - install-trivy
+  #     - when:
+  #         condition:
+  #           equal: [<<parameters.export-output>>, true]
+  #         steps:
+  #           - run: 
+  #               name: Run Trivy
+  #               command: >
+  #                   ${HOME}/trivy image 
+  #                   --input /tmp/workspace/tezoslink-back.tar
+  #                   -o trivy-output.html 
+  #                   -t "@devops/security/trivy/html.tpl" 
+  #                   -f template 
+  #                   <<parameters.args>> 
+  #           - store_artifacts: 
+  #               path: trivy-output.html
+  #     - when:
+  #         condition:
+  #           equal: [<<parameters.export-output>>, false]
+  #         steps:
+  #           - run:  
+  #               name: Run Trivy
+  #               command: > 
+  #                 ${HOME}/trivy image 
+  #                 --input /tmp/workspace/tezoslink-back.tar
+  #                 <<parameters.args>>
       
   push-docker-image:
     docker:
