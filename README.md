@@ -50,7 +50,7 @@ The installation of TezosLink is composed of several different Helm charts :
 ### Tezos-k8s deployment
 TezosLink is based on Tezos node. Thanks to the Oxhead Alpha Community, who provide a clean Helm chart to deploy a node on Tezos, depending on your needs. To do so, you have to : 
 
-1. Add the Helm chart repository to your local Helm installation:
+1. __Add the Helm chart repository to your local Helm installation:__
 
 ```console
 helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
@@ -108,7 +108,7 @@ nodes:
           metrics_addr: [ "0.0.0.0:9932" ]
 ```
 
-* The network :  __underscores__
+* __The network__ :  
 It refers to either the testnet or the mainnet. Note that the mainnet's name stills the same even if the protocol changes. The testnet must change according to one of the Tezos testnets in live. We decide to deploy a testnet and the mainnet :  
 
 ```console
