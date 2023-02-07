@@ -54,6 +54,14 @@ commands:
             chmod +x ${HOME}/yq
             ${HOME}/yq --version
 
+  # load-keys:
+  #   description: Loads the private key to login
+  #   steps:
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createAsset/inputs/key.json
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/createCollectionAndAsset/inputs/key.json
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getAsset/inputs/key.json
+  #     - run: echo $TEST_KEYS | base64 -d >> devops/load-testing/getCollection/inputs/key.json
+
 
 jobs:
   default: 
