@@ -81,7 +81,7 @@ protocols:
 
 
 * The history mode :  
-This variable tells us the type of data we want to pull from the Tezos legder or the kind of request we are sending. Please refer to for more detail. Du to Tezos Link dutties, we need to have not only an archive node, but also a rolling node.  
+This variable tells us the type of data we want to pull from the Tezos legder or the kind of request we are sending. Please refer to [Tezos documentation](https://tezos.gitlab.io/user/history_modes.html?highlight=mode) for more detail. Du to Tezos Link dutties, we need to have not only an archive node, but also a rolling node.  
 Here's an example of configuration to deploy both mode :
 
 ```console
