@@ -80,7 +80,7 @@ jobs:
        - checkout
        - install-yq
        - run:
-           name: Get name of project from repo url
+          name: Get name of project from repo url
           command: echo "export NAMESPACE=$(echo '<<pipeline.project.git_url>>' | sed 's:.*/::')">> $BASH_ENV
       - run:
           name: Slugify name from repo url 
