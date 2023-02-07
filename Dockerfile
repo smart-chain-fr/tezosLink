@@ -29,7 +29,7 @@ COPY --from=builder --chown=nextjs tezosLink/src ./src
 COPY --from=builder --chown=nextjs tezosLink/.next ./.next
 
 COPY --from=builder --chown=nextjs tezosLink/package.json ./package.json
-#COPY --from=builder --chown=nextjs tezosLink/next.config.js ./next.config.js
+COPY --from=builder --chown=nextjs tezosLink/next.config.js ./next.config.js
 
 USER nextjs
 
