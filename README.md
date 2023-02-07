@@ -126,7 +126,10 @@ rolling_snapshot_url: https://limanet.xtz-shots.io/rolling
 ```
 Feel free to choose your snapshot provider.  
 
-Now that all the necessary variables are set, we can install the nodes :  
+Now that all the necessary variables are set, we can install the nodes.  
+We have two options:  
+a. either we clone the Tezos-K8s Repository and change the values according to our needs:
+
 ```console
 cd tezos-k8s
 helm install <installation_name> charts/tezos --namespace <namespace> --create-namespace
@@ -153,7 +156,7 @@ kubectl create secret generic -n tezos-link tezos-link-postgresql `
 
 3.2 Deploy the PostgreSQL helm chart provided by bitnami :
 
-```
+```console
 helm repo add my-repo https://charts.bitnami.com/bitnami
 helm upgrade -i tezoslink-postgresql bitnami/postgresql --version <refere to the release version section above> `
     --create-namespace --namespace tezoslink-postgresql `
@@ -166,7 +169,7 @@ helm upgrade -i tezoslink-postgresql bitnami/postgresql --version <refere to the
 
 3.3 Deploy Prometheus helm chart provided by bitnami :
 
-```
+```console
 helm upgrade -i kube-prometheus bitnami/kube-prometheus --version <refere to the release version section above>  `
     --create-namespace --namespace kube-prometheus `
     --set alertmanager.enabled="false" `
