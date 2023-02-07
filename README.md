@@ -56,7 +56,7 @@ TezosLink is based on Tezos node. Thanks to the Oxhead Alpha Community, who prov
 helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
 ```
 
-2. Install the node :  
+2. __Install the node :__
 Before installing the node, you need to choose some pararmeters according to your needs. They are initialised in the 
   values.yml, located in tezos-k8s/charts/tezos
 
