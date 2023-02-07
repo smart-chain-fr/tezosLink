@@ -73,8 +73,6 @@ According to the Tezos version, the protocol must be specified.
 Please refer to to the [Tezos documentation](https://tezos.gitlab.io/protocols/naming.html) to check the protocol name (command) linked to the Tezos version.
 ```console
 protocols:
-  ## Tezos builds baker binaries for every supported protocol.
-  ## ...
   - command: PtLimaPt
     vote: {}
 ```
