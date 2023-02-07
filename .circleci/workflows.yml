@@ -91,44 +91,44 @@ jobs:
           name: Nothing to do
           command: echo There is nothing to do 
 
-  # verify-tag:
-  #   docker:
-  #     - image: cimg/base:stable
-  #   steps:
-  #     - checkout
-  #     - install-yq
-  #     - run:
-  #         name: Get name of project from repo url
-  #         command: echo "export NAMESPACE=$(echo '<<pipeline.project.git_url>>' | sed 's:.*/::')">> $BASH_ENV
-  #     - run:
-  #         name: Slugify name from repo url 
-  #         command: echo "export NAMESPACE=$(echo $NAMESPACE | awk '{gsub(/[^0-9a-zA-Z .-]/,""); gsub(/^[ \t\r\n]+/, ""); gsub(/[ \t\r\n]+$/, ""); gsub(/[ ]+/,"-"); print tolower($0);}')">> $BASH_ENV
-  #     - run:
-  #         name: Extract TAG from Chart.yaml
-  #         command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
-  #     - run:
-  #         name: Verify if TAG is in Chart.yaml
-  #         command: |
-  #           if [ -z "1" ]
-  #           then
-  #             echo "Tag is either null or missformed (check documentation)"
-  #             exit 1
-  #           fi
-  #     - run: 
-  #         name: Tag is 1
-  #         command: echo 1
-  #     - setup_remote_docker:
-  #         version: 20.10.12
-  #         docker_layer_caching: true
-  #     - run:
-  #         name: Login to SCW registry
-  #         command: docker login rg.fr-par.scw.cloud/$NAMESPACE -u nologin -p $SCW_SECRET_KEY
-  #     - run:
-  #         name: Check if TAG already exists in registry
-  #         command: docker manifest inspect rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1 && exit 1 || echo 'TAG is available'
-  #     - run:
-  #         when: on_fail
-  #         command: echo 'Please review your tag'
+  verify-tag:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install-yq
+      - run:
+          name: Get name of project from repo url
+          command: echo "export NAMESPACE=$(echo '<<pipeline.project.git_url>>' | sed 's:.*/::')">> $BASH_ENV
+      - run:
+          name: Slugify name from repo url 
+          command: echo "export NAMESPACE=$(echo $NAMESPACE | awk '{gsub(/[^0-9a-zA-Z .-]/,""); gsub(/^[ \t\r\n]+/, ""); gsub(/[ \t\r\n]+$/, ""); gsub(/[ ]+/,"-"); print tolower($0);}')">> $BASH_ENV
+      - run:
+          name: Extract TAG from Chart.yaml
+          command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
+      - run:
+          name: Verify if TAG is in Chart.yaml
+          command: |
+            if [ -z "1" ]
+            then
+              echo "Tag is either null or missformed (check documentation)"
+              exit 1
+            fi
+      - run: 
+          name: Tag is 1
+          command: echo 1
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: true
+      - run:
+          name: Login to SCW registry
+          command: docker login rg.fr-par.scw.cloud/$NAMESPACE -u nologin -p $SCW_SECRET_KEY
+      - run:
+          name: Check if TAG already exists in registry
+          command: docker manifest inspect rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG && exit 1 || echo 'TAG is available'
+      - run:
+          when: on_fail
+          command: echo 'Please review your tag'
 
   # run-gitleaks:
   #   docker:
@@ -153,17 +153,17 @@ jobs:
       - run: 
           name: Create persistent workspace
           command: mkdir -p workspace
-      # - run:
-      #     name: Extract TAG from Chart.yaml
-      #     command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
-      # - run: 
-      #     name: Display Tag
-      #     command: echo You are building version 1
+      - run:
+          name: Extract TAG from Chart.yaml
+          command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
+      - run: 
+          name: Display Tag
+          command: echo You are building version 1
       - run:
           name: Build image
           command: > 
               docker build 
-              --tag rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1 
+              --tag rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG 
               <<pipeline.parameters.dockerfile-location>> | while read line; do echo "$(date +%T) > $line"; done;
       # - run: 
       #     name: Save image
@@ -242,7 +242,7 @@ jobs:
       #     command: docker load -i /tmp/workspace/tezoslink-p1-api.tar
       - run:
           name: Push image
-          command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
+          command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:$TAG
 
   # deploy:
   #   parameters:
@@ -302,8 +302,8 @@ workflows:
       #     requires:
       #       - run-gitleaks
       - build-docker-image:
-          # requires:
-          #   - verify-tag
+          requires:
+            - verify-tag
           context:
             - application-segmentation-2
           # filters:
