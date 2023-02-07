@@ -220,4 +220,4 @@ workflows:
           filters: 
             branches:
               only: 
-                - application-segmentation-2 
+                - dev

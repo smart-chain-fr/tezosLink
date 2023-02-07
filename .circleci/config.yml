@@ -12,8 +12,7 @@ workflows:
           filters:
             branches:
               only:
-                - application-segmentation-2
-                - staging 
+                - dev 
                 - main
                 - preprod
           base-revision: <<pipeline.git.branch>>
