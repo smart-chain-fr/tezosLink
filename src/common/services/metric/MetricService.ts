@@ -10,19 +10,19 @@ export default class MetricService {
 
 	public async find(query: QueryService<Partial<MetricEntity>>) {
 		const metrics = await this.metricRepository.findMany(query);
-		if (!metrics) throw new Error("Projects are undefined");
+		if (!metrics) throw new Error("Metrics are undefined");
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metrics);
 	}
 
 	public async findBy(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricRepository.findOne(metricEntity);
-		if (!metric) throw new Error("Project not found");
+		if (!metric) throw new Error("Metrics not found");
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
 
 	public async create(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricRepository.create(metricEntity);
-		if (!metric) throw new Error("Error while creating project");
+		if (!metric) throw new Error("Error while creating a metric");
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
 }
