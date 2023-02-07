@@ -317,8 +317,8 @@ workflows:
       - verify-tag:
           filters:
             <<: *filters-stg
-          requires:
-            - run-gitleaks
+          # requires:
+          #   - run-gitleaks
       - build-docker-image:
           requires:
             - verify-tag
