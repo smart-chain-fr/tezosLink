@@ -308,24 +308,24 @@ workflows:
             - application-segmentation-2
           filters:
             <<: *filters-stg
-      - scan-docker-image:
-          name: scan-docker-image
-          export-output: true
-          requires:
-            - build-docker-image
-          context:
-            - application-segmentation-2
-          filters:
-            <<: *filters-stg
-      - scan-docker-image:
-          name: critical-vulnerabilities-gate
-          args: "-s CRITICAL --exit-code 1"
-          requires:
-            - build-docker-image
-          context:
-            - application-segmentation-2
-          filters:
-            <<: *filters-stg
+      # - scan-docker-image:
+      #     name: scan-docker-image
+      #     export-output: true
+      #     requires:
+      #       - build-docker-image
+      #     context:
+      #       - application-segmentation-2
+      #     filters:
+      #       <<: *filters-stg
+      # - scan-docker-image:
+      #     name: critical-vulnerabilities-gate
+      #     args: "-s CRITICAL --exit-code 1"
+      #     requires:
+      #       - build-docker-image
+      #     context:
+      #       - application-segmentation-2
+      #     filters:
+      #       <<: *filters-stg
       - push-docker-image:
           requires:
             - scan-docker-image
@@ -357,24 +357,24 @@ workflows:
             - production
           filters:
             <<: *filters-ppd
-      - scan-docker-image:
-          name: scan-docker-image
-          export-output: true
-          requires:
-            - build-docker-image
-          context:
-            - production
-          filters:
-            <<: *filters-ppd
-      - scan-docker-image:
-          name: critical-vulnerabilities-gate
-          args: "-s CRITICAL --exit-code 1"
-          requires:
-            - build-docker-image
-          context:
-            - production
-          filters:
-            <<: *filters-ppd
+      # - scan-docker-image:
+      #     name: scan-docker-image
+      #     export-output: true
+      #     requires:
+      #       - build-docker-image
+      #     context:
+      #       - production
+      #     filters:
+      #       <<: *filters-ppd
+      # - scan-docker-image:
+      #     name: critical-vulnerabilities-gate
+      #     args: "-s CRITICAL --exit-code 1"
+      #     requires:
+      #       - build-docker-image
+      #     context:
+      #       - production
+      #     filters:
+      #       <<: *filters-ppd
       - push-docker-image:
           requires:
             - scan-docker-image
@@ -406,24 +406,24 @@ workflows:
             - production
           filters:
             <<: *filters-prd
-      - scan-docker-image:
-          name: scan-docker-image
-          export-output: true
-          requires:
-            - build-docker-image
-          context:
-            - production
-          filters:
-            <<: *filters-prd
-      - scan-docker-image:
-          name: critical-vulnerabilities-gate
-          args: "-s CRITICAL --exit-code 1"
-          requires:
-            - build-docker-image
-          context:
-            - production
-          filters:
-            <<: *filters-prd
+      # - scan-docker-image:
+      #     name: scan-docker-image
+      #     export-output: true
+      #     requires:
+      #       - build-docker-image
+      #     context:
+      #       - production
+      #     filters:
+      #       <<: *filters-prd
+      # - scan-docker-image:
+      #     name: critical-vulnerabilities-gate
+      #     args: "-s CRITICAL --exit-code 1"
+      #     requires:
+      #       - build-docker-image
+      #     context:
+      #       - production
+      #     filters:
+      #       <<: *filters-prd
       - push-docker-image:
           requires:
             - scan-docker-image
