@@ -109,7 +109,7 @@ nodes:
 ```
 
 * The network :  
-The network refers to either the testnet or the mainnet. Note that the mainnet's name stills the same even if the protocol changes. The testnet must change according to one of the Tezos testnets in live. We decide to deploy a testnet and the mainnet :  
+It refers to either the testnet or the mainnet. Note that the mainnet's name stills the same even if the protocol changes. The testnet must change according to one of the Tezos testnets in live. We decide to deploy a testnet and the mainnet :  
 
 ```console
 node_config_network:
@@ -117,9 +117,16 @@ node_config_network:
   chain_name: limanet
 ```
 
+* The snapshots datasources :  
+Thanks to xtz-shots.io, who provides qualified snapshots of the ledger. For Tezos Link, we use :  
 
-* The snapshots datasources 
-
+```console
+archive_tarball_url: https://mainnet.xtz-shots.io/archive-tarball 
+archive_tarball_url: https://limanet.xtz-shots.io/archive-tarball
+rolling_snapshot_url: https://mainnet.xtz-shots.io/rolling
+rolling_snapshot_url: https://limanet.xtz-shots.io/rolling
+```
+Feel free to choose your snapshot provider
 
 ### Tezos-link installation
 
