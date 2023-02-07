@@ -169,10 +169,10 @@ jobs:
           name: Save image
           command: > 
               docker save 
-              -o workspace/tezoslink-back.tar 
+              -o /tmp/workspace/tezoslink-back.tar 
               rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
       - persist_to_workspace:
-          root: workspace
+          root: /tmp/workspace
           paths:
             - tezoslink-back.tar
   
@@ -224,7 +224,7 @@ jobs:
       - checkout
       - install-yq
       - attach_workspace:
-          at: /workspace
+          at: /tmp/workspace
       - run:
           name: Extract TAG from Chart.yaml
           command: echo "export TAG=$(${HOME}/yq '.appVersion' devops/Chart.yaml )" >> $BASH_ENV
@@ -239,7 +239,7 @@ jobs:
           command: docker login rg.fr-par.scw.cloud -u nologin -p $SCW_SECRET_KEY
       - run: 
           name: Load docker image from workspace
-          command: docker load -i /workspace/tezoslink-back.tar
+          command: docker load -i /tmp/workspace/tezoslink-back.tar
       - run:
           name: Push image
           command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
