@@ -511,7 +511,7 @@ workflows:
   default: 
     when: 
       and: 
-        - not: <<pipeline.parameters.devops>>
+#        - not: <<pipeline.parameters.devops>>
         - not: <<pipeline.parameters.src>>
     jobs: 
       - default:
