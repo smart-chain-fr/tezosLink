@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helpers.fullname" . }}-api
+  namespace: {{ include "helpers.namespace" . | quote }}
+  labels: {{ include "helpers.labels.api" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+{{- include "helpers.api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+{{- include "helpers.api.selectorLabels" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+      - name: docker-pull-secret
+      containers:
+      - name: {{ include "helpers.fullname" . }}-api
+        imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+        image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+        resources:
+{{toYaml .Values.api.resources | indent 10}}
+        env:
+{{toYaml .Values.api.env | indent 10}}
+        

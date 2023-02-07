@@ -42,6 +42,29 @@ Proxy labels
 app.kubernetes.io/component : {{ printf "%s-%s" "proxy" (lower .Values.proxy.network) }}
 {{- end }}
 
+{{/*
+Proxy testnet abels
+*/}}
+{{- define "helpers.labels.testnet.proxy" -}}
+{{- include "helpers.labels.common" . }}
+app.kubernetes.io/component : {{ printf "%s-%s" "proxy" (lower .Values.proxy.testnet.network) }}
+{{- end }}
+
+{{/*
+front labels
+*/}}
+{{- define "helpers.labels.front" -}}
+{{- include "helpers.labels.common" . }}
+app.kubernetes.io/component : front
+{{- end }}
+
+{{/*
+api labels
+*/}}
+{{- define "helpers.labels.api" -}}
+{{- include "helpers.labels.common" . }}
+app.kubernetes.io/component : api
+{{- end }}
 
 {{/*
 Selector labels
@@ -51,10 +74,33 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Selector labels
+*/}}
+{{- define "helpers.proxy.selectorLabels" -}}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "helpers.front.selectorLabels" -}}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component : front
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "helpers.api.selectorLabels" -}}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component : api
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "helpers.serviceAccountName" -}}
-{{- default (include "helpers.fullname" .root) .scope.serviceAccount.name }}
+{{- default (include "helpers.fullname" .) .serviceAccount.name }}
 {{- end }}
 
 {{/*

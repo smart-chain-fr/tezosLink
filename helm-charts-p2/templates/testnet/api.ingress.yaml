@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "helpers.fullname" . }}-api
+  namespace: {{ include "helpers.namespace" . | quote }}
+  annotations: 
+{{toYaml .Values.api.ingress.annotations | indent 4 }}
+spec:
+  tls:
+  - hosts: {{ .Values.api.ingress.tls.hosts }}
+    secretName: {{ .Values.api.ingress.tls.secretName }}
+  rules:
+  - host: {{ .Values.api.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "helpers.fullname" . }}-api
+            port:
+              number: {{ .Values.api.service.ports.http }}

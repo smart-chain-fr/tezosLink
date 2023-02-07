@@ -13,7 +13,7 @@ workflows:
             branches:
               only: 
                 - main
-                - ganon-phase2-devops
+                - devops/helm-chart
           base-revision: <<pipeline.git.branch>>
           config-path: .circleci/workflows.yml
           mapping: |
