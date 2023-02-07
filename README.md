@@ -70,7 +70,7 @@ images:
 
 * The protocol :  
 According to the Tezos version, the protocol must be specified.  
-Please refer to to the [Tezos documentation](https://tezos.gitlab.io/protocols/naming.html) to check the protocol name (commnd) linked to the Tezos version.
+Please refer to to the [Tezos documentation](https://tezos.gitlab.io/protocols/naming.html) to check the protocol name (command) linked to the Tezos version.
 ```console
 protocols:
   ## Tezos builds baker binaries for every supported protocol.
@@ -80,8 +80,33 @@ protocols:
 ```
 
 
-* The historical mode
+* The history mode :  
+This variable tells us the type of data we want to pull from the Tezos legder or the kind of request we are sending. Please refer to for more detail. Du to Tezos Link dutties, we need to have not only an archive node, but also a rolling node.  
+Here's an example of configuration to deploy both mode :
 
+```console
+nodes:
+  rolling-node:
+    storage_size: 100Gi
+    runs:
+      - octez_node
+    instances:
+      - is_bootstrap_node: false
+        config:
+          shell:
+            history_mode: rolling
+          metrics_addr: [ "0.0.0.0:9932" ]
+  archive-node:
+    storage_size: 1000Gi
+    runs:
+      - octez_node
+    instances:
+      - is_bootstrap_node: false
+        config:
+          shell:
+            history_mode: archive
+          metrics_addr: [ "0.0.0.0:9932" ]
+```
 
 * The network 
 
