@@ -282,16 +282,16 @@ jobs:
       - kubernetes/install-kubeconfig:
           kubeconfig: KUBECONFIG_DATA
       - helm/install-helm-client
-      - run:
-          name: Deploy
-          command: >
-              helm upgrade 
-              $NAMESPACE-<<parameters.env>> ./devops -i -f devops/<<parameters.env>>.values.yaml 
-              -n $NAMESPACE-<<parameters.env>> 
-              --create-namespace 
-              --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
-              --set namespace=$NAMESPACE-<<parameters.env>> 
-              --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
+      # - run:
+      #     name: Deploy
+      #     command: >
+      #         helm upgrade 
+      #         $NAMESPACE-<<parameters.env>> ./devops -i -f devops/<<parameters.env>>.values.yaml 
+      #         -n $NAMESPACE-<<parameters.env>> 
+      #         --create-namespace 
+      #         --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
+      #         --set namespace=$NAMESPACE-<<parameters.env>> 
+      #         --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
   load-test:
     machine: true
     resource_class: smart-chain-fr/scaleway-runners
