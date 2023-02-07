@@ -53,7 +53,7 @@ TezosLink is based on Tezos node. Thanks to the Oxhead Alpha Community, who prov
 __1. Add the Helm chart repository to your local Helm installation__
 
 ```console
-helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
+helm repo add my-repo https://oxheadalpha.github.io/tezos-helm-charts/
 ```
 
 __2. Install the nodes__   
@@ -139,6 +139,16 @@ We can access to tezos-k8s/charts/tezos/values.yml, to update the varaibles. And
 
 ```console
 helm install <installation_name> charts/tezos --namespace <namespace> --create-namespace
+```
+
+b. either, after adding the oxheadalpha helm repository, directly deploy the nodes by setting the variables in the deploying command:
+
+```console
+helm upgrade -i my-repo charts/tezos --version <refere to the release version section above> `
+    --create-namespace --namespace <namespace> `
+    --set images.octez="tezos/tezos:v15-release" `
+    --set protocols[0].command="PtLimaPt" `
+    ...
 ```
 
 ### Tezos-link installation
