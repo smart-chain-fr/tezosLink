@@ -327,8 +327,8 @@ workflows:
       #     filters:
       #       <<: *filters-stg
       - push-docker-image:
-          requires:
-            - scan-docker-image
+          # requires:
+          #   - scan-docker-image
           context:
             - application-segmentation-2
           filters:
@@ -376,8 +376,8 @@ workflows:
       #     filters:
       #       <<: *filters-ppd
       - push-docker-image:
-          requires:
-            - scan-docker-image
+          # requires:
+          #   - scan-docker-image
           context:
             - production
           filters:
@@ -425,8 +425,8 @@ workflows:
       #     filters:
       #       <<: *filters-prd
       - push-docker-image:
-          requires:
-            - scan-docker-image
+          # requires:
+          #   - scan-docker-image
           context:
             - production
           filters:
