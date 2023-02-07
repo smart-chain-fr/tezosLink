@@ -74,12 +74,12 @@ jobs:
           command: echo There is nothing to do 
 
   verify-tag:
-     docker:
-       - image: cimg/base:stable
-     steps:
-       - checkout
-       - install-yq
-       - run:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install-yq
+      - run:
           name: Get name of project from repo url
           command: echo "export NAMESPACE=$(echo '<<pipeline.project.git_url>>' | sed 's:.*/::')">> $BASH_ENV
       - run:
