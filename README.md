@@ -128,7 +128,8 @@ Feel free to choose your snapshot provider.
 
 Now that all the necessary variables are set, we can install the nodes :  
 ```console
-helm install le_nom_de_notre_installation charts/tezos --namespace le_namespace --create-namespace
+cd tezos-k8s
+helm install <installation_name> charts/tezos --namespace <namespace> --create-namespace
 ```
 
 ### Tezos-link installation
