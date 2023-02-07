@@ -118,7 +118,7 @@ node_config_network:
 ```
 
 * The snapshots datasources :  
-Thanks to xtz-shots.io, who provides qualified snapshots of the ledger. For Tezos Link, we use :  
+Thanks to [Xtz-shots.io](https://xtz-shots.io/), who provides qualified snapshots of the ledger. For Tezos Link, we use :  
 
 ```console
 archive_tarball_url: https://mainnet.xtz-shots.io/archive-tarball 
