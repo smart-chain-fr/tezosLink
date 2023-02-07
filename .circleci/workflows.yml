@@ -292,17 +292,17 @@ jobs:
       #         --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
       #         --set namespace=$NAMESPACE-<<parameters.env>> 
       #         --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
-  load-test:
-    machine: true
-    resource_class: smart-chain-fr/scaleway-runners
-    parameters:
-      mode:
-        type: string 
-        default: ''
-    steps:
-      - checkout
-      - load-keys
-      - run: cd devops/load-testing/ && ./run-tests.sh <<parameters.mode>>
+  # load-test:
+  #   machine: true
+  #   resource_class: smart-chain-fr/scaleway-runners
+  #   parameters:
+  #     mode:
+  #       type: string 
+  #       default: ''
+  #   steps:
+  #     - checkout
+  #     - load-keys
+  #     - run: cd devops/load-testing/ && ./run-tests.sh <<parameters.mode>>
 
 
 workflows:
@@ -525,35 +525,35 @@ workflows:
   #         context:
   #           - production
 
-  load-test-consistent-load:
-    when: 
-      and: 
-#        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.src>>
-    jobs:
-      - start-consistent-load-test:
-          type: approval
-      - load-test:
-          mode: consistentLoad
-          filters:
-            <<: *filters-stg
-          context:
-            - application-segmentation-2
+#   load-test-consistent-load:
+#     when: 
+#       and: 
+# #        - <<pipeline.parameters.devops>>
+#         - not: <<pipeline.parameters.src>>
+#     jobs:
+#       - start-consistent-load-test:
+#           type: approval
+#       - load-test:
+#           mode: consistentLoad
+#           filters:
+#             <<: *filters-stg
+#           context:
+#             - application-segmentation-2
   
-  load-test-stress-test:
-    when: 
-      and: 
-#        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.src>>
-    jobs:
-      - start-stress-test:
-          type: approval
-      - load-test:
-          mode: stressTest
-          filters:
-            <<: *filters-stg
-          context:
-            - application-segmentation-2
+#   load-test-stress-test:
+#     when: 
+#       and: 
+# #        - <<pipeline.parameters.devops>>
+#         - not: <<pipeline.parameters.src>>
+#     jobs:
+#       - start-stress-test:
+#           type: approval
+#       - load-test:
+#           mode: stressTest
+#           filters:
+#             <<: *filters-stg
+#           context:
+#             - application-segmentation-2
 
 
   default: 
