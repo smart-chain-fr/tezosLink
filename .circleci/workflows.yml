@@ -165,16 +165,16 @@ jobs:
               docker build 
               --tag rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1 
               <<pipeline.parameters.dockerfile-location>> | while read line; do echo "$(date +%T) > $line"; done;
-      - run: 
-          name: Save image
-          command: > 
-              docker save 
-              -o /tmp/workspace/tezoslink-back.tar 
-              rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - tezoslink-back.tar
+      # - run: 
+      #     name: Save image
+      #     command: > 
+      #         docker save 
+      #         -o /tmp/workspace/tezoslink-back.tar 
+      #         rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
+      # - persist_to_workspace:
+      #     root: /tmp/workspace
+      #     paths:
+      #       - tezoslink-back.tar
   
   # scan-docker-image:
   #   parameters:
@@ -237,9 +237,9 @@ jobs:
       - run:
           name: Login to SCW registry
           command: docker login rg.fr-par.scw.cloud -u nologin -p $SCW_SECRET_KEY
-      - run: 
-          name: Load docker image from workspace
-          command: docker load -i /tmp/workspace/tezoslink-back.tar
+      # - run: 
+      #     name: Load docker image from workspace
+      #     command: docker load -i /tmp/workspace/tezoslink-back.tar
       - run:
           name: Push image
           command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
