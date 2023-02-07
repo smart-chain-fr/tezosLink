@@ -1,25 +1,43 @@
 version: 2.1
-
-orbs: 
-  path-filtering: circleci/path-filtering@0.1.3
-    
-setup: true 
+jobs:
+  build-push-docker-image: 
+    docker:
+      - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: true
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG Dockerfiles/Dockerfile.api
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG Dockerfiles/Dockerfile.front
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG Dockerfiles/Dockerfile.proxy
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG
 
 workflows:
-  setup-workflow:
+  version: 2
+  # build:
+  #   jobs:
+  #     - build-docker-image:
+  #         filters:
+  #           tags:
+  #             only: /^build.*/
+  #           branches:
+  #             ignore: /.*/
+  build-and-register:
     jobs:
-      - path-filtering/filter:
+      - build-push-docker-image:
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only:
-                - application-segmentation-2
-                - staging 
-                - main
-                - preprod
-          base-revision: <<pipeline.git.branch>>
-          config-path: .circleci/workflows.yml
-          mapping: |
-            src/.* src true
-            devops/.* devops true
-            .gitleaksignore src true
-            .gitleaksignore devops true
+              ignore: /.*/
+              
+
+              
