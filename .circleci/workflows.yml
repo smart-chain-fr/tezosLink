@@ -42,7 +42,7 @@ parameters:
 ########################################################
 ################## DO NOT EDIT #########################
 ########################################################
-  app:
+  src:
     type: boolean
     description: This is the directory of the app, used to trigger app build & deploy
     default: false 
@@ -308,12 +308,12 @@ jobs:
 workflows:
   version: 2
   build-scan-push-deploy-stg:
-    when: <<pipeline.parameters.app>>
+    when: <<pipeline.parameters.src>>
     jobs:
       - run-gitleaks:
           filters: &filters-stg
             branches:
-              only: staging
+              only: application-segmentation-2
       - verify-tag:
           filters:
             <<: *filters-stg
@@ -323,7 +323,7 @@ workflows:
           requires:
             - verify-tag
           context:
-            - staging
+            - application-segmentation-2
           filters:
             <<: *filters-stg
       - scan-docker-image:
@@ -362,7 +362,7 @@ workflows:
             - staging
 
   build-scan-push-deploy-ppd:
-    when: <<pipeline.parameters.app>>
+    when: <<pipeline.parameters.src>>
     jobs:
       - run-gitleaks:
           filters: &filters-ppd
@@ -411,7 +411,7 @@ workflows:
             - production
 
   build-scan-push-deploy-prd:
-    when: <<pipeline.parameters.app>>
+    when: <<pipeline.parameters.src>>
     jobs:
       - run-gitleaks:
           filters: &filters-prd
@@ -459,77 +459,77 @@ workflows:
           context:
             - production
 
-  deploy-new-infra-config-stg:
-    when: 
-      and:
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
-    jobs:
-      - run-gitleaks:
-          filters: 
-            <<: *filters-stg
-      - deploy:
-          env: stg
-          filters:
-            <<: *filters-stg
-          context:
-            - staging
-          requires:
-            - run-gitleaks
+  # deploy-new-infra-config-stg:
+  #   when: 
+  #     and:
+  #       - <<pipeline.parameters.devops>>
+  #       - not: <<pipeline.parameters.src>>
+  #   jobs:
+  #     - run-gitleaks:
+  #         filters: 
+  #           <<: *filters-stg
+  #     - deploy:
+  #         env: stg
+  #         filters:
+  #           <<: *filters-stg
+  #         context:
+  #           - staging
+  #         requires:
+  #           - run-gitleaks
 
-  deploy-new-infra-config-ppd:
-    when: 
-      and:
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
-    jobs:
-      - run-gitleaks:
-          filters: 
-            <<: *filters-ppd
-      - validate-ppd-deploy:
-          type: approval
-          filters:
-            <<: *filters-ppd
-          requires:
-            - run-gitleaks
-      - deploy:
-          env: ppd
-          filters:
-            <<: *filters-ppd
-          requires:
-            - validate-ppd-deploy
-          context:
-            - production
+  # deploy-new-infra-config-ppd:
+  #   when: 
+  #     and:
+  #       - <<pipeline.parameters.devops>>
+  #       - not: <<pipeline.parameters.src>>
+  #   jobs:
+  #     - run-gitleaks:
+  #         filters: 
+  #           <<: *filters-ppd
+  #     - validate-ppd-deploy:
+  #         type: approval
+  #         filters:
+  #           <<: *filters-ppd
+  #         requires:
+  #           - run-gitleaks
+  #     - deploy:
+  #         env: ppd
+  #         filters:
+  #           <<: *filters-ppd
+  #         requires:
+  #           - validate-ppd-deploy
+  #         context:
+  #           - production
 
-  deploy-new-infra-config-prd:
-    when: 
-      and:
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
-    jobs:
-      - run-gitleaks:
-          filters: 
-            <<: *filters-prd
-      - validate-prod-deploy:
-          type: approval
-          filters:
-            <<: *filters-prd
-          requires:
-            - run-gitleaks
-      - deploy:
-          env: prd
-          filters:
-            <<: *filters-prd
-          requires:
-            - validate-prod-deploy
-          context:
-            - production
+  # deploy-new-infra-config-prd:
+  #   when: 
+  #     and:
+  #       - <<pipeline.parameters.devops>>
+  #       - not: <<pipeline.parameters.app>>
+  #   jobs:
+  #     - run-gitleaks:
+  #         filters: 
+  #           <<: *filters-prd
+  #     - validate-prod-deploy:
+  #         type: approval
+  #         filters:
+  #           <<: *filters-prd
+  #         requires:
+  #           - run-gitleaks
+  #     - deploy:
+  #         env: prd
+  #         filters:
+  #           <<: *filters-prd
+  #         requires:
+  #           - validate-prod-deploy
+  #         context:
+  #           - production
 
   load-test-consistent-load:
     when: 
       and: 
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
+#        - <<pipeline.parameters.devops>>
+        - not: <<pipeline.parameters.src>>
     jobs:
       - start-consistent-load-test:
           type: approval
@@ -538,13 +538,13 @@ workflows:
           filters:
             <<: *filters-stg
           context:
-            - staging
+            - application-segmentation-2
   
   load-test-stress-test:
     when: 
       and: 
-        - <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
+#        - <<pipeline.parameters.devops>>
+        - not: <<pipeline.parameters.src>>
     jobs:
       - start-stress-test:
           type: approval
@@ -553,19 +553,19 @@ workflows:
           filters:
             <<: *filters-stg
           context:
-            - staging
+            - application-segmentation-2
 
 
   default: 
     when: 
       and: 
-        - not: <<pipeline.parameters.devops>>
-        - not: <<pipeline.parameters.app>>
+#        - not: <<pipeline.parameters.devops>>
+        - not: <<pipeline.parameters.src>>
     jobs: 
       - default:
           filters: 
             branches:
               only: 
-                - staging 
+                - application-segmentation-2 
                 - main
                 - preprod
