@@ -102,49 +102,49 @@ jobs:
           name: Push image
           command: docker push rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>:1
 
-workflows:
-  version: 2
-  build-scan-push-deploy-stg:
-    when: <<pipeline.parameters.src>>
-    jobs:
-      - build-docker-image:
-          context:
-            - application-segmentation-2
-          filters:
-            <<: *filters-stg
-      - push-docker-image:
-          context:
-            - application-segmentation-2
-          filters:
-            <<: *filters-stg
+# workflows:
+#   version: 2
+#   build-scan-push-deploy-stg:
+#     when: <<pipeline.parameters.src>>
+#     jobs:
+#       - build-docker-image:
+#           context:
+#             - application-segmentation-2
+#           filters:
+#             <<: *filters-stg
+#       - push-docker-image:
+#           context:
+#             - application-segmentation-2
+#           filters:
+#             <<: *filters-stg
 
-  build-scan-push-deploy-ppd:
-    when: <<pipeline.parameters.src>>
-    jobs:
-      - build-docker-image:
-          context:
-            - production
-          filters:
-            <<: *filters-ppd
-      - push-docker-image:
-          context:
-            - production
-          filters:
-            <<: *filters-ppd
+#   build-scan-push-deploy-ppd:
+#     when: <<pipeline.parameters.src>>
+#     jobs:
+#       - build-docker-image:
+#           context:
+#             - production
+#           filters:
+#             <<: *filters-ppd
+#       - push-docker-image:
+#           context:
+#             - production
+#           filters:
+#             <<: *filters-ppd
 
-  build-scan-push-deploy-prd:
-    when: <<pipeline.parameters.src>>
-    jobs:
-      - build-docker-image:
-          context:
-            - production
-          filters:
-            <<: *filters-prd
-      - push-docker-image:
-          context:
-            - production
-          filters:
-            <<: *filters-prd
+#   build-scan-push-deploy-prd:
+#     when: <<pipeline.parameters.src>>
+#     jobs:
+#       - build-docker-image:
+#           context:
+#             - production
+#           filters:
+#             <<: *filters-prd
+#       - push-docker-image:
+#           context:
+#             - production
+#           filters:
+#             <<: *filters-prd
 
   default: 
     when: 
