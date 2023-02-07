@@ -22,14 +22,14 @@ export default class MetricEntity {
 
     @IsNumber()
 	@IsNotEmpty()
-	public projectId!: number;
+	public projectId?: number;
 
 	@IsArray()
-	public project!: ProjectEntity[];
+	public project?: ProjectEntity[];
 
 	@IsDate()
-	public createdAt!: Date;
+	public createdAt?: Date;
 
     @IsDate()
-	public updatedAt!: Date;
+	public updatedAt?: Date;
 }

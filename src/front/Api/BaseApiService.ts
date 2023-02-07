@@ -1,10 +1,12 @@
+
 export enum ContentType {
 	JSON = "application/json",
 	FORM_DATA = "multipart/form-data;",
 }
 
+
 export default abstract class BaseApiService {
-	protected readonly backUrl = process.env['API_HOSTNAME'] + ':' + process.env['API_PORT'] + process.env['API_ROOT_URL'];
+	protected readonly backUrl = process.env["NEXT_PUBLIC_API_HOSTNAME"] + ':' + process.env['NEXT_PUBLIC_API_PORT'] + process.env['NEXT_PUBLIC_API_ROOT_URL'];
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	protected constructor() {}

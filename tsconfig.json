@@ -76,7 +76,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/front/next.config.js"  ],
   "exclude": [
     "node_modules"
   ]

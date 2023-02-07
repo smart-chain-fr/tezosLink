@@ -1,14 +1,15 @@
 import BaseApiService from "src/front/Api/BaseApiService"
 import { IProject } from "src/front/interfaces"
+import { Service } from "typedi";
 
 type IPostProject = {
     title: string,
     network: string
 }
-
+@Service()
 export default class Project extends BaseApiService {
     private static instance: Project;
-    private readonly baseURl = this.backUrl.concat('/').concat('/project');
+    private readonly baseURl = this.backUrl.concat('/project');
 
     private constructor() {
         super();
@@ -43,6 +44,7 @@ export default class Project extends BaseApiService {
     }
 
     public async postProject(params: IPostProject): Promise<IProject> {
+        console.log(this.baseURl);
         const url = new URL(this.baseURl);
         try {
             return await this.postRequest<IProject>(url, params);

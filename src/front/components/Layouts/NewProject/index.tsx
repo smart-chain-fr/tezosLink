@@ -84,7 +84,7 @@ class NewProject extends BasePage<IProps, IState> {
 
     private async handleSubmit() {
         if (this.checkName(this.state.name)) {
-            const uuid : string = await (await Project.getInstance().postProject({title: this.state.name, network: this.state.network})).uuid;
+            const uuid : string = (await Project.getInstance().postProject({title: this.state.name, network: this.state.network})).uuid;
             this.props.router.push("/dashboard/" + uuid + "?ft=true");
         }
     }
