@@ -5,7 +5,7 @@ WORKDIR tezosLink/
 
 COPY package.json  ./
 
-RUN yarn install --frozen-lockfile
+RUN npm install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM node:19-alpine AS builder
@@ -14,7 +14,7 @@ WORKDIR tezosLink/
 
 COPY . .
 COPY --from=deps tezosLink/node_modules ./node_modules
-RUN yarn build
+RUN npm run build
 
 # Production image, copy all the files and run next
 FROM node:19-alpine AS production
@@ -33,4 +33,4 @@ COPY --from=builder --chown=nextjs tezosLink/package.json ./package.json
 
 USER nextjs
 
-CMD ["npm", "start"]
+CMD ["npm", "run"]
