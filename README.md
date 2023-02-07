@@ -56,7 +56,7 @@ __1. Add the Helm chart repository to your local Helm installation__
 helm repo add oxheadalpha https://oxheadalpha.github.io/tezos-helm-charts/
 ```
 
-__2. Install the node__   
+__2. Install the nodes__   
 Before installing the node, you need to choose some pararmeters according to your needs. They are initialised in the 
   values.yml, located in tezos-k8s/charts/tezos
 
@@ -125,7 +125,12 @@ archive_tarball_url: https://limanet.xtz-shots.io/archive-tarball
 rolling_snapshot_url: https://mainnet.xtz-shots.io/rolling
 rolling_snapshot_url: https://limanet.xtz-shots.io/rolling
 ```
-Feel free to choose your snapshot provider.
+Feel free to choose your snapshot provider.  
+
+Now that all the necessary variables are set, we can install the nodes :  
+```console
+helm install le_nom_de_notre_installation charts/tezos --namespace le_namespace --create-namespace
+```
 
 ### Tezos-link installation
 
