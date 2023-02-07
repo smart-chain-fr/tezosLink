@@ -81,7 +81,7 @@ protocols:
 
 
 * The history mode :  
-This variable tells us the type of data we want to pull from the Tezos legder or the kind of request we are sending. Please refer to [Tezos documentation](https://tezos.gitlab.io/user/history_modes.html?highlight=mode) for more detail. Du to Tezos Link dutties, we need to have not only an archive node, but also a rolling node.  
+This variable tells us the type of data we want to pull from the Tezos legder or the kind of request we are sending. Please refer to [Tezos documentation](https://tezos.gitlab.io/user/history_modes.html?highlight=mode) for more detail. Due to Tezos Link dutties, we need to have not only an archive node, but also a rolling node.  
 Here's an example of configuration to deploy both mode :
 
 ```console
@@ -108,7 +108,7 @@ nodes:
           metrics_addr: [ "0.0.0.0:9932" ]
 ```
 
-* The network :  
+* The network :  __underscores__
 It refers to either the testnet or the mainnet. Note that the mainnet's name stills the same even if the protocol changes. The testnet must change according to one of the Tezos testnets in live. We decide to deploy a testnet and the mainnet :  
 
 ```console
@@ -126,7 +126,7 @@ archive_tarball_url: https://limanet.xtz-shots.io/archive-tarball
 rolling_snapshot_url: https://mainnet.xtz-shots.io/rolling
 rolling_snapshot_url: https://limanet.xtz-shots.io/rolling
 ```
-Feel free to choose your snapshot provider
+Feel free to choose your snapshot provider.
 
 ### Tezos-link installation
 
