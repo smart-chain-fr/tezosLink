@@ -33,6 +33,11 @@ parameters:
     description: This is the directory of the app, used to trigger app build & deploy
     default: false 
 
+  devops: 
+    type: boolean 
+    description: This is the directory of the devops, used to trigger devops only deploy
+    default: false
+
 ########################################################
 
 ###################################################################

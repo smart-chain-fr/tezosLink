@@ -33,4 +33,4 @@ COPY --from=builder --chown=nextjs tezosLink/package.json ./package.json
 
 USER nextjs
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]

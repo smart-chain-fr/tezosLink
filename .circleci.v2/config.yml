@@ -1,0 +1,48 @@
+version: 2.1
+jobs:
+  build-docker-image:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
+    resource_class: medium
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: false
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG .
+  build-push-docker-image: 
+    docker:
+      - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: true
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG .
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-docker-image:
+          filters:
+            tags:
+              only: /^build.*/
+            branches:
+              ignore: /.*/
+  build-and-register:
+    jobs:
+      - build-push-docker-image:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+              
