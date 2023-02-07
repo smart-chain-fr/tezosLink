@@ -56,7 +56,6 @@ commands:
 
 
 jobs:
-  
   default: 
     docker:
       - image: cimg/base:stable
