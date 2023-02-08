@@ -41,6 +41,7 @@ jobs:
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
       - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG Dockerfiles/Dockerfile.proxy
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG
+      
 
 workflows:
   version: 2
