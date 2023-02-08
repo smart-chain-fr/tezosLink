@@ -11,7 +11,7 @@ jobs:
           version: 20.10.12
           docker_layer_caching: true
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG -f /Dockerfiles/Dockerfile.api .
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG -f Dockerfiles/Dockerfile.api .
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
       - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG -f Dockerfiles/Dockerfile.front .
