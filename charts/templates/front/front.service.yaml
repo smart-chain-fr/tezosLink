@@ -1,0 +1,30 @@
+{{- if .Values.front.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helpers.fullname" . }}-front
+  namespace: {{ include "helpers.namespace" . | quote }}
+  labels: {{ include "helpers.labels.front" . | nindent 4 }}
+  annotations: 
+    {{ toYaml .Values.front.service.annotations | nindent 4 | trim }}
+spec:
+  type: {{ .Values.front.service.type }}
+{{- if .Values.front.service.clusterIP }}
+  clusterIP: {{ .Values.front.service.clusterIP }}
+{{- end }}
+{{- if .Values.front.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{- range .Values.front.service.loadBalancerSourceRanges}}
+    - {{ . | indent 4 }}
+{{- end}}
+{{- end }}
+  ports:
+    - port:  {{ .Values.front.service.ports.http }}
+      name: http
+      targetPort: {{ .Values.front.service.ports.http }}
+{{- if eq .Values.front.service.type "NodePort" }}
+      nodePort: {{ .Values.front.service.nodePorts.http }}
+{{- end }}
+  selector:
+{{- include "helpers.front.selectorLabels" . | nindent 8 }}
+{{- end }}
