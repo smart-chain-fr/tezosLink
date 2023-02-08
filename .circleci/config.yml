@@ -20,6 +20,23 @@ jobs:
       - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG Dockerfiles/Dockerfile.proxy
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG
 
+  deploy-docker-image:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - kubernetes/install-kubeconfig:
+          kubeconfig: KUBECONFIG_DATA
+      - helm/install-helm-client
+      - run: helm upgrade 
+              phase1-<<parameters.env>> ./devops -i -f devops/<<parameters.env>>.values.yaml 
+              -n phase1-<<parameters.env>> 
+              --create-namespace 
+              --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
+              --set namespace=phase1-<<parameters.env>> 
+              --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
+
+    
+
 workflows:
   version: 2
   build-and-register:
