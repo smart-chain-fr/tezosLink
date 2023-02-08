@@ -37,12 +37,9 @@ api:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 
   env:
-    - name: DATABASE_USERNAME
-      value: "tz-backend"
-    - name: DATABASE_PASSWORD
-      value: "Titi123!"
-    - name : DATABASE_URL
-      value: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
+    DATABASE_USERNAME: "tz-backend"
+    DATABASE_PASSWORD: "Titi123!"
+    DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
 
   resources:
     limits: {}
@@ -162,7 +159,7 @@ front:
 proxy:
   testnet:
     enabled : true
-    replicaCount: 2
+    replicaCount: 1
     network: "mainnet"
     image:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy

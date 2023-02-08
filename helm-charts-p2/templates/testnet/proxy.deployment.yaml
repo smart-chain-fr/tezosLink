@@ -15,13 +15,29 @@ spec:
       labels:
         {{- include "helpers.proxy.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: proxy-service
+      serviceAccountName: proxy-sa
       containers:
         - name: proxy-mainnet
           image: "{{ .Values.proxy.testnet.image.repository }}:{{ .Values.proxy.testnet.image.tag }}"
           imagePullPolicy: {{ .Values.proxy.testnet.image.pullPolicy }}
-          resources: {{- toYaml .Values.proxy.testnet.resources | nindent 12 }}
+          resources: 
+{{- toYaml .Values.proxy.testnet.resources | nindent 12 }}
           env:
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" . }}-cm
+                  key: API_URL
+            - name: PROXY_TESTNET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" . }}-cm
+                  key: PROXY_TESTNET_URL
+            - name: FRONT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" . }}-cm
+                  key: FRONT_URL
           {{- range $key, $val := .Values.proxy.testnet.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
