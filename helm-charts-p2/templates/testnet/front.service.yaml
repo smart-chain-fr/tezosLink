@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helpers.fullname" . }}-front
+  namespace: {{ include "helpers.namespace" . | quote }}
+  labels:
+spec:
+  ports:
+    - port:  {{ .Values.front.service.ports.http }}
+      name: http
+      targetPort: {{ .Values.front.service.ports.http }}
+  selector:
+{{- include "helpers.front.selectorLabels" . | nindent 8 }}
