@@ -33,9 +33,9 @@ jobs:
               helm upgrade helm-charts-p2 -i -f helm-charts-p2/values.yaml 
               -n phase1
               --create-namespace 
-              --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
+              --set helm-charts-p2/values.yaml .image.tag=$TAG 
               --set namespace=phase1
-              --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
+              --set helm-charts-p2/values.yaml .image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
 
 
 workflows:
