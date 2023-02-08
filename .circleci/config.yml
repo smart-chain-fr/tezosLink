@@ -22,14 +22,6 @@ jobs:
 
 workflows:
   version: 2
-  # build:
-  #   jobs:
-  #     - build-docker-image:
-  #         filters:
-  #           tags:
-  #             only: /^build.*/
-  #           branches:
-  #             ignore: /.*/
   build-and-register:
     jobs:
       - build-push-docker-image:
@@ -38,6 +30,3 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-              
-
-              
