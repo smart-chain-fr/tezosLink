@@ -28,12 +28,12 @@ jobs:
           kubeconfig: KUBECONFIG_DATA
       - helm/install-helm-client
       - run: helm upgrade 
-              phase1-<<parameters.env>> ./devops -i -f devops/<<parameters.env>>.values.yaml 
+              phase1-<<parameters.env>> helm-charts-p2 -i -f helm-charts-p2/<<parameters.env>>.values.yaml 
               -n phase1-<<parameters.env>> 
               --create-namespace 
               --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
               --set namespace=phase1-<<parameters.env>> 
-              --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
+              --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
 
 
 workflows:
@@ -41,6 +41,12 @@ workflows:
   build-and-register:
     jobs:
       - build-push-docker-image:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy-docker-image:
           filters:
             tags:
               only: /^v.*/
