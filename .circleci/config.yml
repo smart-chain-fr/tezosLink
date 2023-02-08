@@ -1,4 +1,9 @@
 version: 2.1
+
+orbs:
+  kubernetes: circleci/kubernetes@1.0.0
+  helm: circleci/helm@2.0.1
+
 jobs:
   build-push-docker-image: 
     docker:
@@ -11,13 +16,13 @@ jobs:
           version: 20.10.12
           docker_layer_caching: true
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG /Dockerfiles/Dockerfile.api
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG -f Dockerfiles/Dockerfile.api .
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG Dockerfiles/Dockerfile.front
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG -f Dockerfiles/Dockerfile.front .
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG Dockerfiles/Dockerfile.proxy
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG -f Dockerfiles/Dockerfile.proxy .
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG
 
   deploy-docker-image:
@@ -27,13 +32,13 @@ jobs:
       - kubernetes/install-kubeconfig:
           kubeconfig: KUBECONFIG_DATA
       - helm/install-helm-client
-      - run: helm upgrade 
-              phase1-<<parameters.env>> ./devops -i -f devops/<<parameters.env>>.values.yaml 
-              -n phase1-<<parameters.env>> 
+      - run: 
+          name: Deploy
+          command: >
+              helm upgrade 
+              namespace-test helm-charts-p2 -i -f helm-charts-p2/values.yaml 
+              -n namespace-test
               --create-namespace 
-              --set << pipeline.parameters.project-helm-values >>.image.tag=$TAG 
-              --set namespace=phase1-<<parameters.env>> 
-              --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
 
 
 workflows:
@@ -41,6 +46,12 @@ workflows:
   build-and-register:
     jobs:
       - build-push-docker-image:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy-docker-image:
           filters:
             tags:
               only: /^v.*/
