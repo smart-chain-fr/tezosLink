@@ -31,11 +31,11 @@ jobs:
           name: Deploy
           command: >
               helm upgrade 
-              namespace-test-<<parameters.env>> helm-charts-p2 -i -f helm-charts-p2/values.yaml 
-              -n namespace-test-<<parameters.env>> 
+              namespace-test helm-charts-p2 -i -f helm-charts-p2/values.yaml 
+              -n namespace-test
               --create-namespace 
               --set api.image.tag=$TAG 
-              --set namespace=namespace-test-<<parameters.env>> 
+              --set namespace=namespace-test
               --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
 
 
