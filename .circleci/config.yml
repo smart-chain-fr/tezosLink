@@ -1,19 +1,6 @@
 version: 2.1
 jobs:
-  build-docker-image:
-    docker:
-      - image: cimg/base:stable
-    environment:
-      TAG: << pipeline.git.tag >>
-    resource_class: medium
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.12
-          docker_layer_caching: false
-      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG .
-  build-push-docker-image: 
+  build-push-api: 
     docker:
       - image: cimg/base:stable
     environment:
@@ -24,8 +11,36 @@ jobs:
           version: 20.10.12
           docker_layer_caching: true
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG .
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG Dockerfiles/Dockerfile.api
       - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG
+
+  build-push-frontend: 
+    docker:
+      - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: true
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG Dockerfiles/Dockerfile.front
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG
+
+  build-push-proxy: 
+    docker:
+      - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: true
+      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG Dockerfiles/Dockerfile.proxy
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG
 
 workflows:
   version: 2
