@@ -35,7 +35,6 @@ jobs:
               --set namespace=phase1-<<parameters.env>> 
               --set << pipeline.parameters.project-helm-values >>.image.repository='rg.fr-par.scw.cloud/<<pipeline.parameters.project-name>>/<<pipeline.parameters.project-module>>'
 
-    
 
 workflows:
   version: 2
