@@ -5,6 +5,7 @@ jobs:
       - image: cimg/base:stable
     environment:
       TAG: << pipeline.git.tag >>
+      NAMESPACE: << pipeline.git.namespace >>
     steps:
       - checkout
       - setup_remote_docker:
@@ -30,12 +31,13 @@ jobs:
       - run: 
           name: Deploy
           command: >
-              helm upgrade helm-charts-p2 -i -f helm-charts-p2/values.yaml 
-              -n phase1
+              helm upgrade 
+              $NAMESPACE-<<parameters.env>> helm-charts-p2 -i -f helm-charts-p2/values.yaml 
+              -n $NAMESPACE-<<parameters.env>> 
               --create-namespace 
-              --set helm-charts-p2/values.yaml .image.tag=$TAG 
-              --set namespace=phase1
-              --set helm-charts-p2/values.yaml .image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
+              --set api.image.tag=$TAG 
+              --set namespace=$NAMESPACE-<<parameters.env>> 
+              --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
 
 
 workflows:
