@@ -49,7 +49,7 @@ jobs:
               --set front.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-frontend'
               --set proxy.testnet.image.tag=$TAG 
               --set proxy.testnet.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-proxy' 
-
+              
 
 workflows:
   version: 2
