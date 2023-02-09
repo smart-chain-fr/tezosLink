@@ -43,7 +43,8 @@ jobs:
               namespace-test helm-charts-p2 -i -f helm-charts-p2/values.yaml 
               -n namespace-test
               --create-namespace
-              --set api.image.tag << pipeline.git.tag >>
+              --set api.image.tag=$TAG 
+              --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
 
 
 workflows:
@@ -65,4 +66,3 @@ workflows:
             branches:
               ignore: /.*/
 
-              
