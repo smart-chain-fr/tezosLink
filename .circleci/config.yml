@@ -46,7 +46,7 @@ jobs:
               --set api.image.tag=$TAG 
               --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
               --set front.image.tag=$TAG 
-              --set front.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-front'
+              --set front.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-frontend'
               --set proxy.image.tag=$TAG 
               --set proxy.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-proxy'
 
