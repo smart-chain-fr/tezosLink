@@ -4,6 +4,7 @@ orbs:
   kubernetes: circleci/kubernetes@1.0.0
   helm: circleci/helm@2.0.1
 
+
 jobs:
   build-push-docker-image: 
     docker:
@@ -28,7 +29,10 @@ jobs:
   deploy-docker-image:
     docker:
       - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
     steps:
+      - checkout
       - kubernetes/install-kubeconfig:
           kubeconfig: KUBECONFIG_DATA
       - helm/install-helm-client
@@ -39,6 +43,8 @@ jobs:
               namespace-test helm-charts-p2 -i -f helm-charts-p2/values.yaml 
               -n namespace-test
               --create-namespace
+              --set api.image.tag=$TAG 
+              --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
 
 
 workflows:
@@ -52,8 +58,11 @@ workflows:
             branches:
               ignore: /.*/
       - deploy-docker-image:
+          requires:
+            - build-push-docker-image
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
+
