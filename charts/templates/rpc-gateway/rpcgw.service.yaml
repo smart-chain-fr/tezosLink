@@ -4,9 +4,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "helpers.fullname" $ }}-proxy
+  name: {{ include "helpers.fullname" $ }}-proxy-{{ $network }}
   namespace: {{ include "helpers.namespace" $ | quote }}
-  labels: {{ include "helpers.labels.proxy" $ | nindent 4 }}
+  labels: {{ include "helpers.labels.proxy" (dict "network" $network) | nindent 4 }}
   annotations: 
     {{ toYaml $data.service.annotations | nindent 4 | trim }}
 spec:
@@ -28,6 +28,6 @@ spec:
       nodePort: {{ $data.service.nodePorts.http }}
 {{- end }}
   selector:
-{{- include "helpers.proxy.selectorLabels" . | nindent 8 }}
+{{- include "helpers.proxy.selectorLabels" $ | nindent 8 }}
 {{- end }}
 {{ end }}

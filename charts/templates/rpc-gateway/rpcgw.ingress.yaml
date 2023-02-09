@@ -22,7 +22,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ $network }}-{{ include "helpers.fullname" $ }}-proxy
+            name: {{ include "helpers.fullname" $ }}-proxy-{{ $network }}
             port:
               number: {{ $data.service.ports.http }}
 {{- end -}}

@@ -38,7 +38,7 @@ Proxy labels
 */}}
 {{- define "helpers.labels.proxy" -}}
 {{- include "helpers.labels.common" . }}
-app.kubernetes.io/component : {{ printf "%s-%s" "proxy" (lower .Values.proxy.network) }}
+app.kubernetes.io/component : {{ printf "%s-%s" "proxy" .network }}
 {{- end }}
 
 {{/*
