@@ -30,6 +30,7 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
+      - checkout
       - kubernetes/install-kubeconfig:
           kubeconfig: KUBECONFIG_DATA
       - helm/install-helm-client
