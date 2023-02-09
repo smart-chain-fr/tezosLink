@@ -29,6 +29,8 @@ jobs:
   deploy-docker-image:
     docker:
       - image: cimg/base:stable
+    environment:
+      TAG: << pipeline.git.tag >>
     steps:
       - checkout
       - kubernetes/install-kubeconfig:
@@ -41,6 +43,7 @@ jobs:
               namespace-test helm-charts-p2 -i -f helm-charts-p2/values.yaml 
               -n namespace-test
               --create-namespace
+              --set api.image.tag << pipeline.git.tag >>
 
 
 workflows:
@@ -54,6 +57,8 @@ workflows:
             branches:
               ignore: /.*/
       - deploy-docker-image:
+          requires:
+            - build-push-docker-image
           filters:
             tags:
               only: /^v.*/
