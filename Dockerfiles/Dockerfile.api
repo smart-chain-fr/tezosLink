@@ -24,10 +24,12 @@ WORKDIR tezosLink
 RUN adduser -D tezoslinkuser --uid 10000 && chown -R tezoslinkuser .
 
 COPY --from=builder --chown=tezoslinkuser tezosLink/node_modules ./node_modules
-COPY --from=builder --chown=tezoslinkuser tezosLink/dist/api ./src/api
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/api ./dist/api
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/entries ./dist/entries
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/common ./dist/common
 
 COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
 
 USER tezoslinkuser
 
-CMD ["npm", "run api:start"]
+CMD ["npm", "run", "api:start"]
