@@ -38,7 +38,7 @@ jobs:
               helm upgrade 
               namespace-test helm-charts-p2 -i -f helm-charts-p2/values.yaml 
               -n namespace-test
-              --create-namespace 
+              --create-namespace
 
 
 workflows:
