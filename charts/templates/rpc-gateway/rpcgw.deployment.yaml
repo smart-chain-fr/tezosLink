@@ -1,0 +1,100 @@
+{{ range $network, $data := .Values.proxy}}
+---
+{{- if $data.enabled}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helpers.fullname" $ }}-proxy-{{ $network }}
+  namespace: {{ include "helpers.namespace" $| quote }}
+  labels: {{ include "helpers.labels.proxy" (dict "root" $ "network" $network)| nindent 4 }}
+spec:
+  replicas: {{ $data.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helpers.proxy.selectorLabels" (dict "root" $ "network" $network) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helpers.proxy.selectorLabels" (dict "root" $ "network" $network) | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .serviceAccount.name | default "proxy-sa" }}-{{ $network }}
+      containers:
+        - name: proxy-{{ $network }}
+          image: "{{ $data.image.repository }}:{{ $data.image.tag }}"
+          imagePullPolicy: {{ $data.image.pullPolicy }}
+          resources: 
+            {{- toYaml $data.resources | nindent 12 }}
+          env:
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-cm
+                  key: API_URL
+            {{ if eq $network "testnet" }}
+            - name: PROXY_TESTNET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-cm
+                  key: PROXY_TESTNET_URL
+            - name: RPC_TESTNET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-cm
+                  key: RPC_TESTNET_URL
+            {{ else if eq $network "mainnet" }}
+            - name: PROXY_MAINNET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-cm
+                  key: PROXY_MAINNET_URL    
+            - name: RPC_MAINNET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-cm
+                  key: RPC_MAINNET_URL              
+            {{ end }}
+            - name: FRONT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-cm
+                  key: FRONT_URL
+          {{- range $key, $val := $data.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+          {{- if $data.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ $data.livenessProbe.path }}
+              port: {{ $data.livenessProbe.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ $data.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $data.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ $data.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ $data.livenessProbe.failureThreshold }}
+            successThreshold: {{ $data.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if $data.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ $data.readinessProbe.path }}
+              port: {{ $data.readinessProbe.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ $data.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $data.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ $data.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ $data.readinessProbe.failureThreshold }}
+            successThreshold: {{ $data.readinessProbe.successThreshold }}
+          {{- end }}
+          {{- if $data.containerSecurityContext.enabled }}
+          securityContext: {{- omit $data.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+      {{- if $data.podSecurityContext.enabled }}
+      securityContext: {{- omit $data.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{ end }}

@@ -203,6 +203,8 @@ proxy:
     enabled : true
     replicaCount: 1
     network: "testnet"
+    rpcNodeHost: "xxxxxxxxx"
+
     image:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
       pullPolicy: IfNotPresent
@@ -391,6 +393,8 @@ proxy:
     enabled : true
     replicaCount: 1
     network: "mainnet"
+    rpcNodeHost: "xxxxxxxxx"
+
     image:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
       pullPolicy: IfNotPresent
@@ -410,6 +414,8 @@ proxy:
     secret: 
       SECRET_KEY: c2VjcmV0Cg==
       SECRET2: c2VjcmV0Cg==
+
+    additionalSecrets: []
 
     serviceAccount:
       # Specifies whether a service account should be created

@@ -37,7 +37,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Proxy labels
 */}}
 {{- define "helpers.labels.proxy" -}}
-{{- include "helpers.labels.common" . }}
+{{- include "helpers.labels.common" .root }}
 app.kubernetes.io/component : {{ printf "%s-%s" "proxy" .network }}
 {{- end }}
 
@@ -73,8 +73,9 @@ Selector labels
 Selector labels
 */}}
 {{- define "helpers.proxy.selectorLabels" -}}
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/instance: {{ .root.Release.Name }}
 app.kubernetes.io/component: proxy
+network: {{ .network }}
 {{- end }}
 
 {{/*
