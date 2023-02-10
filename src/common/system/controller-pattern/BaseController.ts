@@ -22,6 +22,10 @@ export default abstract class BaseController {
 		return this.httpResponse(response, HttpCodes.BAD_REQUEST, responseData);
 	}
 
+	protected httpNotFoundRequest(response: Response, responseData: IResponseData = "Not Found") {
+		return this.httpResponse(response, HttpCodes.NOT_FOUND, responseData);
+	}
+
 	protected httpInternaleError(response: Response, responseData: IResponseData = "http Internal Server Error") {
 		return this.httpResponse(response, HttpCodes.INTERNAL_ERROR, responseData);
 	}

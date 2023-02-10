@@ -1,8 +1,9 @@
 import TezosLink from "@Common/databases/TezosLink";
 import { ProjectEntity } from "@Common/ressources";
-import { QueryService } from "@Services/BaseService";
+import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
+
 @Service()
 export default class ProjectRepository {
 	constructor(private database: TezosLink) {}
@@ -10,44 +11,32 @@ export default class ProjectRepository {
 		return this.database.getClient().project;
 	}
 
-	public async findMany(query?: QueryService<Partial<ProjectEntity>>): Promise<ProjectEntity[] | null> {
+	public async findMany(query: any): Promise<ProjectEntity[]> {
 		try {
-			const data = { ...query };
-			console.log(data?.query);
-			return this.model.findMany({
-				// WIP -- Prisma custom queries & pagniation
-				orderBy: {
-					createdAt: "desc",
-				},
-			}) as Promise<ProjectEntity[]>;
+			return this.model.findMany(query) as Promise<ProjectEntity[]>;
 		} catch (error) {
-			console.error(error);
-			return null;
+			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity> | null> {
 		try {
 			const data = { ...projectEntity };
-			if (!data) return null;
 			return this.model.findUnique({ where: data });
 		} catch (error) {
-			console.error(error);
-			return null;
+			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
 
 	public async create(projectEntity: Partial<ProjectEntity>): Promise<ProjectEntity> {
 		try {
 			const data = { ...projectEntity };
-			if (!data.title || !data.network) {
-				throw new Error("Title and network fields are required");
-			}
 			data.uuid = uuidv4();
 			return this.model.create({
 				data: {
 					uuid: data.uuid,
-					title: data.title,
-					network: data.network,
+					title: data.title!,
+					network: data.network!,
 				},
 				include: {
 					// Include metrics
@@ -55,8 +44,7 @@ export default class ProjectRepository {
 				},
 			}) as Promise<ProjectEntity>;
 		} catch (error) {
-			console.error(error);
-			throw new Error("Error creating project");
+			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
 }

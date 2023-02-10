@@ -5,5 +5,6 @@ enum HttpCodes {
 	INTERNAL_ERROR = 500,
 	UNKNOWN_ERROR = 520,
 	NOT_IMPLEMENTED = 501,
+	NOT_FOUND = 404,
 }
 export default HttpCodes;

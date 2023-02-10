@@ -1,8 +1,8 @@
 import { type Response, type Request, type NextFunction } from "express";
-
 import Container from "typedi";
 import ExpressServer from "../ExpressServer";
 import type BaseController from "./BaseController";
+import HttpCodes from "./HttpCodes";
 import { StRoute } from "./StRoute";
 
 /**
@@ -21,8 +21,11 @@ function createRoute(controller: any, route: StRoute) {
 	const args = [
 		...route.frontMiddlewares,
 		async (req: Request, res: Response, next: NextFunction) => {
-			await route.func.call(controller, req, res);
-			next();
+			try {
+				await route.func.call(controller, req, res);
+			} catch (error) {
+				next(res.status(HttpCodes.INTERNAL_ERROR).send({ message: "An error occurred while processing your request. " + error }));
+			}
 		},
 		...route.backMiddlewares,
 	];

@@ -1,16 +1,13 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsDate } from "class-validator";
+import { IsNotEmpty, IsOptional, IsDate } from "class-validator";
 import MetricEntity from "./MetricEntity";
 
 export default class ProjectEntity {
-	@IsNumber()
 	@IsNotEmpty()
 	public id!: number;
 
-	@IsOptional()
-	@IsString()
-	public title?: string;
+	@IsNotEmpty({groups: ["create"]})
+	public title!: string;
 
-	@IsString()
     @IsNotEmpty()
 	public uuid!: string;
 
@@ -20,11 +17,9 @@ export default class ProjectEntity {
     @IsDate()
 	public updatedAt!: Date;
 
-	@IsString()
-	@IsNotEmpty()
+	@IsNotEmpty({groups: ["create"]})
 	public network!: string;
 
 	@IsOptional()
-	@IsArray()
 	public metrics?: MetricEntity[];
 }

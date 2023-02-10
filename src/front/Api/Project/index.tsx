@@ -44,7 +44,6 @@ export default class Project extends BaseApiService {
     }
 
     public async postProject(params: IPostProject): Promise<IProject> {
-        console.log(this.baseURl);
         const url = new URL(this.baseURl);
         try {
             return await this.postRequest<IProject>(url, params);

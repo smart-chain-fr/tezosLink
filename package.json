@@ -13,7 +13,7 @@
     "@Entities": "./dist/common/entities",
     "@System": "./dist/common/system",
     "@ControllerPattern": "./dist/common/system/controller-pattern",
-    "@Front": "./dist/front/*" 
+    "@Front": "./dist/front/*"
   },
   "scripts": {
     "build": "next build && tsc",
@@ -39,8 +39,8 @@
   },
   "homepage": "https://github.com/smart-chain-fr/tezosLink#readme",
   "dependencies": {
-    "apexcharts": "^3.36.3",
     "@prisma/client": "^4.9.0",
+    "apexcharts": "^3.36.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "classnames": "^2.3.2",
@@ -50,6 +50,7 @@
     "module-alias": "^2.2.2",
     "next": "^13.1.5",
     "prisma": "^4.9.0",
+    "prisma-query": "^2.0.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-dom": "^18.2.0",

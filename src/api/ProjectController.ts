@@ -1,60 +1,63 @@
 import { type Response, type Request } from "express";
 import { Controller, Get, Post } from "@ControllerPattern/index";
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import { ProjectEntity } from "@Common/ressources";
-import { IsNotEmpty, IsString, Validate, validateOrReject } from "class-validator";
+import { IsNotEmpty, IsString, IsUUID, validateOrReject } from "class-validator";
 import ProjectService from "@Services/project/ProjectService";
 import ApiController from "./ApiController";
-import { QueryService } from "@Services/BaseService";
-import IsValidUuid from "@Common/system/class-validators/IsValidUuid";
 import ObjectHydrate from "@Common/helpers/ObjectHydrate";
+import { processFindManyQuery } from "prisma-query";
 
- class Params {
+class Params {
 	@IsString()
 	@IsNotEmpty()
-	@Validate(IsValidUuid)
+	@IsUUID()
 	public uuid!: string;
 }
 
 @Controller()
 @Service()
 export default class ProjectController extends ApiController {
-	constructor(@Inject() private projectService: ProjectService) {
+	constructor(private projectService: ProjectService) {
 		super();
 	}
 
-	@Get("/project")
+	@Get("/projects")
 	protected async get(req: Request, res: Response) {
-		let query = this.buildQueryAsObject<Partial<ProjectEntity>>(req);
-		try {
-			await validateOrReject(QueryService.createFrom<Partial<ProjectEntity>>(query), { forbidUnknownValues: true, skipMissingProperties: true  });
-		} catch (error) {
-			this.httpBadRequest(res, error);
-			return;
+		const query = processFindManyQuery(req.query);
+		if (1 === 1) {
+			throw new Error("Coucou Ismael");
 		}
-		this.httpSuccess(res, await this.projectService.find(query));
+
+		this.httpSuccess(res, await this.projectService.getByCriterias(query));
 	}
 
-	@Get("/project/:uuid")
+	@Get("/projects/:uuid")
 	protected async getByUUID(req: Request, res: Response) {
-			const { uuid } = req.params as Partial<Params>;
-			const params = new Params();
-			params.uuid = uuid!; 
+		const { uuid } = req.params as Partial<Params>;
+		const params = new Params();
+		params.uuid = uuid!;
 		try {
 			await validateOrReject(params, { forbidUnknownValues: true });
 		} catch (error) {
 			this.httpBadRequest(res, error);
 			return;
 		}
-		this.httpSuccess(res, await this.projectService.findByUUID(params));
+
+		const project = await this.projectService.getByUUID(params);
+		if (!project) {
+			this.httpNotFoundRequest(res);
+			return;
+		}
+		this.httpSuccess(res, project);
 	}
 
-	@Post("/project")
+	@Post("/projects")
 	protected async post(req: Request, res: Response) {
 		const projectEntity = new ProjectEntity();
 		ObjectHydrate.hydrate(projectEntity, req.body);
 		try {
-			await validateOrReject(projectEntity, { skipMissingProperties: true });
+			await validateOrReject(projectEntity, { whitelist: true, forbidNonWhitelisted: true, groups: ["create"] });
 		} catch (error) {
 			this.httpBadRequest(res, error);
 			return;

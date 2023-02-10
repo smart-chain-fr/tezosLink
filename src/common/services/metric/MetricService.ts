@@ -1,28 +1,37 @@
 import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import MetricRepository from "@Common/repositories/MetricsRepository";
 import { MetricEntity } from "@Common/ressources";
-import { QueryService } from "@Services/BaseService";
+import { type processFindManyQuery } from "prisma-query";
 import { Service } from "typedi";
 
 @Service()
 export default class MetricService {
 	constructor(private metricRepository: MetricRepository) {}
 
-	public async find(query: QueryService<Partial<MetricEntity>>) {
+	/**
+	 * @throws {Error} If metrics are undefined
+	 */
+	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>) {
 		const metrics = await this.metricRepository.findMany(query);
-		if (!metrics) throw new Error("Metrics are undefined");
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metrics);
 	}
-
-	public async findBy(metricEntity: Partial<MetricEntity>) {
-		const metric = await this.metricRepository.findOne(metricEntity);
-		if (!metric) throw new Error("Metrics not found");
+	/**
+	 * @throws {Error} If metric is undefined
+	 */
+	public async getByUUID(projectEntity: Partial<MetricEntity>) {
+		const metric = await this.metricRepository.findOne(projectEntity);
+		if (!metric) return null;
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
-
-	public async create(metricEntity: Partial<MetricEntity>) {
-		const metric = await this.metricRepository.create(metricEntity);
-		if (!metric) throw new Error("Error while creating a metric");
+	/**
+	 *
+	 * @throws {Error} If metric cannot be created
+	 * @returns
+	 */
+	public async create(projectEntity: Partial<MetricEntity>) {
+		const metric = await this.metricRepository.create(projectEntity);
+		if (!metric) throw new Error("Error while creating project");
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
 }
+

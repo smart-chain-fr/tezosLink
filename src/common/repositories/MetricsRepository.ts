@@ -1,6 +1,6 @@
 import TezosLink from "@Common/databases/TezosLink";
 import { MetricEntity } from "@Common/ressources";
-import { QueryService } from "@Services/BaseService";
+import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
 import { Service } from "typedi";
 @Service()
 export default class MetricRepository {
@@ -8,42 +8,33 @@ export default class MetricRepository {
 	protected get model() {
 		return this.database.getClient().metric;
 	}
-	public async findMany(query?: QueryService<Partial<MetricEntity>>): Promise<MetricEntity[] | null> {
+
+	public async findMany(query: any): Promise<MetricEntity[]> {
 		try {
-			const data = { ...query };
-			console.log(data?.query);
-			return this.model.findMany({
-				// WIP -- Prisma custom queries & pagniation
-				orderBy: {
-					createdAt: "desc",
-				},
-			}) as Promise<MetricEntity[]>;
+			return this.model.findMany(query) as Promise<MetricEntity[]>;
 		} catch (error) {
-			console.error(error);
-			return null;
+			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+
 	public async findOne(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity> | null> {
 		try {
 			const data = { ...metricEntity };
-			if (!data) return null;
-			return ( this.model.findUnique({ where: data })) as Promise<Partial<MetricEntity>>;
+			return this.model.findUnique({ where: data });
 		} catch (error) {
-			console.error(error);
-			return null;
+			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-	public async create(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity>> {
+
+	public async create(metricEntity: Partial<MetricEntity>): Promise<MetricEntity> {
 		try {
 			const data = { ...metricEntity };
-			if (!data.path || !data.remote_address) {
-				throw new Error("Path and Remote Address fields are required");
-			}
+
 			return this.model.create({
 				data: {
-					path: data.path,
+					path: data.path!,
 					uuid: data.uuid!,
-					remote_address: data.remote_address,
+					remote_address: data.remote_address!,
 					date_requested: data.date_requested!,
 					project: {
 						connect: {
@@ -51,10 +42,9 @@ export default class MetricRepository {
 						},
 					},
 				},
-			}) as Promise<Partial<MetricEntity>>;
+			}) as Promise<MetricEntity>;
 		} catch (error) {
-			console.error(error);
-			throw new Error("Error creating metric");
+			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
 }
