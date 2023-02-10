@@ -60,10 +60,10 @@ api:
   
   ingress:  
     enabled: true
-    host: p2.api.tezoslink.smart-chain.fr
+    host: p2.api.tezoslink-test.smart-chain.fr
     tls:
       hosts: 
-      - p2.api.tezoslink.smart-chain.fr
+      - p2.api.tezoslink-test.smart-chain.fr
       secretName: api-tls
     annotations:
       kubernetes.io/ingress.class: nginx
@@ -84,15 +84,22 @@ api:
     DATABASE_PASSWORD: "Titi123!"
     DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
 
-  secret: 
-    SECRET_KEY: c2VjcmV0Cg==
-    SECRET2: c2VjcmV0Cg==
+  secret: []
+    # SECRET_KEY: c2VjcmV0Cg==
+    # SECRET2: c2VjcmV0Cg==
 
   resources:
     limits: {}
     requests:
       cpu: 100m
       memory: 256Mi
+  
+  podSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup:
+    fsGroup:
+    runAsNonRoot: true
 
   livenessProbe:
     enabled: true
@@ -162,10 +169,10 @@ front:
 
   ingress: 
     enabled: true
-    host: p2.front.tezoslink.smart-chain.fr
+    host: p2.front.tezoslink-test.smart-chain.fr
     tls:
       hosts: 
-      - p2.front.tezoslink.smart-chain.fr
+      - p2.front.tezoslink-test.smart-chain.fr
       secretName: front-tls
     annotations:
       kubernetes.io/ingress.class: nginx
@@ -184,6 +191,13 @@ front:
     requests:
       cpu: 100m
       memory: 256Mi
+
+  podSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup:
+    fsGroup:
+    runAsNonRoot: true
 
   livenessProbe:
     enabled: true
@@ -220,10 +234,12 @@ proxy:
       ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
       TEZOS_ROLLING_PORT: "8732"
       TEZOS_NETWORK: "mainnet"
+      # required envs
     
     secret: 
       SECRET_KEY: c2VjcmV0Cg==
       SECRET2: c2VjcmV0Cg==
+      # required envs
 
     serviceAccount:
       # Specifies whether a service account should be created
@@ -301,10 +317,10 @@ proxy:
     
     ingress: 
       enabled: true
-      host: p2.proxy1.tezoslink.smart-chain.fr
+      host: p2.proxy1.tezoslink-test.smart-chain.fr
       tls:
         hosts: 
-        - p2.proxy1.tezoslink.smart-chain.fr
+        - p2.proxy1.tezoslink-test.smart-chain.fr
         secretName: proxy1-tls
       annotations:
         kubernetes.io/ingress.class: nginx
@@ -321,22 +337,9 @@ proxy:
     podSecurityContext:
       enabled: true
       runAsUser: 1000
-    ## Prometheus proxy containers' Security Context (only main container)
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-    ## @param proxy.containerSecurityContext.enabled Enable container security context
-    ## @param proxy.containerSecurityContext.capabilities.drop [array] Linux Kernel capabilities which should be dropped
-    ## @param proxy.containerSecurityContext.runAsNonRoot Force the container to run as a non root user
-    ## @param proxy.containerSecurityContext.allowPrivilegeEscalation Switch privilegeEscalation possibility on or off
-    ## @param proxy.containerSecurityContext.readOnlyRootFilesystem Mount / (root) as a readonly filesystem
-    ##
-    containerSecurityContext:
-      enabled: true
-      capabilities:
-        drop:
-        - ALL
+      runAsGroup:
+      fsGroup:
       runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: false
     
     ## Configure extra options for liveness probe
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
@@ -493,10 +496,10 @@ proxy:
     
     ingress: 
       enabled: true
-      host: p2.proxy2.tezoslink.smart-chain.fr
+      host: p2.proxy2.tezoslink-test.smart-chain.fr
       tls:
         hosts: 
-        - p2.proxy2.tezoslink.smart-chain.fr
+        - p2.proxy2.tezoslink-test.smart-chain.fr
         secretName: proxy2-tls
       annotations:
         kubernetes.io/ingress.class: nginx
@@ -513,22 +516,9 @@ proxy:
     podSecurityContext:
       enabled: true
       runAsUser: 1000
-    ## Prometheus proxy containers' Security Context (only main container)
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-    ## @param proxy.containerSecurityContext.enabled Enable container security context
-    ## @param proxy.containerSecurityContext.capabilities.drop [array] Linux Kernel capabilities which should be dropped
-    ## @param proxy.containerSecurityContext.runAsNonRoot Force the container to run as a non root user
-    ## @param proxy.containerSecurityContext.allowPrivilegeEscalation Switch privilegeEscalation possibility on or off
-    ## @param proxy.containerSecurityContext.readOnlyRootFilesystem Mount / (root) as a readonly filesystem
-    ##
-    containerSecurityContext:
-      enabled: true
-      capabilities:
-        drop:
-        - ALL
+      runAsGroup:
+      fsGroup:
       runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: false
     
     ## Configure extra options for liveness probe
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes

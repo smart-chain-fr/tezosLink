@@ -44,6 +44,13 @@ spec:
             - name: {{ $key }}
               value: {{ $val | quote }}
             {{- end }}
+            {{- range $key, $val := .Values.api.secret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-api
+                  key: {{ $key | quote}}
+            {{- end }}
           {{- if .Values.api.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
@@ -58,6 +65,9 @@ spec:
               port: {{ .Values.api.readinessProbe.port }}
             initialDelaySeconds: {{ .Values.api.readinessProbe.initialDelaySeconds }}
           {{- end }}
+      {{- if .Values.api.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.api.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
 {{ end }}     
 
         
