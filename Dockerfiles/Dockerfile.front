@@ -34,4 +34,4 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
 
 USER tezoslinkuser
 
-CMD ["npm", "run web:start"]
+CMD ["npm", "run", "web:start"]
