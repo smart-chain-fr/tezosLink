@@ -15,7 +15,6 @@ WORKDIR tezosLink
 
 COPY . .
 COPY --from=deps tezosLink/node_modules ./node_modules
-COPY --from=deps tezosLink/prisma prisma
 RUN npm run build
 
 # Production image, copy all the files and run next
