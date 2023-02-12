@@ -25,6 +25,7 @@ RUN adduser -D tezoslinkuser --uid 10000 && chown -R tezoslinkuser .
 
 COPY --from=builder --chown=tezoslinkuser tezosLink/node_modules ./node_modules
 COPY --from=builder --chown=tezoslinkuser tezosLink/public ./public
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/common ./dist/common
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/entries ./dist/entries
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/front ./dist/front
 COPY --from=builder --chown=tezoslinkuser tezosLink/.next ./.next

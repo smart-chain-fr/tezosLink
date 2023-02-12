@@ -24,6 +24,7 @@ WORKDIR tezosLink
 RUN adduser -D tezoslinkuser --uid 10000 && chown -R tezoslinkuser .
 
 COPY --from=builder --chown=tezoslinkuser tezosLink/node_modules ./node_modules
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/common ./dist/common
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/rpc-gateway ./dist/rpc-gateway
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/entries ./dist/entries
 
