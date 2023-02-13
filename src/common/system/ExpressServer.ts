@@ -14,6 +14,7 @@ export default class ExpressServer implements ServerInterface {
 	public init(config: IConfig) {
 		this.router.use(...config.middlwares);
 		this.router.use(config.rootUrl, this.subRouter);
+		if (config.errorHandler) this.router.use(config.errorHandler);
 
 		this.router.listen(config.port, () => {
 			console.table(

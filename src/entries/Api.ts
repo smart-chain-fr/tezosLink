@@ -3,10 +3,11 @@ import "reflect-metadata";
 import dotenv from "dotenv";
 import { Container } from "typedi";
 import ExpressServer from "@Common/system/ExpressServer";
-import routes from "@Api/index";
+import routes from "@Api/controllers/index";
 import cors from "cors";
 import bodyParser from "body-parser";
 import TezosLink from "@Common/databases/TezosLink";
+import errorHandler from "@Api/middlewares/ErrorHandler";
 
 dotenv.config();
 
@@ -25,7 +26,8 @@ Container.get(ExpressServer).init({
 		cors({ origin: "*" }),
 		bodyParser.urlencoded({ extended: true }),
 		bodyParser.json(),
-	]
+	],
+	errorHandler,
 });
 
 routes.start();

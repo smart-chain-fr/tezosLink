@@ -6,6 +6,7 @@ import ExpressServer from "@Common/system/ExpressServer";
 import routes from "@RpcGateway/index";
 import cors from "cors";
 import bodyParser from "body-parser";
+import errorHandler from "@Api/middlewares/ErrorHandler";
 
 dotenv.config();
 
@@ -24,7 +25,8 @@ Container.get(ExpressServer).init({
 		cors({ origin: "*" }),
 		bodyParser.urlencoded({ extended: true }),
 		bodyParser.json(),
-	]
+	],
+	errorHandler,
 });
 
 routes.start();

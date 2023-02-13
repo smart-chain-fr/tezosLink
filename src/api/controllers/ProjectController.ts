@@ -4,9 +4,9 @@ import { Service } from "typedi";
 import { ProjectEntity } from "@Common/ressources";
 import { IsNotEmpty, IsString, IsUUID, validateOrReject } from "class-validator";
 import ProjectService from "@Services/project/ProjectService";
-import ApiController from "./ApiController";
 import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import { processFindManyQuery } from "prisma-query";
+import ApiController from "@Common/system/controller-pattern/ApiController";
 
 class Params {
 	@IsString()
