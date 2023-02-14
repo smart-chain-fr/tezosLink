@@ -15,7 +15,7 @@ type IProps = {
 	Date: string
 }
 
-export default class Status extends BasePage<IProps> {
+export default class StatusLayout extends BasePage<IProps> {
 	public override render(): JSX.Element {
 		return (
 			<DefaultTemplate title={"Status"}>

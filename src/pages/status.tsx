@@ -1,4 +1,8 @@
-import Status from "@Components/Layouts/Status";
+import Status from "@Front/Api/Status";
+import StatusLayout from "@Front/components/Layouts/Status";
+import { IStatus } from "@Front/interfaces";
+import { GetServerSideProps } from "next";
+
 
 type IProps = {
   MainnetProxyStatus: boolean;
@@ -12,5 +16,11 @@ type IProps = {
 };
 
 export default function Route(props: IProps) {
-  return <Status {...props} />;
+  return <StatusLayout {...props} />;
 }
+
+/* export const getServerSideProps: GetServerSideProps<IStatus> = async () => {
+  return {
+      props: await Status.getInstance().getStatus(),
+  };
+} */

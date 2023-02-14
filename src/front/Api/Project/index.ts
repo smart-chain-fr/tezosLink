@@ -9,7 +9,7 @@ type IPostProject = {
 @Service()
 export default class Project extends BaseApiService {
     private static instance: Project;
-    private readonly baseURl = this.backUrl.concat('/project');
+    private readonly baseURl = this.backUrl.concat('/projects');
 
     private constructor() {
         super();
