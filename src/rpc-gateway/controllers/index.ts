@@ -1,5 +1,5 @@
 import { Container } from "typedi";
-import Rpc from "./Rpc";
+import Rpc from "./ProxyController";
 
 
 export default {

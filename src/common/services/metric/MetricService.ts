@@ -18,8 +18,8 @@ export default class MetricService {
 	/**
 	 * @throws {Error} If metric is undefined
 	 */
-	public async getByUUID(projectEntity: Partial<MetricEntity>) {
-		const metric = await this.metricRepository.findOne(projectEntity);
+	public async getByUUID(metricEntity: Partial<MetricEntity>) {
+		const metric = await this.metricRepository.findOne(metricEntity);
 		if (!metric) return null;
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
@@ -28,10 +28,61 @@ export default class MetricService {
 	 * @throws {Error} If metric cannot be created
 	 * @returns
 	 */
-	public async create(projectEntity: Partial<MetricEntity>) {
-		const metric = await this.metricRepository.create(projectEntity);
-		if (!metric) throw new Error("Error while creating project");
+	public async create(metricEntity: Partial<MetricEntity>) {
+		const metric = await this.metricRepository.create(metricEntity);
+		if (!metric) return null;
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
+	}
+
+	/**
+     * 
+     * @throws {Error} If metric is undefined
+     * @returns 
+     */
+		public async getCountRpcPath(metricEntity: Partial<MetricEntity>, from: Date, to: Date) {
+			const pathsCount = await this.metricRepository.countRpcPathUsage(metricEntity.projectId!,from,to);
+			if (!pathsCount) return null;
+			return pathsCount;
+		}
+	/**
+	 * 	
+	 * @throws {Error} If metric is undefined	
+	 * @returns
+	 */
+	public async getCountAllMetrics(metricEntity: Partial<MetricEntity>) {
+		const count = await this.metricRepository.countAll(metricEntity.projectId!);
+		if (isNaN(count)) return null;
+		return count;
+	}
+
+	/**
+	 * 
+	 * @throws {Error} If metric is undefined
+	 * @returns
+	 */
+	public async getLastMetrics(metricEntity: Partial<MetricEntity>, limit: number){
+		const lastMetric = await this.metricRepository.findLastRequests(metricEntity.projectId!,limit);
+		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), lastMetric);
+	}
+
+	/**
+	 * 
+	 * @throws {Error} If metric is undefined
+	 * @returns
+	 */
+	public async getRequestsByDay(metricEntity: Partial<MetricEntity>, from: Date, to: Date){
+		const requestByDay = await this.metricRepository.findRequestsByDay(metricEntity.projectId!,from,to);
+		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), requestByDay);
+	}
+
+	/**
+	 * 	
+	 * @throws {Error} If metric is undefined
+	 * @returns
+	 */
+	public async removeThreeMontsOldMetrics() {
+		const months = 3;
+		await this.metricRepository.removeOldMetricsBymonths(months);
 	}
 }
 

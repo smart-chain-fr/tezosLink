@@ -4,6 +4,8 @@ import { ProjectEntity } from "@Common/ressources";
 import { type processFindManyQuery } from "prisma-query";
 import { Service } from "typedi";
 
+
+
 @Service()
 export default class ProjectService {
 	constructor(private projectRepository: ProjectRepository) {}
@@ -30,7 +32,7 @@ export default class ProjectService {
      */
 	public async create(projectEntity: Partial<ProjectEntity>) {
 		const project = await this.projectRepository.create(projectEntity);
-		if (!project) throw new Error("Error while creating project");
+		if (!project) return null;
 		return ObjectHydrate.hydrate<Partial<ProjectEntity>>(new ProjectEntity(), project);
 	}
 }

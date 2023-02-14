@@ -5,22 +5,22 @@ export default class MetricEntity {
 	@IsNotEmpty()
 	public id!: number;
 	
-	@IsNotEmpty()
+	@IsNotEmpty(({groups: ["create"]}))
 	public path!: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty(({groups: ["create"]}))
 	public uuid!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty(({groups: ["create"]}))
 	public remote_address!: string;
 
-    @IsDate()
+    @IsNotEmpty(({groups: ["create"]}))
 	public date_requested!: Date;
 
-	@IsNotEmpty()
+	@IsNotEmpty(({groups: ["create"]}))
 	public projectId!: number;
 
-	@IsNotEmpty()
+	@IsNotEmpty(({groups: ["create"]}))
 	public project!: ProjectEntity;
 
 	@IsDate()

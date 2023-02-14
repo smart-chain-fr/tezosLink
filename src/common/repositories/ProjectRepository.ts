@@ -22,7 +22,18 @@ export default class ProjectRepository {
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity> | null> {
 		try {
 			const data = { ...projectEntity };
-			return this.model.findUnique({ where: data });
+			return this.model.findUnique({
+				where: data,
+				
+				include: {
+					// Include metrics & count
+					Metrics: true,
+					_count: {
+						select: { Metrics: true },
+					  },
+				  
+				},
+			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

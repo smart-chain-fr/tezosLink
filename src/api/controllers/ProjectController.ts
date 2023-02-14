@@ -25,10 +25,6 @@ export default class ProjectController extends ApiController {
 	@Get("/projects")
 	protected async get(req: Request, res: Response) {
 		const query = processFindManyQuery(req.query);
-		if (1 === 1) {
-			throw new Error("Coucou Ismael");
-		}
-
 		this.httpSuccess(res, await this.projectService.getByCriterias(query));
 	}
 

@@ -3,7 +3,7 @@ import "reflect-metadata";
 import dotenv from "dotenv";
 import { Container } from "typedi";
 import ExpressServer from "@Common/system/ExpressServer";
-import routes from "@RpcGateway/index";
+import routes from "@RpcGateway/controllers/index";
 import cors from "cors";
 import bodyParser from "body-parser";
 import errorHandler from "@Api/middlewares/ErrorHandler";
