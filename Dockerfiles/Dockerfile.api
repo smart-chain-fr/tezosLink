@@ -36,3 +36,4 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
 USER tezoslinkuser
 
 CMD ["npm", "run", "api:start"]
+EXPOSE 3001
