@@ -1,7 +1,7 @@
-import Status from "@Front/Api/Status";
+// import Status from "@Front/Api/Status";
 import StatusLayout from "@Front/components/Layouts/Status";
-import { IStatus } from "@Front/interfaces";
-import { GetServerSideProps } from "next";
+// import { IStatus } from "@Front/interfaces";
+// import { GetServerSideProps } from "next";
 
 
 type IProps = {
