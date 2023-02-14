@@ -1,6 +1,7 @@
 import TezosLink from "@Common/databases/TezosLink";
 import { MetricEntity } from "@Common/ressources";
 import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
+import { type Prisma } from "@prisma/client";
 import { Service } from "typedi";
 
 type RequestsByDayMetrics = {
@@ -63,7 +64,7 @@ export default class MetricRepository {
 			const data = { ...metricEntity };
 			const result: MetricEntity[] = [];
 
-			this.instanceDb.$transaction(async (transaction) => {
+			this.instanceDb.$transaction(async(transaction: Prisma.TransactionClient) => {
 				for (const item of data) {
 					if (!item) continue;
 					result.push(
