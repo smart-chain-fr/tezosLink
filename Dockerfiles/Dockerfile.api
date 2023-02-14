@@ -6,9 +6,6 @@ WORKDIR tezosLink
 COPY package.json ./
 
 RUN npm install --frozen-lockfile
-# RUN npm install -g prisma
-# RUN prisma generate
-
 
 # Rebuild the source code only when needed
 FROM node:19-alpine AS builder
