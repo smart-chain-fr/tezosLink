@@ -4,6 +4,11 @@ import BasePage from "@Components/Layouts/Base";
 import DefaultTemplate from "@Components/LayoutTemplates/DefaultTemplate"
 import classes from "./classes.module.scss";
 
+type IState = {
+	MainnetProxyStatus: boolean,
+	TestnetProxyStatus: boolean,
+}
+
 type IProps = {
 	MainnetProxyStatus: boolean,
 	MainnetArchiveStatus: boolean,
@@ -15,7 +20,10 @@ type IProps = {
 	Date: string
 }
 
-export default class StatusLayout extends BasePage<IProps> {
+export default class StatusLayout extends BasePage<IProps, IState> {
+	public constructor(props: IProps) {
+        super(props);
+    }
 	public override render(): JSX.Element {
 		return (
 			<DefaultTemplate title={"Status"}>

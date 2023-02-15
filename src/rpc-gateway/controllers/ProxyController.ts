@@ -3,7 +3,7 @@ import { type Response, type Request } from "express";
 import { Controller, Get } from "@ControllerPattern/index";
 import { Service } from "typedi";
 import ApiController from "@Common/system/controller-pattern/ApiController";
-import axios from 'axios';
+import axios from "axios";
 
 dotenv.config();
 
@@ -38,9 +38,9 @@ export default class ProxyController extends ApiController {
 		let archiveNodeStatus = false;
 		let rollingNodeStatus = false;
 
-		const archiveTestURL = `${process.env["RPC_PROXY_ARCHIVE_HOSTNAME"]}/chains/main/blocks/head`;
+		const archiveTestURL = new URL(`${process.env["ARCHIVE_NODES_URL"] }/chains/main/blocks/head`);
 		try {
-			const archiveTestResponse = await axios.get(archiveTestURL);
+			const archiveTestResponse = await axios.get(archiveTestURL.toString());
 			if (archiveTestResponse.status >= this.httpCode.SUCCESS && archiveTestResponse.status < this.httpCode.BAD_REQUEST) {
 				archiveNodeStatus = true;
 			}
@@ -49,9 +49,9 @@ export default class ProxyController extends ApiController {
 			return;
 		}
 
-		const rollingTestURL = `${process.env["RPC_PROXY_ROLLING_HOSTNAME"]}/chains/main/blocks/head`;
+		const rollingTestURL = new URL(`${process.env["ROLLING_NODES_URL"]}/chains/main/blocks/head`);
 		try {
-			const rollingTestResponse = await axios.get(rollingTestURL);
+			const rollingTestResponse = await axios.get(rollingTestURL.toString());
 			if (rollingTestResponse.status >= this.httpCode.SUCCESS && rollingTestResponse.status < this.httpCode.BAD_REQUEST) {
 				rollingNodeStatus = true;
 			}
@@ -59,7 +59,7 @@ export default class ProxyController extends ApiController {
 			this.httpBadRequest(res, err);
 			return;
 		}
-
+		//Object response for the status
 		const data = {
 			archive_node: archiveNodeStatus,
 			rolling_node: rollingNodeStatus,

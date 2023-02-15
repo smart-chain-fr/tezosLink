@@ -1,8 +1,17 @@
+import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import  IDatabaseConfig  from "../../config/IDatabaseConfig";
 
+dotenv.config();
+
 export default class DbProvider {
-	protected client = new PrismaClient();
+	protected client = new PrismaClient({
+		datasources: {
+			db: {
+			  url: `postgres://${process.env["DATABASE_USER"]}:${process.env["DATABASE_PASSWORD"]}@${process.env["DATABASE_HOSTNAME"]}:${process.env["DATABASE_PORT"]}/${process.env["DATABASE_NAME"]}`,
+			},
+		  },
+	});
 
 	constructor(protected config: IDatabaseConfig) {
 	}

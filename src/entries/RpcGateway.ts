@@ -10,9 +10,9 @@ import errorHandler from "@Api/middlewares/ErrorHandler";
 
 dotenv.config();
 
-const port = process.env["RPC_GATEWAY_PORT"];
-const rootUrl = process.env["RPC_GATEWAY_ROOT_URL"];
-const label = process.env["RPC_GATEWAY_LABEL"] ?? "Unknown Service";
+const port = process.env["NEXT_PUBLIC_RPC_GATEWAY_PORT"];
+const rootUrl = process.env["NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL"];
+const label = process.env["NEXT_PUBLIC_RPC_GATEWAY_LABEL"] ?? "Unknown Service";
 
 if (!port) throw new Error(`process.env Port is undefined`);
 if (!rootUrl) throw new Error(`process.env RootUrl is undefined`);

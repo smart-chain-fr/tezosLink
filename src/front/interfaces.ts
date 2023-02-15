@@ -21,13 +21,11 @@ export interface IProject {
 }
 
 export interface IStatus {
-    MainnetProxyStatus: boolean;
-    MainnetArchiveStatus: boolean;
-    MainnetRollingStatus: boolean;
-    TestnetName: string;
-    TestnetProxyStatus: boolean;
-    TestnetArchiveStatus: boolean;
-    TestnetRollingStatus: boolean;
-    Date: string;
+    archive_node: boolean,
+    rolling_node: boolean,
+}
+
+export interface IHealth {
+    status: string,
 }
 
