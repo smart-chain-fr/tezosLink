@@ -29,8 +29,9 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/dist/entries ./dist/entries
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/common ./dist/common
 
 COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
-
+RUN npx prisma generate
 USER tezoslinkuser
+
 
 CMD ["npm", "run", "api:start"]
 EXPOSE 3001
