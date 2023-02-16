@@ -3,16 +3,17 @@ FROM node:19-alpine AS deps
 
 ARG DATABASE_HOSTNAME
 
-ENV DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
-ENV DATABASE_PORT=${DATABASE_PORT}
-ENV DATABASE_USER=${DATABASE_USER}
-ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
-ENV DATABASE_NAME=${DATABASE_NAME}
+ENV DATABASE_HOSTNAME "$DATABASE_HOSTNAME"
+ENV DATABASE_PORT "$DATABASE_PORT"
+ENV DATABASE_USER "$DATABASE_USER"
+ENV DATABASE_PASSWORD "$DATABASE_PASSWORD"
+ENV DATABASE_NAME "$DATABASE_NAME"
 
 WORKDIR tezosLink
 
-RUN npx prisma generate ./dist/common/databases/schema.prisma
 COPY package.json ./
+COPY src/common/databases/schema.prisma ./src/common/databases/schema.prisma
+RUN npx prisma generate 
 
 RUN npm install --frozen-lockfile
 
@@ -41,4 +42,5 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
 
 USER tezoslinkuser
 
+EXPOSE 3000
 CMD ["npm", "run", "api:start"]
