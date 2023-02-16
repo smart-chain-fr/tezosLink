@@ -6,8 +6,8 @@ metadata:
   labels:
 spec:
   ports:
-    - port:  {{ .Values.proxy.testnet.service.ports.http }}
+    - port:  {{ .Values.proxy.mainnet.service.ports.http }}
       name: http
-      targetPort: {{ .Values.proxy.testnet.service.ports.http }}
+      targetPort: {{ .Values.proxy.mainnet.service.ports.http }}
   selector:
 {{- include "helpers.proxy.selectorLabels" . | nindent 8 }}

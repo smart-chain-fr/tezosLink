@@ -1,47 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "helpers.fullname" . }}-api
+  name: {{ include "helpers.fullname" . }}-front
   namespace: {{ include "helpers.namespace" . | quote }}
-  labels: {{ include "helpers.labels.api" . | nindent 4 }}
+  labels: {{ include "helpers.labels.front" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.api.replicas }}
+  replicas: {{ .Values.front.replicas }}
   selector:
     matchLabels:
-{{- include "helpers.api.selectorLabels" . | nindent 6 }}
+{{- include "helpers.front.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-{{- include "helpers.api.selectorLabels" . | nindent 8 }}
+{{- include "helpers.front.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: api-sa
+      serviceAccountName: front-sa
       imagePullSecrets:
         - name: docker-pull-secret
       containers:
-        - name: {{ include "helpers.fullname" . }}-api
-          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
-          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+        - name: {{ include "helpers.fullname" . }}-front
+          imagePullPolicy: {{ .Values.front.image.pullPolicy }}
+          image: "{{ .Values.front.image.repository }}:{{ .Values.front.image.tag }}"
           resources:
-{{toYaml .Values.api.resources | indent 12}}
+{{toYaml .Values.front.resources | indent 12}}
           env:
             - name: API_URL
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "helpers.fullname" . }}-cm
                   key: API_URL
-            - name: PROXY_TESTNET_URL
+            - name: PROXY_MAINNET_URL
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "helpers.fullname" . }}-cm
-                  key: PROXY_TESTNET_URL
+                  key: PROXY_MAINNET_URL
             - name: FRONT_URL
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "helpers.fullname" . }}-cm
                   key: FRONT_URL
-          {{- range $key, $val := .Values.api.env }}
+          {{- range $key, $val := .Values.front.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
           {{- end }}
-
-        

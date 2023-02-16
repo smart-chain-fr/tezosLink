@@ -5,4 +5,4 @@ metadata:
 data:
   API_URL: {{ .Values.api.ingress.host | quote}}
   FRONT_URL: {{ .Values.front.ingress.host | quote }}
-  PROXY_TESTNET_URL: {{ .Values.proxy.testnet.ingress.host | quote }}
+  PROXY_MAINNET_URL: {{ .Values.proxy.mainnet.ingress.host | quote }}
