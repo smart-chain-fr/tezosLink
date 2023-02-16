@@ -23,7 +23,7 @@ export default function Route(currentStatus: IStatus) {
     TestnetProxyStatus: currentStatus.archive_node,
     TestnetArchiveStatus: currentStatus.archive_node,
     TestnetRollingStatus: currentStatus.rolling_node,
-    Date: new Date(Date.now()).toLocaleString(),
+    Date: new Date(Date.now()).toISOString().slice(0, 10),
   };
   return <StatusLayout {...props} />;
 }

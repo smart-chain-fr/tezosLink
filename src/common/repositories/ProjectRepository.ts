@@ -21,9 +21,8 @@ export default class ProjectRepository {
 
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity> | null> {
 		try {
-			const data = { ...projectEntity };
 			return this.model.findUnique({
-				where: data,
+				where: projectEntity,
 				
 				include: {
 					// Include metrics & count

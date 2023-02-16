@@ -41,16 +41,26 @@ export default function Route(currentProject: IProject) {
 
 export const getServerSideProps: GetServerSideProps<IProject> = async (context) => {
     const uuid = context.params?.['uuid'];
-    
-    if (!uuid || Array.isArray(uuid) || !uuid.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')) {
+    try {
+        if (!uuid || Array.isArray(uuid) || !uuid.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')) {
+            return {
+                redirect: {
+                    permanent: false,
+                        destination: "/project-not-found",
+                    },
+                }
+        }
+        const project = await Project.getInstance().getOneProject(uuid);
+        if (!project) { return { notFound: true } }
+        return {
+            props: project,
+        };
+    } catch (error) {
         return {
             redirect: {
                 permanent: false,
-                    destination: "/project-not-found",
-                },
-            }
+                destination: "/project-not-found",
+            },
+        }
     }
-    return {
-        props: await Project.getInstance().getOneProject(uuid),
-    };
 }

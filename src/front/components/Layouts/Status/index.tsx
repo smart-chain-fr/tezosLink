@@ -5,8 +5,6 @@ import DefaultTemplate from "@Components/LayoutTemplates/DefaultTemplate"
 import classes from "./classes.module.scss";
 
 type IState = {
-	MainnetProxyStatus: boolean,
-	TestnetProxyStatus: boolean,
 }
 
 type IProps = {
