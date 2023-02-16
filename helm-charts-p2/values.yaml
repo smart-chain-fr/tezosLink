@@ -157,7 +157,7 @@ front:
 
 
 proxy:
-  mainnet:
+  testnet:
     enabled : true
     replicaCount: 1
     network: "mainnet"
