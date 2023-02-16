@@ -1,8 +1,17 @@
 # Install dependencies only when needed
 FROM node:19-alpine AS deps
 
+ARG DATABASE_HOSTNAME
+
+ENV DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
+ENV DATABASE_PORT=${DATABASE_PORT}
+ENV DATABASE_USER=${DATABASE_USER}
+ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
+ENV DATABASE_NAME=${DATABASE_NAME}
+
 WORKDIR tezosLink
 
+RUN npx prisma generate
 COPY package.json ./
 
 RUN npm install --frozen-lockfile
@@ -27,11 +36,9 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/node_modules ./node_modules
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/api ./dist/api
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/entries ./dist/entries
 COPY --from=builder --chown=tezoslinkuser tezosLink/dist/common ./dist/common
-
+COPY --from=builder --chown=tezoslinkuser tezosLink/src/common/databases/ ./src/common/databases/
 COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
-RUN npx prisma generate
+
 USER tezoslinkuser
 
-
 CMD ["npm", "run", "api:start"]
-EXPOSE 3001

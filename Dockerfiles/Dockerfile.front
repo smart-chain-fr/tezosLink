@@ -1,6 +1,10 @@
 # Install dependencies only when needed
 FROM node:19-alpine AS deps
 
+ENV WEB_LABEL "$WEB_LABEL"
+ENV WEB_PORT "$WEB_PORT"
+ENV WEB_ROOT_URL "$WEB_ROOT_URL"
+
 WORKDIR tezosLink
 
 COPY package.json ./
@@ -36,4 +40,3 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
 USER tezoslinkuser
 
 CMD ["npm", "run", "web:start"]
-EXPOSE 3000
