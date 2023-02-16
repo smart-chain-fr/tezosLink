@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helpers.fullname" . }}-cm
+data:
+  API_URL: {{ .Values.api.ingress.host | quote}}
+  FRONT_URL: {{ .Values.front.ingress.host | quote }}
+  PROXY_TESTNET_URL: {{ .Values.proxy.testnet.ingress.host | quote }}
+  PROXY_MAINNET_URL: {{ .Values.proxy.mainnet.ingress.host | quote }}
+  RPC_TESTNET_URL: {{ .Values.proxy.testnet.rpcNodeHost | quote }}
+  RPC_MAINNET_URL: {{ .Values.proxy.mainnet.rpcNodeHost | quote }}

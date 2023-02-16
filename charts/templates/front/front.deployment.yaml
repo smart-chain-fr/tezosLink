@@ -1,0 +1,73 @@
+{{ if .Values.front.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helpers.fullname" . }}-front
+  namespace: {{ include "helpers.namespace" . | quote }}
+  labels: {{ include "helpers.labels.front" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.front.replicas }}
+  selector:
+    matchLabels:
+{{- include "helpers.front.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+{{- include "helpers.front.selectorLabels" . | nindent 8 }}
+    spec:
+      {{ if .Values.front.serviceAccount.create}}
+      serviceAccountName: {{ default .Values.front.serviceAccount.name "front-sa" }}
+      {{ end }}
+      containers:
+        - name: {{ include "helpers.fullname" . }}-front
+          imagePullPolicy: {{ .Values.front.image.pullPolicy }}
+          image: "{{ .Values.front.image.repository }}:{{ .Values.front.image.tag }}"
+          resources: 
+            {{ toYaml .Values.front.resources | nindent 12 | trim }}
+          env:
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" . }}-cm
+                  key: API_URL
+            - name: PROXY_TESTNET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" . }}-cm
+                  key: PROXY_TESTNET_URL
+            - name: FRONT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helpers.fullname" . }}-cm
+                  key: FRONT_URL
+            {{- range $key, $val := .Values.front.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- range $key, $val := .Values.front.secret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helpers.fullname" $ }}-front
+                  key: {{ $key | quote}}
+            {{- end }}
+          {{- if .Values.front.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.front.livenessProbe.path }}
+              port: {{ .Values.front.livenessProbe.port }}
+            initialDelaySeconds: {{ .Values.front.livenessProbe.initialDelaySeconds }}
+          {{- end }}
+          {{- if .Values.front.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.front.readinessProbe.path }}
+              port: {{ .Values.front.readinessProbe.port }}
+            initialDelaySeconds: {{ .Values.front.readinessProbe.initialDelaySeconds }}
+          {{- end }}
+      {{- if .Values.front.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.front.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+{{ end }}     
+
+        
