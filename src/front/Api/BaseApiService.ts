@@ -7,7 +7,8 @@ export enum ContentType {
 
 export default abstract class BaseApiService {
 	protected readonly backUrl = process.env["NEXT_PUBLIC_API_HOSTNAME"] + ':' + process.env['NEXT_PUBLIC_API_PORT'] + process.env['NEXT_PUBLIC_API_ROOT_URL'];
-
+	protected readonly proxyUrl = process.env["NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME"] + ':' + process.env['NEXT_PUBLIC_RPC_GATEWAY_PORT'] + process.env['NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL'];
+	
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	protected constructor() {}
 

@@ -21,10 +21,7 @@ export default class TezosLink {
 	}
 
 	private getDatabaseName(): string {
-		const dbUrl = process.env["DATABASE_URL"];
-		if (!dbUrl) throw new Error("Database url is undefined!. Add url of db in the .env file.");
-		const dbSegments = dbUrl.split("/") ?? [];
-		const name = dbSegments[dbSegments.length - 1];
+		const name = process.env["DATABASE_NAME"];
 		if (!name) throw new Error("Database name is undefined!. Add name of db in the url.");
 		return name;
 	}
