@@ -36,13 +36,12 @@ async function getInstanceStatus(instance: Status, url: string) {
 
 async function getStatus(): Promise<IProps> {
   const {
-    NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME,
-    NEXT_PUBLIC_RPC_GATEWAY_PORT,
-    NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL,
+    NEXT_PUBLIC_PROXY_MAINNET_URL,
+    NEXT_PUBLIC_PROXY_TESTNET_URL,
   } = process.env;
 
-  const mainnetProxyUrl = `${NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME}:${NEXT_PUBLIC_RPC_GATEWAY_PORT}`;
-  const testnetProxyUrl = `${NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME}:${NEXT_PUBLIC_RPC_GATEWAY_PORT}${NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL}`;
+  const mainnetProxyUrl = `${NEXT_PUBLIC_PROXY_MAINNET_URL}`;
+  const testnetProxyUrl = `${NEXT_PUBLIC_PROXY_TESTNET_URL}`;
 
   const instance = Status.getInstance();
 
@@ -72,6 +71,7 @@ export default function Route(props: IProps) {
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
   try {
     const currentStatus = await getStatus();
+    console.log(currentStatus);
     return {
       props: currentStatus,
     };

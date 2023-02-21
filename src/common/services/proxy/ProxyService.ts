@@ -1,3 +1,6 @@
+import ObjectHydrate from "@Common/helpers/ObjectHydrate";
+import MetricsRepository from "@Common/repositories/MetricsRepository";
+import MetricEntity from "@Common/ressources/MetricEntity";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 import BaseService from "@Services/BaseService";
 import axios from "axios";
@@ -15,7 +18,7 @@ interface IStatusNode {
 
 @Service()
 export default class ProxyService extends BaseService {
-	constructor() {
+	constructor(private metricsRepository: MetricsRepository) {
 		super();
 	}
 	/**
@@ -33,6 +36,7 @@ export default class ProxyService extends BaseService {
 	public async getNodesStatus(): Promise<IStatusNode> {
 		const archiveTestURL = new URL(`${process.env["ARCHIVE_NODES_URL"]}/chains/main/blocks/head`);
 		const rollingTestURL = new URL(`${process.env["ROLLING_NODES_URL"]}/chains/main/blocks/head`);
+
 		const archive_node = {
 			status: HttpCodes.INTERNAL_ERROR,
 			reason: null,
@@ -55,5 +59,26 @@ export default class ProxyService extends BaseService {
 			rolling_node,
 		};
 	}
+
+	public async proxyRequest(metricEntity: Partial<MetricEntity>) {
+		const metric = new MetricEntity();
+		if(this.isWhitelisted(metricEntity.path!)) {
+			await this.saveMetrics(metricEntity);
+			if (!metric) return null;		
+		}
+		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);	
+	}
+
+	/**
+	 *
+	 * @throws {Error} If metric cannot be created
+	 * @returns
+	 */
+	async saveMetrics(metricEntity: Partial<MetricEntity>) {
+		const metric = await this.metricsRepository.create(metricEntity);
+		if (!metric) return null;
+		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
+	}
+
 }
 
