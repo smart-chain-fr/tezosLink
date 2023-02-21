@@ -29,11 +29,11 @@ export default class StatusLayout extends BasePage<IProps, IState> {
 					<div className={classes["content"]}>
 						<h2>Services status</h2>
 						<StatusProxy proxyStatus={this.props.MainnetProxyStatus}
-							network={"Mainnet"} date={this.props.Date} />
+							network={"Mainnet"} date={this.props.Date!} />
 						<StatusNode nodeArchiveStatus={this.props.MainnetArchiveStatus}
 							nodeRollingStatus={this.props.MainnetRollingStatus} network={"Mainnet"} />
 						<StatusProxy proxyStatus={this.props.TestnetProxyStatus}
-							network={this.props.TestnetName} date={this.props.Date} />
+							network={this.props.TestnetName} date={this.props.Date!} />
 						<StatusNode nodeArchiveStatus={this.props.TestnetArchiveStatus}
 							nodeRollingStatus={this.props.TestnetRollingStatus} network={this.props.TestnetName} />
 					</div>

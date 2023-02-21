@@ -20,12 +20,14 @@ export interface IProject {
     metrics?: IMetrics[]
 }
 
-export interface IStatus {
-    archive_node: boolean,
-    rolling_node: boolean,
+export interface IHttpReponse {
+	status: number;
+	reason: string | null;
 }
 
-export interface IHealth {
-    status: string,
+export interface IStatus {
+	archive_node: IHttpReponse;
+	rolling_node: IHttpReponse;
+    
 }
 

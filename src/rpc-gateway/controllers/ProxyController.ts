@@ -3,7 +3,7 @@ import { type Response, type Request } from "express";
 import { Controller, Get } from "@ControllerPattern/index";
 import { Service } from "typedi";
 import ApiController from "@Common/system/controller-pattern/ApiController";
-import axios from "axios";
+import ProxyService from "@Services/proxy/ProxyService";
 
 dotenv.config();
 
@@ -15,57 +15,23 @@ export enum ContentType {
 @Controller()
 @Service()
 export default class ProxyController extends ApiController {
-	constructor() {
+	constructor(private proxyService: ProxyService) {
 		super();
-	}
-
-	protected buildHeaders(contentType: ContentType) {
-		const headers = new Headers();
-
-		if (contentType === ContentType.JSON) {
-			headers.set("Content-Type", contentType);
-		}
-		return headers;
 	}
 
 	@Get("/health")
 	protected async getHealth(req: Request, res: Response) {
-		this.httpSuccess(res, { status: "success" });
+		const health = this.proxyService.getHttpServerResponse();
+		this.httpSuccess(res, health);
 	}
 
 	@Get("/status")
 	protected async getStatus(req: Request, res: Response) {
-		let archiveNodeStatus = false;
-		let rollingNodeStatus = false;
-
-		const archiveTestURL = new URL(`${process.env["ARCHIVE_NODES_URL"] }/chains/main/blocks/head`);
-		try {
-			const archiveTestResponse = await axios.get(archiveTestURL.toString());
-			if (archiveTestResponse.status >= this.httpCode.SUCCESS && archiveTestResponse.status < this.httpCode.BAD_REQUEST) {
-				archiveNodeStatus = true;
-			}
-		} catch (err) {
-			this.httpBadRequest(res, err);
-			return;
+		const status = await this.proxyService.getNodesStatus();
+		if (!status) {
+			this.httpNotFoundRequest(res, status);
 		}
-
-		const rollingTestURL = new URL(`${process.env["ROLLING_NODES_URL"]}/chains/main/blocks/head`);
-		try {
-			const rollingTestResponse = await axios.get(rollingTestURL.toString());
-			if (rollingTestResponse.status >= this.httpCode.SUCCESS && rollingTestResponse.status < this.httpCode.BAD_REQUEST) {
-				rollingNodeStatus = true;
-			}
-		} catch (err) {
-			this.httpBadRequest(res, err);
-			return;
-		}
-		//Object response for the status
-		const data = {
-			archive_node: archiveNodeStatus,
-			rolling_node: rollingNodeStatus,
-		};
-
-		this.httpSuccess(res, data);
+		this.httpSuccess(res, status);
 	}
 }
 
