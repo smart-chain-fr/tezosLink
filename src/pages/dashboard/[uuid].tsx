@@ -1,6 +1,6 @@
 import Dashboard from "@Components/Layouts/Dashboard";
 import Project from "src/front/Api/Project";
-import { IProject } from "src/front/interfaces";
+import { IProject } from "@Front/interfaces/interfaces";
 import { GetServerSideProps } from "next";
 import {
   getLastRequest,

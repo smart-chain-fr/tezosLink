@@ -4,11 +4,11 @@ import { Service } from "typedi";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import ProxyService from "@Services/proxy/ProxyService";
 
-
 export enum ContentType {
 	JSON = "application/json",
 	FORM_DATA = "multipart/form-data;",
 }
+
 
 @Controller()
 @Service()
@@ -34,7 +34,7 @@ export default class ProxyController extends ApiController {
 
 	@Get("/*")
 	protected async handleProxying(req: Request, res: Response) {
-		const  url  = req.url;
+		const url = req.url;
 		if (!url) {
 			this.httpBadRequest(res, "Url is required");
 			return;
@@ -42,6 +42,5 @@ export default class ProxyController extends ApiController {
 		//WIP : handle Poxy request
 		this.httpSuccess(res, url);
 	}
-
 }
 

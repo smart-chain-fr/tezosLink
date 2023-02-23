@@ -1,5 +1,5 @@
+import { IHttpReponse, IStatusNode } from "@Common/system/interfaces/Interfaces";
 import BaseApiService from "src/front/Api/BaseApiService";
-import { IHttpReponse, IStatus } from "src/front/interfaces";
 import { Service } from "typedi";
 
 @Service()
@@ -28,10 +28,10 @@ export default class Status extends BaseApiService {
 		}
 	}
 
-	public async getStatusByUrl(url: string): Promise<IStatus> {
+	public async getStatusByUrl(url: string): Promise<IStatusNode> {
 		const statusUrl = new URL(url.concat("/status"));
 		try {
-			return await this.getRequest<IStatus>(statusUrl);
+			return await this.getRequest<IStatusNode>(statusUrl);
 		} catch (err) {
 			this.onError(err);
 			return Promise.reject(err);

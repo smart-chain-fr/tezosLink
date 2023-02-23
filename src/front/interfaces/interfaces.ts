@@ -20,14 +20,3 @@ export interface IProject {
     metrics?: IMetrics[]
 }
 
-export interface IHttpReponse {
-	status: number;
-	reason: string | null;
-}
-
-export interface IStatus {
-	archive_node: IHttpReponse;
-	rolling_node: IHttpReponse;
-    
-}
-
