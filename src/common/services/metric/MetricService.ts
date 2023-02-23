@@ -13,7 +13,7 @@ export default class MetricService {
 	 */
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>) {
 		const metrics = await this.metricRepository.findMany(query);
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metrics);
+		return ObjectHydrate.map(MetricEntity, metrics);
 	}
 	/**
 	 * @throws {Error} If metric is undefined
@@ -61,8 +61,8 @@ export default class MetricService {
 	 * @returns
 	 */
 	public async getLastMetrics(metricEntity: Partial<MetricEntity>, limit: number){
-		const lastMetric = await this.metricRepository.findLastRequests(metricEntity.projectId!,limit);
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), lastMetric);
+		const metrics = await this.metricRepository.findLastRequests(metricEntity.projectId!,limit);
+		return ObjectHydrate.map(MetricEntity, metrics);
 	}
 
 	/**
@@ -71,8 +71,8 @@ export default class MetricService {
 	 * @returns
 	 */
 	public async getRequestsByDay(metricEntity: Partial<MetricEntity>, from: Date, to: Date){
-		const requestByDay = await this.metricRepository.findRequestsByDay(metricEntity.projectId!,from,to);
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), requestByDay);
+		const metrics = await this.metricRepository.findRequestsByDay(metricEntity.projectId!,from,to);
+		return ObjectHydrate.map(MetricEntity, metrics);
 	}
 
 	/**

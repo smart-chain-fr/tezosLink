@@ -1,22 +1,24 @@
+import { BackendVariables } from "@Common/config/Variables";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 import Status from "@Front/Api/Status";
-import StatusLayout from "@Front/components/Layouts/Status";
+import StatusLayout, { IProps } from "@Front/components/Layouts/Status";
 import { GetServerSideProps } from "next";
+import Container from "typedi";
 
-type IProps = {
-  MainnetProxyStatus: boolean;
-  MainnetArchiveStatus: boolean;
-  MainnetRollingStatus: boolean;
-  TestnetName: string;
-  TestnetProxyStatus: boolean;
-  TestnetArchiveStatus: boolean;
-  TestnetRollingStatus: boolean;
-  Date: string;
+export default function Route(props: IProps) {
+  return <StatusLayout {...props} />;
+}
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+    const status = await getStatus();
+    return {
+      props: { status },
+    };
 };
 
 async function getInstanceStatus(instance: Status, url: string) {
   const health = await instance.getHealthByUrl(url).catch((error) => {
-    return { status: error.status};
+    return { status: error.status };
   });
   const status = await instance.getStatusByUrl(url).catch((error) => {
     return {
@@ -24,7 +26,7 @@ async function getInstanceStatus(instance: Status, url: string) {
       rolling_node: { status: error.status },
     };
   });
-  console.log(health, status);
+
   return {
     ProxyStatus: health.status !== HttpCodes.SUCCESS ? false : true,
     ArchiveStatus:
@@ -34,28 +36,25 @@ async function getInstanceStatus(instance: Status, url: string) {
   };
 }
 
-async function getStatus(): Promise<IProps> {
-  const {
-    NEXT_PUBLIC_PROXY_MAINNET_URL,
-    NEXT_PUBLIC_PROXY_TESTNET_URL,
-  } = process.env;
-
-  const mainnetProxyUrl = `${NEXT_PUBLIC_PROXY_MAINNET_URL}`;
-  const testnetProxyUrl = `${NEXT_PUBLIC_PROXY_TESTNET_URL}`;
+async function getStatus(): Promise<IProps["status"]> {
+  const variables = Container.get(BackendVariables);
 
   const instance = Status.getInstance();
 
-  if (!instance) {
-    throw new Error("Status instance not found");
-  }
-
-  const mainnetStatus = await getInstanceStatus(instance, mainnetProxyUrl);
-  const testnetStatus = await getInstanceStatus(instance, testnetProxyUrl);
+  const mainnetStatus = await getInstanceStatus(
+    instance,
+    variables.NEXT_PUBLIC_PROXY_MAINNET_URL
+  );
+  const testnetStatus = await getInstanceStatus(
+    instance,
+    variables.NEXT_PUBLIC_PROXY_TESTNET_URL
+  );
 
   return {
     MainnetProxyStatus: mainnetStatus.ProxyStatus,
     MainnetArchiveStatus: mainnetStatus.ArchiveStatus,
     MainnetRollingStatus: mainnetStatus.RollingStatus,
+    /** @TODO */
     TestnetName: "LIMANET",
     TestnetProxyStatus: testnetStatus.ProxyStatus,
     TestnetArchiveStatus: testnetStatus.ArchiveStatus,
@@ -63,25 +62,3 @@ async function getStatus(): Promise<IProps> {
     Date: new Date(Date.now()).toISOString().slice(0, 10),
   };
 }
-
-export default function Route(props: IProps) {
-  return <StatusLayout {...props} />;
-}
-
-export const getServerSideProps: GetServerSideProps<IProps> = async () => {
-  try {
-    const currentStatus = await getStatus();
-    console.log(currentStatus);
-    return {
-      props: currentStatus,
-    };
-  } catch (e) {
-    console.error(e);
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/status-not-found",
-      },
-    };
-  }
-};

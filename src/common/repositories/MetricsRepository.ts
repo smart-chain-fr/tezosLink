@@ -38,17 +38,15 @@ export default class MetricRepository {
 
 	public async create(metricEntity: Partial<MetricEntity>): Promise<MetricEntity> {
 		try {
-			const data = { ...metricEntity };
-
 			return this.model.create({
 				data: {
-					path: data.path!,
-					uuid: data.uuid!,
-					remote_address: data.remote_address!,
-					date_requested: data.date_requested!,
+					path: metricEntity.path!,
+					uuid: metricEntity.uuid!,
+					remote_address: metricEntity.remote_address!,
+					date_requested: metricEntity.date_requested!,
 					project: {
 						connect: {
-							id: data.id!,
+							uuid: metricEntity.project!.uuid!,
 						},
 					},
 				},
@@ -64,7 +62,7 @@ export default class MetricRepository {
 			const data = { ...metricEntity };
 			const result: MetricEntity[] = [];
 
-			this.instanceDb.$transaction(async(transaction: Prisma.TransactionClient) => {
+			this.instanceDb.$transaction(async (transaction: Prisma.TransactionClient) => {
 				for (const item of data) {
 					if (!item) continue;
 					result.push(
@@ -135,7 +133,7 @@ export default class MetricRepository {
 			const response = this.model.groupBy({
 				by: ["date_requested"],
 				_count: {
-					date_requested: true,	
+					date_requested: true,
 				},
 				where: {
 					projectId: projectId,

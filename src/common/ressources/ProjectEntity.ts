@@ -1,10 +1,12 @@
+import { Exclude } from "class-transformer";
 import { IsNotEmpty, IsOptional, IsDate } from "class-validator";
 import MetricEntity from "./MetricEntity";
 
 export default class ProjectEntity {
+	@Exclude()
 	@IsNotEmpty()
 	public id!: number;
-
+	
 	@IsNotEmpty({groups: ["create"]})
 	public title!: string;
 

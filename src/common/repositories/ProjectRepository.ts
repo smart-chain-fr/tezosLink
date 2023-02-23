@@ -5,6 +5,7 @@ import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
 @Service()
+ /** @TODO */
 export default class ProjectRepository {
 	constructor(private database: TezosLink) {}
 	protected get model() {
@@ -21,17 +22,16 @@ export default class ProjectRepository {
 
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity> | null> {
 		try {
-			return this.model.findUnique({
+			return this.model.findFirst({
 				where: projectEntity,
-				
-				include: {
+
+				/* include: {
 					// Include metrics & count
 					Metrics: true,
 					_count: {
 						select: { Metrics: true },
-					  },
-				  
-				},
+					},
+				}, */
 			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);

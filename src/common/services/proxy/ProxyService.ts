@@ -3,15 +3,31 @@ import MetricsRepository from "@Common/repositories/MetricsRepository";
 import ProjectRepository from "@Common/repositories/ProjectRepository";
 import MetricEntity from "@Common/ressources/MetricEntity";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
-import { IHttpReponse, IRpcRequest, IStatusNode } from "@Common/system/interfaces/Interfaces";
+import { IHttpReponse, IStatusNode } from "@Common/system/interfaces/Interfaces";
 import BaseService from "@Services/BaseService";
 import axios from "axios";
+import { IsNotEmpty, IsUUID, Validate } from "class-validator";
 import { Service } from "typedi";
+import IsRpcPathAllowed from "./validators/IsRpcPathAllowed";
+import IsValidProject from "./validators/IsValidProject";
 
+export class RpcRequest {
+	@IsNotEmpty()
+	@Validate(IsRpcPathAllowed)
+	path!: string;
+
+	@IsNotEmpty()
+	@IsUUID()
+	@Validate(IsValidProject, [{ network: BaseService.network }])
+	uuid!: string;
+
+	@IsNotEmpty()
+	remoteAddress!: string;
+}
 
 @Service()
 export default class ProxyService extends BaseService {
-	constructor(private metricsRepository: MetricsRepository, private projectRepository : ProjectRepository) {
+	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectRepository) {
 		super();
 	}
 	/**
@@ -53,15 +69,6 @@ export default class ProxyService extends BaseService {
 		};
 	}
 
-	public async proxyRequest(metricEntity: Partial<MetricEntity>) {
-		const metric = new MetricEntity();
-		if (this.isWhitelisted(metricEntity.path!)) {
-			await this.saveMetric(metricEntity);
-			if (!metric) return null;
-		}
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
-	}
-
 	/**
 	 *
 	 * @throws {Error} If metric cannot be created
@@ -74,73 +81,34 @@ export default class ProxyService extends BaseService {
 	}
 
 	// Proxy proxy an http request to the right repositories
-	public async proxy(request: IRpcRequest): Promise<[string, boolean]> {
+	public async proxy(request: RpcRequest): Promise<string> {
 		console.info(`Received proxy request for path: ${request.path}`);
 
-		try {
-			const project = await this.projectRepository.findOne(request);
+		const project = await this.projectRepository.findOne({ uuid: request.uuid, network: BaseService.network });
 
-			if (project != null && project.network !== this.network) {
-				console.debug(`This proxy instance can handle network: ${this.network} but project network is ${project.network}`);
-				return ["invalid network", false];
-			}
-
-			if (!this.isAllowed(request.path)) {
-				console.debug(`Not allowed to proxy on the path: ${request.path}`);
-				return ["call blacklisted", false];
-			}
-
-			const metric = new MetricEntity();
-			metric.path = request.path;
-			this.saveMetric(metric);
-
-			if (this.isRollingNodeRedirection(request.path)) {
-				console.info("Forwarding request directly to rolling node (as a reverse proxy)");
-				return ["", true];
-			} else {
-				console.info("Forwarding request directly to archive node (as a reverse proxy)");
-				return ["", true];
-			}
-		} catch (err) {
-			console.error(`Failed to proxy request: ${err}`);
-			return ["Error occured", true];
+		if (!project) {
+			return Promise.reject(`Project uuid: ${request.uuid} with network: ${BaseService.network} does not exist`);
 		}
+
+		let response = "";
+
+		if (this.isRollingNodeRedirection(request.path)) {
+			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
+		} else {
+			console.info("Forwarding request directly to archive node (as a reverse proxy)");
+		}
+		// Logger les metrics
+		const metric = new MetricEntity();
+		Object.assign(metric, request, { project, dateRequested: new Date()});
+
+		await this.saveMetric(metric);
+		return response;
 	}
 
 	isRollingNodeRedirection(url: string): boolean {
-		let isRedirectionAllowed = false;
 		const urls = url.split("?");
-		url = `/${urls[0]!.trim()}`;
-
-		for (const whitelistedPatterns of this.rollingPatterns) {
-			if (whitelistedPatterns.includes(url)) {
-				isRedirectionAllowed = true;
-				break;
-			}
-		}
-
-		return isRedirectionAllowed;
-	}
-
-	isAllowed(url: string): boolean {
-		let isPathAllowed = false;
-		const urls = url.split("?");
-		url = "/" + urls[0]!.trim();
-
-		for (const whiteListedPaths of this.whitelisted) {
-			if (whiteListedPaths.includes(url)) {
-				isPathAllowed = true;
-				for (const bl of this.blacklisted) {
-					if (bl.includes(url)) {
-						isPathAllowed = false;
-						break;
-					}
-				}
-				break;
-			}
-		}
-
-		return isPathAllowed;
+		const pureUrl = `/${urls[0]!.trim()}`;
+		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => rollingpattern.includes(pureUrl)));
 	}
 }
 

@@ -1,10 +1,3 @@
-export interface IRpcRequest {
-	path: string;
-	uuid: string;
-	action: number;
-	remoteAddr: string;
-}
-
 export interface IHttpReponse {
 	status: number;
 	reason: string | null;

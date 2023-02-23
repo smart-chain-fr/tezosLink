@@ -10,3 +10,4 @@ export function getUUIDFromPath(path: string, re: RegExp): string {
 export function getRPCFromPath(basePath: string, path: string, re: RegExp): string {
 	return path.replace("/" + basePath + getUUIDFromPath(path, re), "");
 }
+
