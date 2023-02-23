@@ -62,11 +62,11 @@ export default class ProxyService extends BaseService {
 
 	public async proxyRequest(metricEntity: Partial<MetricEntity>) {
 		const metric = new MetricEntity();
-		if(this.isWhitelisted(metricEntity.path!)) {
-			await this.saveMetrics(metricEntity);
-			if (!metric) return null;		
+		if (this.isWhitelisted(metricEntity.path!)) {
+			await this.saveMetric(metricEntity);
+			if (!metric) return null;
 		}
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);	
+		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
 
 	/**
@@ -74,11 +74,78 @@ export default class ProxyService extends BaseService {
 	 * @throws {Error} If metric cannot be created
 	 * @returns
 	 */
-	async saveMetrics(metricEntity: Partial<MetricEntity>) {
+	async saveMetric(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricsRepository.create(metricEntity);
 		if (!metric) return null;
 		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
 	}
 
+	// Proxy proxy an http request to the right repositories
+	public async proxy(metric: MetricEntity): Promise<[string, boolean]> {
+		console.info(`Received proxy request for path: ${metric.path}`);
+
+		try {
+			const metricObject = await this.metricsRepository.findOne(metric);
+
+			if (metricObject != null && metricObject.project!.network !== this.network) {
+				console.debug(`This proxy instance can handle network: ${this.network} but project network is ${metricObject.project!.network}`);
+				return ["invalid network", false];
+			}
+
+			if (!this.isAllowed(metric.path)) {
+				console.debug(`Not allowed to proxy on the path: ${metric.path}`);
+				return ["call blacklisted", false];
+			}
+
+			this.saveMetric(metric);
+
+			if (this.isRollingNodeRedirection(metric.path)) {
+				console.info("Forwarding request directly to rolling node (as a reverse proxy)");
+				return ["", true];
+			} else {
+				console.info("Forwarding request directly to archive node (as a reverse proxy)");
+				return ["", true];
+			}
+		} catch (err) {
+			console.error(`Failed to proxy request: ${err}`);
+			return ["Error occured", true];
+		}
+	}
+
+	isRollingNodeRedirection(url: string): boolean {
+		let isRedirectionAllowed = false;
+		const urls = url.split("?");
+		url = `/${urls[0]!.trim()}`;
+
+		for (const whitelistedPatterns of this.rollingPatterns) {
+			if (whitelistedPatterns.includes(url)) {
+				isRedirectionAllowed = true;
+				break;
+			}
+		}
+
+		return isRedirectionAllowed;
+	}
+
+	isAllowed(url: string): boolean {
+		let isPathAllowed = false;
+		const urls = url.split("?");
+		url = "/" + urls[0]!.trim();
+
+		for (const whiteListedPaths of this.whitelisted) {
+			if (whiteListedPaths.includes(url)) {
+				isPathAllowed = true;
+				for (const bl of this.blacklisted) {
+					if (bl.includes(url)) {
+						isPathAllowed = false;
+						break;
+					}
+				}
+				break;
+			}
+		}
+
+		return isPathAllowed;
+	}
 }
 

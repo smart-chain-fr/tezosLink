@@ -31,5 +31,17 @@ export default class ProxyController extends ApiController {
 		}
 		this.httpSuccess(res, status);
 	}
+
+	@Get("/*")
+	protected async handleProxying(req: Request, res: Response) {
+		const  url  = req.url;
+		if (!url) {
+			this.httpBadRequest(res, "Url is required");
+			return;
+		}
+		//WIP : handle Poxy request
+		this.httpSuccess(res, url);
+	}
+
 }
 

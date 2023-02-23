@@ -1,6 +1,8 @@
 export default abstract class BaseService {
-    private readonly whitelisted: string[] = ["/chains/main/blocks(.*?)", "/mockserver/status"];
-    private readonly blacklisted: string[] = ["(.*?)context/contracts$", "/monitor(.*?)", "/network(.*?)"];
+    public readonly whitelisted: string[] = ["/chains/main/blocks(.*?)", "/mockserver/status"];
+    public readonly blacklisted: string[] = ["(.*?)context/contracts$", "/monitor(.*?)", "/network(.*?)"];
+    public readonly rollingPatterns: string[] = ["(.*?)context/contracts$", "/monitor(.*?)", "/network(.*?)"];
+    public readonly network: string = "mainnet";
 
     protected constructor() {}
 
