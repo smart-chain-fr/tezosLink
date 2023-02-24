@@ -40,7 +40,7 @@ jobs:
           name: Deploy
           command: >
               helm upgrade 
-              tezos-link helm-charts-p2 -i -f helm-charts-p2/values.yaml 
+              tezos-link charts -i -f charts/values.yaml 
               -n tezos-link
               --create-namespace
               --set api.image.tag=$TAG 
