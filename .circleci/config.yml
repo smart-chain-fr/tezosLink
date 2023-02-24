@@ -7,6 +7,9 @@ orbs:
 
 jobs:
   build-push-docker-image: 
+    parameters: 
+      module: 
+        type: string
     docker:
       - image: cimg/base:stable
     environment:
@@ -17,14 +20,8 @@ jobs:
           version: 20.10.12
           docker_layer_caching: true
       - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG -f Dockerfiles/Dockerfile.api .
-      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-api:$TAG
-      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG -f Dockerfiles/Dockerfile.front .
-      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-frontend:$TAG
-      - run: docker login rg.fr-par.scw.cloud/tezoslink -u nologin -p $SCW_SECRET_KEY
-      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG -f Dockerfiles/Dockerfile.proxy .
-      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-proxy:$TAG
+      - run: docker build --tag rg.fr-par.scw.cloud/tezoslink/p1-<<parameters.module>>:$TAG -f Dockerfiles/Dockerfile.<<parameters.module>> .
+      - run: docker push rg.fr-par.scw.cloud/tezoslink/p1-<<parameters.module>>:$TAG
 
   deploy-docker-image:
     docker:
@@ -43,8 +40,8 @@ jobs:
               tezos-link charts -i -f charts/values.yaml 
               -n tezos-link
               --create-namespace
-              --set api.image.tag=$TAG 
-              --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
+              --set <<parameters.module>>.image.tag=$TAG 
+              --set <<parameters.module>>.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
               --set front.image.tag=$TAG 
               --set front.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-frontend'
               --set proxy.testnet.image.tag=$TAG 
@@ -56,6 +53,21 @@ workflows:
   build-and-register:
     jobs:
       - build-push-docker-image:
+          module: frontend
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build-push-docker-image:
+          module: api
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build-push-docker-image:
+          module: proxy
           filters:
             tags:
               only: /^v.*/
