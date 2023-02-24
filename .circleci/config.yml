@@ -40,8 +40,8 @@ jobs:
               tezos-link charts -i -f charts/values.yaml 
               -n tezos-link
               --create-namespace
-              --set <<parameters.module>>.image.tag=$TAG 
-              --set <<parameters.module>>.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
+              --set api.image.tag=$TAG 
+              --set api.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-api'
               --set front.image.tag=$TAG 
               --set front.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-frontend'
               --set proxy.testnet.image.tag=$TAG 
