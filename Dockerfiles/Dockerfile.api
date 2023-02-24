@@ -1,16 +1,6 @@
 # Install dependencies only when needed
 FROM node:19-alpine AS deps
 
-ENV DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
-ENV DATABASE_PORT=${DATABASE_PORT}
-ENV DATABASE_USER=${DATABASE_USER}
-ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
-ENV DATABASE_NAME=${DATABASE_NAME}
-
-ENV NEXT_PUBLIC_API_LABEL=${NEXT_PUBLIC_API_LABEL}
-ENV NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT}
-ENV NEXT_PUBLIC_API_ROOT_URL=${NEXT_PUBLIC_API_ROOT_URL}
-
 WORKDIR tezosLink
 
 COPY package.json ./
@@ -44,5 +34,5 @@ COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
 
 USER tezoslinkuser
 
-EXPOSE 3000
 CMD ["npm", "run", "api:start"]
+EXPOSE 3000
