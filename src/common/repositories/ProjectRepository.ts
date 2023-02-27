@@ -1,11 +1,12 @@
 import TezosLink from "@Common/databases/TezosLink";
+import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import { ProjectEntity } from "@Common/ressources";
 import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
 @Service()
- /** @TODO */
+/** @TODO */
 export default class ProjectRepository {
 	constructor(private database: TezosLink) {}
 	protected get model() {
@@ -14,25 +15,19 @@ export default class ProjectRepository {
 
 	public async findMany(query: any): Promise<ProjectEntity[]> {
 		try {
-			return this.model.findMany(query) as Promise<ProjectEntity[]>;
+			const projects = await this.model.findMany(query);
+			return ObjectHydrate.map<ProjectEntity>(ProjectEntity, projects, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
 
-	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity> | null> {
+	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		try {
-			return this.model.findFirst({
+			const project = (await this.model.findFirst({
 				where: projectEntity,
-
-				/* include: {
-					// Include metrics & count
-					Metrics: true,
-					_count: {
-						select: { Metrics: true },
-					},
-				}, */
-			});
+			})) as ProjectEntity;
+			return ObjectHydrate.hydrate<ProjectEntity>(new ProjectEntity(), project, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -42,7 +37,7 @@ export default class ProjectRepository {
 		try {
 			const data = { ...projectEntity };
 			data.uuid = uuidv4();
-			return this.model.create({
+			const project = (await this.model.create({
 				data: {
 					uuid: data.uuid,
 					title: data.title!,
@@ -52,7 +47,8 @@ export default class ProjectRepository {
 					// Include metrics
 					Metrics: true,
 				},
-			}) as Promise<ProjectEntity>;
+			})) as ProjectEntity;
+			return ObjectHydrate.hydrate<ProjectEntity>(new ProjectEntity(), project, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

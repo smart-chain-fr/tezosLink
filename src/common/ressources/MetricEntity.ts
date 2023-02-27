@@ -1,6 +1,8 @@
+import { Exclude } from "class-transformer";
 import ProjectEntity from "./ProjectEntity";
 
 export default class MetricEntity {
+	@Exclude()
 	public id!: number;
 
 	public path!: string;

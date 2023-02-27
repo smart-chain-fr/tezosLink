@@ -10,10 +10,10 @@ export default function Route(props: IProps) {
 }
 
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
-    const status = await getStatus();
-    return {
-      props: { status },
-    };
+  const status = await getStatus();
+  return {
+    props: { status },
+  };
 };
 
 async function getInstanceStatus(instance: Status, url: string) {

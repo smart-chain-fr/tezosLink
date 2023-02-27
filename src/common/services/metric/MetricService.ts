@@ -1,4 +1,3 @@
-import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import MetricRepository from "@Common/repositories/MetricsRepository";
 import { MetricEntity } from "@Common/ressources";
 import { type processFindManyQuery } from "prisma-query";
@@ -12,8 +11,7 @@ export default class MetricService {
 	 * @throws {Error} If metrics are undefined
 	 */
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>) {
-		const metrics = await this.metricRepository.findMany(query);
-		return ObjectHydrate.map(MetricEntity, metrics);
+		return await this.metricRepository.findMany(query);
 	}
 	/**
 	 * @throws {Error} If metric is undefined
@@ -21,7 +19,7 @@ export default class MetricService {
 	public async getByUUID(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricRepository.findOne(metricEntity);
 		if (!metric) return null;
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
+		return metric;
 	}
 	/**
 	 *
@@ -31,7 +29,7 @@ export default class MetricService {
 	public async create(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricRepository.create(metricEntity);
 		if (!metric) return null;
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
+		return metric;
 	}
 
 	/**
@@ -61,8 +59,7 @@ export default class MetricService {
 	 * @returns
 	 */
 	public async getLastMetrics(metricEntity: Partial<MetricEntity>, limit: number){
-		const metrics = await this.metricRepository.findLastRequests(metricEntity.projectId!,limit);
-		return ObjectHydrate.map(MetricEntity, metrics);
+		return await this.metricRepository.findLastRequests(metricEntity.projectId!,limit);
 	}
 
 	/**
@@ -71,8 +68,7 @@ export default class MetricService {
 	 * @returns
 	 */
 	public async getRequestsByDay(metricEntity: Partial<MetricEntity>, from: Date, to: Date){
-		const metrics = await this.metricRepository.findRequestsByDay(metricEntity.projectId!,from,to);
-		return ObjectHydrate.map(MetricEntity, metrics);
+		return await this.metricRepository.findRequestsByDay(metricEntity.projectId!,from,to);
 	}
 
 	/**

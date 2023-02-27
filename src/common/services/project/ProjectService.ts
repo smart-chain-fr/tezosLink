@@ -1,4 +1,3 @@
-import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import ProjectRepository from "@Common/repositories/ProjectRepository";
 import { ProjectEntity } from "@Common/ressources";
 import { type processFindManyQuery } from "prisma-query";
@@ -8,16 +7,11 @@ import { Service } from "typedi";
 export default class ProjectService {
 	constructor(private projectRepository: ProjectRepository) {}
 
-	//Déplacer l'hydrate dans les repos -----------------------------------
-
-
 	/**
 	 * @throws {Error} If projects are undefined
 	 */
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>) {
-		const projects = await this.projectRepository.findMany(query);
-		return ObjectHydrate.map<ProjectEntity>(ProjectEntity, projects, { strategy: "exposeAll" });
-		
+		return this.projectRepository.findMany(query);
 	}
 	/**
 	 * @throws {Error} If project is undefined
@@ -25,7 +19,7 @@ export default class ProjectService {
 	public async getByUUID(projectEntity: Partial<ProjectEntity>) {
 		const project = await this.projectRepository.findOne(projectEntity);
 		if (!project) return null;
-		return ObjectHydrate.hydrate<Partial<ProjectEntity>>(new ProjectEntity(), project, { strategy: "exposeAll" });
+		return project;
 	}
 	/**
 	 *
@@ -35,7 +29,7 @@ export default class ProjectService {
 	public async create(projectEntity: Partial<ProjectEntity>) {
 		const project = await this.projectRepository.create(projectEntity);
 		if (!project) return null;
-		return ObjectHydrate.hydrate<Partial<ProjectEntity>>(new ProjectEntity(), project, { strategy: "exposeAll" });
+		return project;
 	}
 }
 

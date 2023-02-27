@@ -1,12 +1,13 @@
 import TezosLink from "@Common/databases/TezosLink";
+import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import { MetricEntity } from "@Common/ressources";
 import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
 import { type Prisma } from "@prisma/client";
 import { Service } from "typedi";
 
-type RequestsByDayMetrics = {
-	date_requested: Date;
-	count: number;
+export class RequestsByDayMetrics {
+	date_requested!: Date;
+	count!: number;
 };
 
 @Service()
@@ -21,7 +22,8 @@ export default class MetricRepository {
 
 	public async findMany(query: any): Promise<MetricEntity[]> {
 		try {
-			return this.model.findMany(query) as Promise<MetricEntity[]>;
+			const metrics = await this.model.findMany(query);
+			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -30,7 +32,8 @@ export default class MetricRepository {
 	public async findOne(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity> | null> {
 		try {
 			const data = { ...metricEntity };
-			return this.model.findUnique({ where: data });
+			const metric = await this.model.findUnique({ where: data });
+			return ObjectHydrate.hydrate<MetricEntity>(new MetricEntity(), metric, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -38,7 +41,7 @@ export default class MetricRepository {
 
 	public async create(metricEntity: Partial<MetricEntity>): Promise<MetricEntity> {
 		try {
-			return this.model.create({
+			const metric = (await this.model.create({
 				data: {
 					path: metricEntity.path!,
 					uuid: metricEntity.uuid!,
@@ -50,7 +53,8 @@ export default class MetricRepository {
 						},
 					},
 				},
-			}) as Promise<MetricEntity>;
+			})) as MetricEntity;
+			return ObjectHydrate.hydrate<MetricEntity>(new MetricEntity(), metric, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -82,16 +86,16 @@ export default class MetricRepository {
 					);
 				}
 			});
-			return result;
+			return ObjectHydrate.map<MetricEntity>(MetricEntity, result, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
 
 	// Count Rpc path usage for a specific project
-	public async countRpcPathUsage(projectId: number, from: Date, to: Date): Promise<any> {
+	public async countRpcPathUsage(projectId: number, from: Date, to: Date): Promise<MetricEntity[]> {
 		try {
-			return this.model.groupBy({
+			const result = await this.model.groupBy({
 				by: ["path"],
 				_count: {
 					path: true,
@@ -104,6 +108,7 @@ export default class MetricRepository {
 					},
 				},
 			});
+			return ObjectHydrate.map<MetricEntity>(MetricEntity, result, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -112,7 +117,7 @@ export default class MetricRepository {
 	// Last requests for a specific project
 	public async findLastRequests(projectId: number, limit: number): Promise<MetricEntity[]> {
 		try {
-			return this.model.findMany({
+			const metrics = await this.model.findMany({
 				where: {
 					projectId: projectId,
 				},
@@ -121,6 +126,7 @@ export default class MetricRepository {
 					date_requested: "desc",
 				},
 			});
+			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -149,7 +155,7 @@ export default class MetricRepository {
 					count: item._count.date_requested,
 				});
 			}
-			return result;
+			return ObjectHydrate.map<RequestsByDayMetrics>(RequestsByDayMetrics, result, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -162,7 +168,7 @@ export default class MetricRepository {
 				where: {
 					projectId: projectId,
 				},
-			});
+			}) as Promise<number>;
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
