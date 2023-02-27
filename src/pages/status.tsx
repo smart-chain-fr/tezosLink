@@ -43,11 +43,11 @@ async function getStatus(): Promise<IProps["status"]> {
 
   const mainnetStatus = await getInstanceStatus(
     instance,
-    variables.NEXT_PUBLIC_PROXY_MAINNET_URL
+    variables.NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL
   );
   const testnetStatus = await getInstanceStatus(
     instance,
-    variables.NEXT_PUBLIC_PROXY_TESTNET_URL
+    variables.NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL
   );
 
   return {

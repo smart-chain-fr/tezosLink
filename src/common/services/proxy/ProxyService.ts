@@ -1,6 +1,6 @@
 import ObjectHydrate from "@Common/helpers/ObjectHydrate";
-import MetricsRepository from "@Common/repositories/MetricsRepository";
-import ProjectRepository from "@Common/repositories/ProjectRepository";
+import MetricsRepository from "@Common/repositories/metrics/MetricsRepository";
+import ProjectsRepository from "@Repositories/projects/ProjectsRepository";
 import MetricEntity from "@Common/ressources/MetricEntity";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 import { IHttpReponse, IStatusNode } from "@Common/system/interfaces/Interfaces";
@@ -27,7 +27,7 @@ export class RpcRequest {
 
 @Service()
 export default class ProxyService extends BaseService {
-	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectRepository) {
+	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository) {
 		super();
 	}
 	/**

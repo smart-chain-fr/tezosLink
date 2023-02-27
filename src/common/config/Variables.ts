@@ -53,10 +53,10 @@ export class BackendVariables {
 	public readonly NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL!: string;
 
 	@IsNotEmpty()
-	public readonly NEXT_PUBLIC_PROXY_MAINNET_URL!: string;
+	public readonly NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL!: string;
 
 	@IsNotEmpty()
-	public readonly NEXT_PUBLIC_PROXY_TESTNET_URL!: string;
+	public readonly NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL!: string;
 
 	@IsNotEmpty()
 	public readonly ARCHIVE_NODES_URL!: string;
@@ -93,8 +93,8 @@ export class BackendVariables {
 		this.NEXT_PUBLIC_RPC_GATEWAY_LABEL = process.env["NEXT_PUBLIC_RPC_GATEWAY_LABEL"]!;
 		this.NEXT_PUBLIC_RPC_GATEWAY_PORT = process.env["NEXT_PUBLIC_RPC_GATEWAY_PORT"]!;
 		this.NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL = process.env["NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL"]!;
-		this.NEXT_PUBLIC_PROXY_MAINNET_URL = process.env["NEXT_PUBLIC_PROXY_MAINNET_URL"]!;
-		this.NEXT_PUBLIC_PROXY_TESTNET_URL = process.env["NEXT_PUBLIC_PROXY_TESTNET_URL"]!;
+		this.NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL = process.env["NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL"]!;
+		this.NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL = process.env["NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL"]!;
 		this.ARCHIVE_NODES_URL = process.env["ARCHIVE_NODES_URL"]!;
 		this.ARCHIVE_NODES_PORT = process.env["ARCHIVE_NODES_PORT"]!;
 		this.ROLLING_NODES_URL = process.env["ROLLING_NODES_URL"]!;

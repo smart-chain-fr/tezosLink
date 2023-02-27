@@ -1,4 +1,4 @@
-import ProjectRepository from "@Common/repositories/ProjectRepository";
+import ProjectsRepository from "@Repositories/projects/ProjectsRepository";
 import BaseService from "@Services/BaseService";
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import Container from "typedi";
@@ -7,7 +7,7 @@ import { RpcRequest } from "../ProxyService";
 @ValidatorConstraint({ name: "IsValidProject" })
 export default class IsValidProject implements ValidatorConstraintInterface {
 	public async validate(uuid: string, args: ValidationArguments) {
-		const projectRepository = Container.get(ProjectRepository);
+		const projectRepository = Container.get(ProjectsRepository);
 
 		if (args.constraints?.[0]?.network) {
 			return Boolean(await projectRepository.findOne({ uuid, network: BaseService.network }));

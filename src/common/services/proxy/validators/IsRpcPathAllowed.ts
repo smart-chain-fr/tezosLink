@@ -20,8 +20,8 @@ function isAllowed(url: string): boolean {
 	for (const whiteListedPaths of BaseService.whitelisted) {
 		if (whiteListedPaths.includes(url)) {
 			isPathAllowed = true;
-			for (const bl of BaseService.blacklisted) {
-				if (bl.includes(url)) {
+			for (const blacklistedPaths of BaseService.blacklisted) {
+				if (blacklistedPaths.includes(url)) {
 					isPathAllowed = false;
 					break;
 				}

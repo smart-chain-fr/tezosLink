@@ -1,11 +1,14 @@
-import ProjectRepository from "@Common/repositories/ProjectRepository";
+import ProjectsRepository from "@Repositories/projects/ProjectsRepository";
 import { ProjectEntity } from "@Common/ressources";
+import BaseService from "@Services/BaseService";
 import { type processFindManyQuery } from "prisma-query";
 import { Service } from "typedi";
 
 @Service()
-export default class ProjectService {
-	constructor(private projectRepository: ProjectRepository) {}
+export default class ProjectsService extends BaseService {
+	constructor(private projectRepository: ProjectsRepository) {
+		super();
+	}
 
 	/**
 	 * @throws {Error} If projects are undefined

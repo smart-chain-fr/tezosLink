@@ -8,6 +8,7 @@
     "@Pages": "./dist/pages",
     "@Common": "./dist/common",
     "@Services": "./dist/common/services",
+    "@Repositories": "./dist/common/repositories",
     "@Entries": "./dist/common/entries",
     "@Config": "./dist/common/config",
     "@Entities": "./dist/common/entities",
