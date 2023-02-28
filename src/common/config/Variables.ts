@@ -40,9 +40,6 @@ export class BackendVariables {
 	@IsNotEmpty()
 	public readonly NEXT_PUBLIC_API_ROOT_URL!: string;
 
-	@IsNotEmpty()
-	public readonly NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME!: string;
-
 	@IsOptional()
 	public readonly NEXT_PUBLIC_RPC_GATEWAY_LABEL!: string;
 
@@ -89,7 +86,6 @@ export class BackendVariables {
 		this.NEXT_PUBLIC_API_LABEL = process.env["NEXT_PUBLIC_API_LABEL"]!;
 		this.NEXT_PUBLIC_API_PORT = process.env["NEXT_PUBLIC_API_PORT"]!;
 		this.NEXT_PUBLIC_API_ROOT_URL = process.env["NEXT_PUBLIC_API_ROOT_URL"]!;
-		this.NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME = process.env["NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME"]!;
 		this.NEXT_PUBLIC_RPC_GATEWAY_LABEL = process.env["NEXT_PUBLIC_RPC_GATEWAY_LABEL"]!;
 		this.NEXT_PUBLIC_RPC_GATEWAY_PORT = process.env["NEXT_PUBLIC_RPC_GATEWAY_PORT"]!;
 		this.NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL = process.env["NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL"]!;

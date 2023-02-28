@@ -12,24 +12,20 @@ export default class IsRpcPathAllowed implements ValidatorConstraintInterface {
 	}
 }
 
-function isAllowed(url: string): boolean {
-	let isPathAllowed = false;
-	const urls = url.split("?");
-	url = "/" + urls[0]!.trim();
-
-	for (const whiteListedPaths of BaseService.whitelisted) {
-		if (whiteListedPaths.includes(url)) {
-			isPathAllowed = true;
-			for (const blacklistedPaths of BaseService.blacklisted) {
-				if (blacklistedPaths.includes(url)) {
-					isPathAllowed = false;
-					break;
-				}
-			}
+function isAllowed(path: string): boolean {
+	const pureUrl = `/${path!.trim()}`;
+	let nonWhitelistedPart = "";
+	for (const whitelistPath of BaseService.whitelisted) {
+		if (pureUrl.includes(whitelistPath)) {
+			nonWhitelistedPart = pureUrl.slice(pureUrl.indexOf(whitelistPath) + whitelistPath.length);
 			break;
 		}
 	}
-
-	return isPathAllowed;
+	for (const blacklistPath of BaseService.blacklisted) {
+		if (nonWhitelistedPart.includes(blacklistPath) || pureUrl.includes(blacklistPath)) {
+			return false;
+		}
+	}
+	return true;
 }
 

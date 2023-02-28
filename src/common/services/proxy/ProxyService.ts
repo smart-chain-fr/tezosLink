@@ -10,6 +10,7 @@ import { IsNotEmpty, IsUUID, Validate } from "class-validator";
 import { Service } from "typedi";
 import IsRpcPathAllowed from "./validators/IsRpcPathAllowed";
 import IsValidProject from "./validators/IsValidProject";
+import { BackendVariables } from "@Common/config/Variables";
 
 export class RpcRequest {
 	@IsNotEmpty()
@@ -27,7 +28,7 @@ export class RpcRequest {
 
 @Service()
 export default class ProxyService extends BaseService {
-	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository) {
+	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository, private variables: BackendVariables) {
 		super();
 	}
 	/**
@@ -43,8 +44,8 @@ export default class ProxyService extends BaseService {
 	 * @throws {Error} if url is undefined
 	 */
 	public async getNodesStatus(): Promise<IStatusNode> {
-		const archiveTestURL = new URL(`${process.env["ARCHIVE_NODES_URL"]}/chains/main/blocks/head`);
-		const rollingTestURL = new URL(`${process.env["ROLLING_NODES_URL"]}/chains/main/blocks/head`);
+		const archiveTestURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/chains/main/blocks/head`);
+		const rollingTestURL = new URL(`${this.variables.ROLLING_NODES_URL}/chains/main/blocks/head`);
 
 		const archive_node = {
 			status: HttpCodes.INTERNAL_ERROR,
@@ -93,22 +94,28 @@ export default class ProxyService extends BaseService {
 		let response = "";
 
 		if (this.isRollingNodeRedirection(request.path)) {
+			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
+			const { data } = await axios.get(rollingURL.toString());
+			response = data;
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 		} else {
+			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
+			const { data } = await axios.get(archiveURL.toString());
+			response = data;
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 		}
 		// Logger les metrics
 		const metric = new MetricEntity();
-		Object.assign(metric, request, { project, dateRequested: new Date()});
+		Object.assign(metric, request, { project, dateRequested: new Date() });
 
 		await this.saveMetric(metric);
 		return response;
 	}
 
 	isRollingNodeRedirection(url: string): boolean {
-		const urls = url.split("?");
-		const pureUrl = `/${urls[0]!.trim()}`;
-		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => rollingpattern.includes(pureUrl)));
+		const pureUrl = `/${url!.trim()}`;
+		console.info(`Checking if ${pureUrl} is a rolling node redirection`);
+		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => pureUrl.includes(rollingpattern)));
 	}
 }
 
