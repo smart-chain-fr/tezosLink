@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "helpers.fullname" . }}-api
+  name: {{ include "helpers.fullname" . }}-api-svc
   namespace: {{ include "helpers.namespace" . | quote }}
   labels: {{ include "helpers.labels.api" . | nindent 4 }}
   annotations: 
@@ -19,9 +19,9 @@ spec:
 {{- end}}
 {{- end }}
   ports:
-    - port:  {{ .Values.api.service.ports.http }}
+    - port:  {{ .Values.env.NEXT_PUBLIC_API_PORT}}
       name: http
-      targetPort: {{ .Values.api.service.ports.http }}
+      targetPort: {{ .Values.env.NEXT_PUBLIC_API_PORT}}
 {{- if eq .Values.api.service.type "NodePort" }}
       nodePort: {{ .Values.api.service.nodePorts.http }}
 {{- end }}

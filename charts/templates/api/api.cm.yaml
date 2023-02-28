@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helpers.fullname" .}}-api-cm
+data:
+  NEXT_PUBLIC_API_HOSTNAME: {{ printf "http://%s" .Values.env.NEXT_PUBLIC_API_HOSTNAME }}
+  NEXT_PUBLIC_API_LABEL: {{ .Values.env.NEXT_PUBLIC_API_LABEL }}
+  NEXT_PUBLIC_API_PORT: {{ quote .Values.env.NEXT_PUBLIC_API_PORT }}
+  NEXT_PUBLIC_API_ROOT_URL: {{ .Values.env.NEXT_PUBLIC_API_ROOT_URL }}
+  DATABASE_HOSTNAME: {{ .Values.env.DATABASE_HOSTNAME}}
+  DATABASE_PORT: {{ quote .Values.env.DATABASE_PORT }}
+  DATABASE_USER: {{ .Values.env.DATABASE_USER }}
+  DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
+  DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}

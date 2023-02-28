@@ -1,0 +1,57 @@
+{{ if .Values.web.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helpers.fullname" . }}-web
+  namespace: {{ include "helpers.namespace" . | quote }}
+  labels: {{ include "helpers.labels.web" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.web.replicas }}
+  selector:
+    matchLabels:
+{{- include "helpers.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+{{- include "helpers.web.selectorLabels" . | nindent 8 }}
+    spec:
+      {{ if .Values.web.serviceAccount.create}}
+      serviceAccountName: {{ default .Values.web.serviceAccount.name "web-sa" }}
+      {{ end }}
+      containers:
+        - name: {{ include "helpers.fullname" . }}-web
+          imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
+          resources: 
+            {{ toYaml .Values.web.resources | nindent 12 | trim }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "helpers.fullname" . }}-web-cm
+            {{ if .Values.web.secret }}
+            - secretRef:
+                name: {{ include "helpers.fullname" . }}-web-secret
+            {{ end }}
+            {{ range .Values.web.additionalSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{ end }} 
+          {{- if .Values.web.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.env.WEB_ROOT_URL }}{{ .Values.web.livenessProbe.path }}
+              port: {{ .Values.env.WEB_PORT }}
+            initialDelaySeconds: {{ .Values.web.livenessProbe.initialDelaySeconds }}
+          {{- end }}
+          {{- if .Values.web.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.env.WEB_ROOT_URL }}{{ .Values.web.readinessProbe.path }}
+              port: {{ .Values.env.WEB_PORT }}
+            initialDelaySeconds: {{ .Values.web.readinessProbe.initialDelaySeconds }}
+          {{- end }}
+      {{- if .Values.web.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.web.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+{{ end }}     
+
+        

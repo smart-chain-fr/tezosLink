@@ -24,45 +24,29 @@ spec:
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
           resources: 
             {{ toYaml .Values.api.resources | nindent 12 | trim }}
-          env:
-            - name: API_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "helpers.fullname" . }}-cm
-                  key: API_URL
-            - name: PROXY_TESTNET_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "helpers.fullname" . }}-cm
-                  key: PROXY_TESTNET_URL
-            - name: FRONT_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "helpers.fullname" . }}-cm
-                  key: FRONT_URL
-            {{- range $key, $val := .Values.api.env }}
-            - name: {{ $key }}
-              value: {{ $val | quote }}
-            {{- end }}
-            {{- range $key, $val := .Values.api.secret }}
-            - name: {{ $key }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "helpers.fullname" $ }}-api
-                  key: {{ $key | quote}}
-            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "helpers.fullname" . }}-api-cm
+            {{ if .Values.api.secret }}
+            - secretRef:
+                name: {{ include "helpers.fullname" . }}-api-secret
+            {{ end }}
+            {{ range .Values.api.additionalSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{ end }}
           {{- if .Values.api.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: {{ .Values.api.livenessProbe.path }}
-              port: {{ .Values.api.livenessProbe.port }}
+              port: {{ .Values.env.NEXT_PUBLIC_API_PORT }}
             initialDelaySeconds: {{ .Values.api.livenessProbe.initialDelaySeconds }}
           {{- end }}
           {{- if .Values.api.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: {{ .Values.api.readinessProbe.path }}
-              port: {{ .Values.api.readinessProbe.port }}
+              port: {{ .Values.env.NEXT_PUBLIC_API_PORT }}
             initialDelaySeconds: {{ .Values.api.readinessProbe.initialDelaySeconds }}
           {{- end }}
       {{- if .Values.api.podSecurityContext.enabled }}

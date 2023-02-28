@@ -36,25 +36,25 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Proxy labels
 */}}
-{{- define "helpers.labels.proxy" -}}
+{{- define "helpers.labels.rpcgateway" -}}
 {{- include "helpers.labels.common" .root }}
-app.kubernetes.io/component : {{ printf "%s-%s" "proxy" .network }}
+app.kubernetes.io/component : {{ printf "%s-%s" "rpcgateway" .network }}
 {{- end }}
 
 {{/*
 Proxy testnet abels
 */}}
-{{- define "helpers.labels.testnet.proxy" -}}
+{{- define "helpers.labels.testnet.rpcgateway" -}}
 {{- include "helpers.labels.common" . }}
-app.kubernetes.io/component : {{ printf "%s-%s" "proxy" (lower .Values.proxy.testnet.network) }}
+app.kubernetes.io/component : {{ printf "%s-%s" "rpcgateway" (lower .Values.rpcgateway.testnet.network) }}
 {{- end }}
 
 {{/*
-front labels
+web labels
 */}}
-{{- define "helpers.labels.front" -}}
+{{- define "helpers.labels.web" -}}
 {{- include "helpers.labels.common" . }}
-app.kubernetes.io/component : front
+app.kubernetes.io/component : web
 {{- end }}
 
 {{/*
@@ -72,18 +72,18 @@ Selector labels
 {{/*
 Selector labels
 */}}
-{{- define "helpers.proxy.selectorLabels" -}}
+{{- define "helpers.rpcgateway.selectorLabels" -}}
 app.kubernetes.io/instance: {{ .root.Release.Name }}
-app.kubernetes.io/component: proxy
+app.kubernetes.io/component: rpcgateway
 network: {{ .network }}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "helpers.front.selectorLabels" -}}
+{{- define "helpers.web.selectorLabels" -}}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/component : front
+app.kubernetes.io/component : web
 {{- end }}
 
 {{/*

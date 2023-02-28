@@ -1,0 +1,42 @@
+{{ range $network, $data := $.Values.rpcgateway}}
+---
+{{ if $data.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-cm
+data:
+  {{ if eq $network "testnet" }}
+  NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME: {{ printf "http://%s" $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
+  NEXT_PUBLIC_RPC_GATEWAY_LABEL: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_LABEL }}
+  NEXT_PUBLIC_RPC_GATEWAY_PORT: {{ quote $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_PORT }}
+  NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL }}
+  ARCHIVE_NODES_URL: {{ printf "http://%s" $.Values.env.TESTNET_ARCHIVE_NODES_URL }}
+  ARCHIVE_NODES_PORT: {{ quote $.Values.env.TESTNET_ARCHIVE_NODES_PORT }}
+  ROLLING_NODES_URL: {{ printf "http://%s" $.Values.env.TESTNET_ROLLING_NODES_URL }}
+  ROLLING_NODES_PORT: {{ quote $.Values.env.TESTNET_ROLLING_NODES_PORT}}
+  DATABASE_HOSTNAME: {{ $.Values.env.DATABASE_HOSTNAME }}
+  DATABASE_PORT: {{ quote $.Values.env.DATABASE_PORT }}
+  DATABASE_USER: {{ $.Values.env.DATABASE_USER }}
+  DATABASE_PASSWORD: {{ $.Values.env.DATABASE_PASSWORD }}
+  DATABASE_NAME: {{ $.Values.env.DATABASE_NAME }}
+  TEZOS_NETWORK: {{ $data.network }}
+  {{ end }}
+  {{ if eq $network "mainnet"}}
+  NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME: {{ printf "http://%s" $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
+  NEXT_PUBLIC_RPC_GATEWAY_LABEL: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_LABEL }}
+  NEXT_PUBLIC_RPC_GATEWAY_PORT: {{ quote $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_PORT }}
+  NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL }}
+  ARCHIVE_NODES_URL: {{ printf "http://%s" $.Values.env.MAINNET_ARCHIVE_NODES_URL }}
+  ARCHIVE_NODES_PORT: {{ quote $.Values.env.MAINNET_ARCHIVE_NODES_PORT }}
+  ROLLING_NODES_URL: {{ printf "http://%s" $.Values.env.MAINNET_ROLLING_NODES_URL }}
+  ROLLING_NODES_PORT: {{ quote $.Values.env.MAINNET_ROLLING_NODES_PORT}}
+  DATABASE_HOSTNAME: {{ $.Values.env.DATABASE_HOSTNAME }}
+  DATABASE_PORT: {{ quote $.Values.env.DATABASE_PORT }}
+  DATABASE_USER: {{ $.Values.env.DATABASE_USER }}
+  DATABASE_PASSWORD: {{ $.Values.env.DATABASE_PASSWORD }}
+  DATABASE_NAME: {{ $.Values.env.DATABASE_NAME }}
+  TEZOS_NETWORK: {{ $data.network }}
+  {{ end}}
+{{ end }}
+{{ end }}
