@@ -1,15 +1,16 @@
-import { BackendVariables } from "@Common/config/Variables";
-import Container from "typedi";
 
 export enum ContentType {
 	JSON = "application/json",
 	FORM_DATA = "multipart/form-data;",
 }
 
-export default abstract class BaseApiService {
-	protected readonly variables = Container.get(BackendVariables);
-	protected readonly backUrl = this.variables.NEXT_PUBLIC_API_HOSTNAME + ":" + this.variables.NEXT_PUBLIC_API_PORT + this.variables.NEXT_PUBLIC_API_ROOT_URL;
 
+export default abstract class BaseApiService {
+	protected apiHostname = process.env["NEXT_PUBLIC_API_HOSTNAME"];
+	protected apiPort = process.env["NEXT_PUBLIC_API_PORT"] || "";
+	protected apiRootUrl = process.env["NEXT_PUBLIC_API_ROOT_URL"] || "";
+	protected backUrl = this.apiHostname + (this.apiPort ? `:${this.apiPort}` : "") + this.apiRootUrl;
+	
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	protected constructor() {}
 
@@ -115,9 +116,9 @@ export default abstract class BaseApiService {
 	protected onError(error: unknown) {
 		console.error(error);
 	}
+
 }
 
 export interface IResponse {
 	http_status: number;
 }
-
