@@ -1,33 +1,28 @@
 import "module-alias/register";
 import "reflect-metadata";
-import dotenv from "dotenv";
 import { Container } from "typedi";
 import ExpressServer from "@Common/system/ExpressServer";
 import routes from "@RpcGateway/controllers/index";
 import cors from "cors";
 import bodyParser from "body-parser";
 import errorHandler from "@Api/middlewares/ErrorHandler";
+import { BackendVariables } from "@Common/config/Variables";
 
-dotenv.config();
+(async () => {
+	const variables = await Container.get(BackendVariables).validate();
 
-const port = process.env["NEXT_PUBLIC_RPC_GATEWAY_PORT"];
-const rootUrl = process.env["NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL"];
-const label = process.env["NEXT_PUBLIC_RPC_GATEWAY_LABEL"] ?? "Unknown Service";
+	const port = variables.NEXT_PUBLIC_RPC_GATEWAY_PORT;
+	const rootUrl = variables.NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL;
+	const label = variables.NEXT_PUBLIC_RPC_GATEWAY_LABEL ?? "Unknown Service";
 
-if (!port) throw new Error(`process.env Port is undefined`);
-if (!rootUrl) throw new Error(`process.env RootUrl is undefined`);
+	Container.get(ExpressServer).init({
+		label,
+		port: parseInt(port),
+		rootUrl,
+		middlwares: [cors({ origin: "*" }), bodyParser.urlencoded({ extended: true }), bodyParser.json()],
+		errorHandler,
+	});
 
-Container.get(ExpressServer).init({
-	label,
-	port: parseInt(port),
-	rootUrl,
-	middlwares: [
-		cors({ origin: "*" }),
-		bodyParser.urlencoded({ extended: true }),
-		bodyParser.json(),
-	],
-	errorHandler,
-});
-
-routes.start();
+	routes.start();
+})();
 

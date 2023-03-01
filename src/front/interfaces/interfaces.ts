@@ -20,12 +20,3 @@ export interface IProject {
     metrics?: IMetrics[]
 }
 
-export interface IStatus {
-    archive_node: boolean,
-    rolling_node: boolean,
-}
-
-export interface IHealth {
-    status: string,
-}
-

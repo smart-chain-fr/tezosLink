@@ -6,13 +6,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_PRISMA_STUDIO_DB_URL")
 }
 
 model Project {
-  id        Int      @default(autoincrement()) @id
+  uuid      String   @unique @db.VarChar(255) @id
   title      String @db.VarChar(255)
-  uuid      String   @unique @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   network  String @db.VarChar(255)
@@ -21,13 +20,12 @@ model Project {
 }
 
 model Metric {
-  id        Int      @default(autoincrement()) @id
+  uuid      String  @unique @db.VarChar(255) @id
   path String @db.VarChar(255)
-  uuid      String   @unique @db.VarChar(255)
   remote_address  String @db.VarChar(255)
-  date_requested  DateTime 
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId Int 
+  date_requested  DateTime 	@db.Date()
+  project   Project  @relation(fields: [projectUuid], references: [uuid])
+  projectUuid String 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("app_metrics")

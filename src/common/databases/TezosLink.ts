@@ -1,13 +1,14 @@
 import { Service } from "typedi";
 import DbProvider from "@Common/system/database";
 import dotenv from "dotenv";
+import { BackendVariables } from "@Common/config/Variables";
 
 dotenv.config();
 
 @Service()
 export default class TezosLink {
 	protected readonly dbProvider: DbProvider;
-	constructor() {
+	constructor(private variables: BackendVariables) {
 		this.dbProvider = new DbProvider({
 			name: this.getDatabaseName(),
 		});
@@ -21,7 +22,7 @@ export default class TezosLink {
 	}
 
 	private getDatabaseName(): string {
-		const name = process.env["DATABASE_NAME"];
+		const name = this.variables.DATABASE_NAME;
 		if (!name) throw new Error("Database name is undefined!. Add name of db in the url.");
 		return name;
 	}
