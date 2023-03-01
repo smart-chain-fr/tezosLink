@@ -2,10 +2,10 @@ import TezosLink from "@Common/databases/TezosLink";
 import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import { ProjectEntity } from "@Common/ressources";
 import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
+import { Prisma } from "@prisma/client";
 import BaseRepository from "@Repositories/BaseRepository";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
-
 
 @Service()
 export default class ProjectsRepository extends BaseRepository {
@@ -16,7 +16,7 @@ export default class ProjectsRepository extends BaseRepository {
 		return this.database.getClient().project;
 	}
 
-	public async findMany(query: any): Promise<ProjectEntity[]> {
+	public async findMany(query: Prisma.ProjectFindManyArgs): Promise<ProjectEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);

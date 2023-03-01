@@ -8,14 +8,14 @@ type IState = {};
 
 export type IProps = {
   status: {
-    MainnetProxyStatus: boolean;
-    MainnetArchiveStatus: boolean;
-    MainnetRollingStatus: boolean;
-    TestnetName: string;
-    TestnetProxyStatus: boolean;
-    TestnetArchiveStatus: boolean;
-    TestnetRollingStatus: boolean;
-    Date: string;
+    mainnetProxyStatus: boolean;
+    mainnetArchiveStatus: boolean;
+    mainnetRollingStatus: boolean;
+    testnetName: string;
+    testnetProxyStatus: boolean;
+    testnetArchiveStatus: boolean;
+    testnetRollingStatus: boolean;
+    date: string;
   };
 };
 
@@ -31,24 +31,24 @@ export default class StatusLayout extends BasePage<IProps, IState> {
           <div className={classes["content"]}>
             <h2>Services status</h2>
             <StatusProxy
-              proxyStatus={status!.MainnetProxyStatus}
+              proxyStatus={status!.mainnetProxyStatus}
               network={"Mainnet"}
-              date={status.Date!}
+              date={status.date!}
             />
             <StatusNode
-              nodeArchiveStatus={status!.MainnetArchiveStatus}
-              nodeRollingStatus={status.MainnetRollingStatus}
+              nodeArchiveStatus={status!.mainnetArchiveStatus}
+              nodeRollingStatus={status.mainnetRollingStatus}
               network={"Mainnet"}
             />
             <StatusProxy
-              proxyStatus={status.TestnetProxyStatus}
-              network={status.TestnetName}
-              date={status.Date!}
+              proxyStatus={status.testnetProxyStatus}
+              network={status.testnetName}
+              date={status.date!}
             />
             <StatusNode
-              nodeArchiveStatus={status.TestnetArchiveStatus}
-              nodeRollingStatus={status.TestnetRollingStatus}
-              network={status.TestnetName}
+              nodeArchiveStatus={status.testnetArchiveStatus}
+              nodeRollingStatus={status.testnetRollingStatus}
+              network={status.testnetName}
             />
           </div>
         </div>

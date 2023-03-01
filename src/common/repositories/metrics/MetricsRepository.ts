@@ -5,6 +5,7 @@ import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQuery
 import { type Prisma } from "@prisma/client";
 import BaseRepository from "@Repositories/BaseRepository";
 import { Service } from "typedi";
+import { v4 as uuidv4 } from "uuid";
 
 export class RequestsByDayMetrics {
 	date_requested!: Date;
@@ -28,7 +29,7 @@ export default class MetricsRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: any): Promise<MetricEntity[]> {
+	public async findMany(query: Prisma.MetricFindManyArgs): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
@@ -43,8 +44,7 @@ export default class MetricsRepository extends BaseRepository {
 
 	public async findOne(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity> | null> {
 		try {
-			const data = { ...metricEntity };
-			const metric = await this.model.findUnique({ where: data });
+			const metric = await this.model.findUnique({ where: metricEntity });
 			return ObjectHydrate.hydrate<MetricEntity>(new MetricEntity(), metric, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -53,15 +53,17 @@ export default class MetricsRepository extends BaseRepository {
 
 	public async create(metricEntity: Partial<MetricEntity>): Promise<MetricEntity> {
 		try {
+			const data = { ...metricEntity };
+			data.uuid = uuidv4();
 			const metric = (await this.model.create({
 				data: {
-					path: metricEntity.path!,
-					uuid: metricEntity.uuid!,
-					remote_address: metricEntity.remote_address!,
-					date_requested: metricEntity.date_requested!,
+					path: data.path!,
+					uuid: data.uuid!,
+					remote_address: data.remote_address!,
+					date_requested: data.date_requested!,
 					project: {
 						connect: {
-							uuid: metricEntity.project!.uuid!,
+							uuid: data.project!.uuid!,
 						},
 					},
 				},
@@ -80,16 +82,18 @@ export default class MetricsRepository extends BaseRepository {
 			this.instanceDb.$transaction(async (transaction: Prisma.TransactionClient) => {
 				for (const item of metricEntity) {
 					if (!item) continue;
+					const data = { ...item };
+					data.uuid = uuidv4();
 					result.push(
 						await transaction.metric.create({
 							data: {
-								path: item.path!,
-								uuid: item.uuid!,
-								remote_address: item.remote_address!,
-								date_requested: item.date_requested!,
+								path: data.path!,
+								uuid: data.uuid!,
+								remote_address: data.remote_address!,
+								date_requested: data.date_requested!,
 								project: {
 									connect: {
-										uuid: item.uuid!,
+										uuid: data.projectUuid!,
 									},
 								},
 							},
@@ -104,7 +108,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count Rpc path usage for a specific project
-	public async countRpcPathUsage(uuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
+	public async countRpcPathUsage(ProjectUuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
 		try {
 			const result: CountRpcPathUsage[] = [];
 			const response = await this.model.groupBy({
@@ -113,7 +117,7 @@ export default class MetricsRepository extends BaseRepository {
 					path: true,
 				},
 				where: {
-					uuid: uuid,
+					projectUuid: ProjectUuid,
 					date_requested: {
 						gte: from,
 						lte: to,
@@ -133,13 +137,13 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Last requests for a specific project
-	public async findLastRequests(uuid: string, limit: number): Promise<MetricEntity[]> {
+	public async findLastRequests(projectUuid: string, limit: number): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
 			const rows = Math.min(limit || this.defaultFetchRows, this.maxFetchRows);
 			const metrics = await this.model.findMany({
 				where: {
-					uuid: uuid,
+					projectUuid: projectUuid,
 				},
 				take: rows,
 				orderBy: {
@@ -153,7 +157,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Find Requests by Day for a specific project
-	public async findRequestsByDay(uuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]> {
+	public async findRequestsByDay(projectUuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]> {
 		try {
 			const result: RequestsByDayMetrics[] = [];
 			const response = await this.model.groupBy({
@@ -162,7 +166,7 @@ export default class MetricsRepository extends BaseRepository {
 					date_requested: true,
 				},
 				where: {
-					uuid: uuid,
+					projectUuid: projectUuid,
 					date_requested: {
 						gte: from,
 						lte: to,
@@ -183,11 +187,11 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count all metrics by criterias for a specific project
-	public async countAll(uuid: string): Promise<number> {
+	public async countAll(projectUuid: string): Promise<number> {
 		try {
 			return this.model.count({
 				where: {
-					uuid: uuid,
+					projectUuid: projectUuid,
 				},
 			}) as Promise<number>;
 		} catch (error) {

@@ -13,15 +13,15 @@ export default class ProjectsService extends BaseService {
 	/**
 	 * @throws {Error} If projects are undefined
 	 */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>) {
+	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<ProjectEntity[]> {
 		return this.projectRepository.findMany(query);
 	}
 	/**
 	 * @throws {Error} If project is undefined
 	 */
-	public async getByUUID(projectEntity: Partial<ProjectEntity>) {
+	public async getByUUID(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		const project = await this.projectRepository.findOne(projectEntity);
-		if (!project) return null;
+		if (!project) Promise.reject(new Error("Cannot get project by uuid"));
 		return project;
 	}
 	/**
@@ -29,9 +29,9 @@ export default class ProjectsService extends BaseService {
 	 * @throws {Error} If project cannot be created
 	 * @returns
 	 */
-	public async create(projectEntity: Partial<ProjectEntity>) {
+	public async create(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		const project = await this.projectRepository.create(projectEntity);
-		if (!project) return null;
+		if (!project) Promise.reject(new Error("Cannot create project"));
 		return project;
 	}
 }

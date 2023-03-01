@@ -1,19 +1,15 @@
-import { Exclude } from "class-transformer";
 import ProjectEntity from "./ProjectEntity";
 
 export default class MetricEntity {
-	@Exclude()
-	public id!: number;
+	public uuid!: string;
 
 	public path!: string;
-
-	public uuid!: string;
 
 	public remote_address!: string;
 
 	public date_requested!: Date;
 
-	public projectId!: number;
+	public projectUuid!: string;
 
 	public project!: ProjectEntity;
 

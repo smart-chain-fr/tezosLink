@@ -51,14 +51,14 @@ async function getStatus(): Promise<IProps["status"]> {
   );
 
   return {
-    MainnetProxyStatus: mainnetStatus.ProxyStatus,
-    MainnetArchiveStatus: mainnetStatus.ArchiveStatus,
-    MainnetRollingStatus: mainnetStatus.RollingStatus,
+    mainnetProxyStatus: mainnetStatus.ProxyStatus,
+    mainnetArchiveStatus: mainnetStatus.ArchiveStatus,
+    mainnetRollingStatus: mainnetStatus.RollingStatus,
     /** @TODO */
-    TestnetName: "LIMANET",
-    TestnetProxyStatus: testnetStatus.ProxyStatus,
-    TestnetArchiveStatus: testnetStatus.ArchiveStatus,
-    TestnetRollingStatus: testnetStatus.RollingStatus,
-    Date: new Date(Date.now()).toISOString().slice(0, 10),
+    testnetName: "LIMANET",
+    testnetProxyStatus: testnetStatus.ProxyStatus,
+    testnetArchiveStatus: testnetStatus.ArchiveStatus,
+    testnetRollingStatus: testnetStatus.RollingStatus,
+    date: new Date(Date.now()).toISOString().slice(0, 10),
   };
 }

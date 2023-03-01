@@ -18,7 +18,7 @@
     /* Strict Type-Checking Options */
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "noImplicitOverride": true,
     "strict": true, 
     "noImplicitAny": true,

@@ -1,4 +1,3 @@
-import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import MetricsRepository from "@Common/repositories/metrics/MetricsRepository";
 import ProjectsRepository from "@Repositories/projects/ProjectsRepository";
 import MetricEntity from "@Common/ressources/MetricEntity";
@@ -78,7 +77,7 @@ export default class ProxyService extends BaseService {
 	async saveMetric(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricsRepository.create(metricEntity);
 		if (!metric) return null;
-		return ObjectHydrate.hydrate<Partial<MetricEntity>>(new MetricEntity(), metric);
+		return metric;
 	}
 
 	// Proxy proxy an http request to the right repositories
