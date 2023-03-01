@@ -13,10 +13,10 @@ global:
 
 # Can be injected as secret
 env:
-  DATABASE_HOSTNAME: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local"
+  DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
   DATABASE_PORT: "5432"
-  DATABASE_USER: "tz-backend"
-  DATABASE_PASSWORD: "Titi123!"
+  DATABASE_USER: "tzbackendv2"
+  DATABASE_PASSWORD: "Titi123v2"
   DATABASE_NAME: "tezoslink"
 
   WEB_HOSTNAME: "test-web-svc.tezoslink-helm-test.svc.cluster.local"
