@@ -12,3 +12,33 @@ data:
   DATABASE_USER: {{ .Values.env.DATABASE_USER }}
   DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
   DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}
+  TEZOS_NETWORK: TESTNET
+  DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
+  DATABASE_PORT: "5432"
+  DATABASE_USER: "tzbackendv2"
+  DATABASE_PASSWORD: "Titi123v2"
+  DATABASE_NAME: "tezoslink"
+
+  WEB_HOSTNAME: "test-web-svc.tezoslink-helm-test.svc.cluster.local"
+  WEB_LABEL: "TezosLink"
+  WEB_PORT: "3000"
+  WEB_ROOT_URL: "/"
+  NODE_ENV: production
+
+  NEXT_PUBLIC_API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
+  NEXT_PUBLIC_API_LABEL: "TezosLink API"
+  NEXT_PUBLIC_API_PORT: "3001"
+  NEXT_PUBLIC_API_ROOT_URL: "/api"
+
+
+  # Concat
+  # NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL: "http://localhost:3002/rpc"
+  # NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: "http://localhost:3002/rpc"
+
+  ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
+  ARCHIVE_NODES_PORT: "443"
+  ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
+  ROLLING_NODES_PORT: "443"
+
+  NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: "localhost"
+

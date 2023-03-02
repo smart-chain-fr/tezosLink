@@ -62,7 +62,7 @@ api:
   replicas: 1
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/p1-api
-    tag: v1.3.8
+    tag: v1.3.10
     pullPolicy: Always
 
   service:
@@ -133,8 +133,8 @@ web:
   replicas: 1
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend
-    tag: v1.3.8
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-front
+    tag: v1.3.9
     pullPolicy: Always
 
   service:
@@ -207,7 +207,7 @@ rpcgateway:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v1.3.8
+      tag: v1.3.9
     
     secret: 
       SECRET_KEY: c2VjcmV0Cg==
@@ -293,7 +293,7 @@ rpcgateway:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v1.3.8
+      tag: v1.3.9
     
     env:
       DATABASE_USERNAME: "tz-backend"
