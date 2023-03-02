@@ -1,15 +1,26 @@
+import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import  IDatabaseConfig  from "../../config/IDatabaseConfig";
+import IDatabaseConfig from "../../config/IDatabaseConfig";
+import { BackendVariables } from "@Common/config/Variables";
+import Container from "typedi";
+
+dotenv.config();
 
 export default class DbProvider {
-	protected client = new PrismaClient();
+	protected readonly variables = Container.get(BackendVariables);
+	protected client = new PrismaClient({
+		datasources: {
+			db: {
+				url: `postgres://${this.variables.DATABASE_USER}:${this.variables.DATABASE_PASSWORD}@${this.variables.DATABASE_HOSTNAME}:${this.variables.DATABASE_PORT}/${this.variables.DATABASE_NAME}`,
+			},
+		},
+	});
 
-	constructor(protected config: IDatabaseConfig) {
-	}
+	constructor(protected config: IDatabaseConfig) {}
 
 	public async connect(): Promise<void> {
 		await this.client.$connect();
-		console.info(`⚡️[Prisma]: Connected to ${this.config.name}`);// A Logger middleware is to be added here
+		console.info(`⚡️[Prisma]: Connected to ${this.config.name}`); // A Logger middleware is to be added here
 	}
 
 	public getClient() {

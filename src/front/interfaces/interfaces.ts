@@ -20,14 +20,3 @@ export interface IProject {
     metrics?: IMetrics[]
 }
 
-export interface IStatus {
-    MainnetProxyStatus: boolean;
-    MainnetArchiveStatus: boolean;
-    MainnetRollingStatus: boolean;
-    TestnetName: string;
-    TestnetProxyStatus: boolean;
-    TestnetArchiveStatus: boolean;
-    TestnetRollingStatus: boolean;
-    Date: string;
-}
-

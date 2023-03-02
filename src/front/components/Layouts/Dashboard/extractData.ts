@@ -1,4 +1,4 @@
-import { IMetrics } from "src/front/interfaces";
+import { IMetrics } from "@Front/interfaces/interfaces";
 
 type requestByDay = {
     date: Date,

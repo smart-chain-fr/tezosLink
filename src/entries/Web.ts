@@ -1,21 +1,25 @@
 import "module-alias/register";
 import "reflect-metadata";
-import dotenv from "dotenv";
 import { Container } from "typedi";
 import NextServer from "@Common/system/NextJs";
+import { BackendVariables } from "@Common/config/Variables";
 
-dotenv.config();
+(async () => {
+	try {
+		const variables = await Container.get(BackendVariables).validate();
 
-const port = process.env["WEB_PORT"];
-const rootUrl = process.env["WEB_ROOT_URL"];
-const label = process.env["WEB_LABEL"] ?? "Unknown Service";
+		const port = variables.WEB_PORT;
+		const rootUrl = variables.WEB_ROOT_URL;
+		const label = variables.WEB_LABEL ?? "Unknown Service";
 
-if (!port) throw new Error(`process.env Port is undefined`);
-if (!rootUrl) throw new Error(`process.env RootUrl is undefined`);
+		Container.get(NextServer).init({
+			label,
+			isDev: variables.NODE_ENV !== "production",
+			port: parseInt(port),
+			rootUrl,
+		});
+	} catch (e) {
+		console.error(e);
+	}
+})();
 
-Container.get(NextServer).init({
-	label,
-	isDev: process.env.NODE_ENV !== 'production',
-	port: parseInt(port),
-	rootUrl,
-});

@@ -18,7 +18,7 @@
     /* Strict Type-Checking Options */
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "noImplicitOverride": true,
     "strict": true, 
     "noImplicitAny": true,
@@ -46,6 +46,7 @@
       "@RpcGateway/*": ["src/rpc-gateway/*"],
       "@Page/*": ["src/pages/*"],
       "@Services/*": ["src/common/services/*"],
+      "@Repositories/*": ["src/common/repositories/*"],
       "@Entries/*": ["src/entries/*"],
       "@Common/*": ["src/common/*"],
       "@Config/*": ["src/common/config/*"],

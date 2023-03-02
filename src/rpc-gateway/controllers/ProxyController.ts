@@ -1,11 +1,10 @@
-import dotenv from "dotenv";
 import { type Response, type Request } from "express";
 import { Controller, Get } from "@ControllerPattern/index";
 import { Service } from "typedi";
 import ApiController from "@Common/system/controller-pattern/ApiController";
-import axios from 'axios';
-
-dotenv.config();
+import ProxyService, { RpcRequest } from "@Services/proxy/ProxyService";
+import { validateOrReject } from "class-validator";
+import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 
 export enum ContentType {
 	JSON = "application/json",
@@ -15,57 +14,39 @@ export enum ContentType {
 @Controller()
 @Service()
 export default class ProxyController extends ApiController {
-	constructor() {
+	constructor(private proxyService: ProxyService) {
 		super();
-	}
-
-	protected buildHeaders(contentType: ContentType) {
-		const headers = new Headers();
-
-		if (contentType === ContentType.JSON) {
-			headers.set("Content-Type", contentType);
-		}
-		return headers;
 	}
 
 	@Get("/health")
 	protected async getHealth(req: Request, res: Response) {
-		this.httpSuccess(res, { status: "success" });
+		const health = this.proxyService.getHttpServerResponse();
+		this.httpSuccess(res, health);
 	}
 
 	@Get("/status")
 	protected async getStatus(req: Request, res: Response) {
-		let archiveNodeStatus = false;
-		let rollingNodeStatus = false;
-
-		const archiveTestURL = `${process.env["RPC_PROXY_ARCHIVE_HOSTNAME"]}/chains/main/blocks/head`;
-		try {
-			const archiveTestResponse = await axios.get(archiveTestURL);
-			if (archiveTestResponse.status >= this.httpCode.SUCCESS && archiveTestResponse.status < this.httpCode.BAD_REQUEST) {
-				archiveNodeStatus = true;
-			}
-		} catch (err) {
-			this.httpBadRequest(res, err);
-			return;
+		const status = await this.proxyService.getNodesStatus();
+		if (!status) {
+			this.httpNotFoundRequest(res, status);
 		}
+		this.httpSuccess(res, status);
+	}
 
-		const rollingTestURL = `${process.env["RPC_PROXY_ROLLING_HOSTNAME"]}/chains/main/blocks/head`;
+	@Get("/:uuid/*")
+	protected async proxy(req: Request, res: Response) {
+		const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 		try {
-			const rollingTestResponse = await axios.get(rollingTestURL);
-			if (rollingTestResponse.status >= this.httpCode.SUCCESS && rollingTestResponse.status < this.httpCode.BAD_REQUEST) {
-				rollingNodeStatus = true;
-			}
-		} catch (err) {
+			const rpcRequest = ObjectHydrate.hydrate<RpcRequest>(new RpcRequest(), {
+				uuid: req.params["uuid"]!,
+				path: req.params[0]!,
+				remoteAddress: (Array.isArray(ip) ? ip[0] : ip)!,
+			});
+			await validateOrReject(rpcRequest);
+			this.httpSuccess(res, await this.proxyService.proxy(rpcRequest));
+		} catch(err) {
 			this.httpBadRequest(res, err);
-			return;
 		}
-
-		const data = {
-			archive_node: archiveNodeStatus,
-			rolling_node: rollingNodeStatus,
-		};
-
-		this.httpSuccess(res, data);
 	}
 }
 

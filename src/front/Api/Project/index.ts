@@ -1,5 +1,5 @@
 import BaseApiService from "src/front/Api/BaseApiService"
-import { IProject } from "src/front/interfaces"
+import { IProject } from "@Front/interfaces/interfaces"
 import { Service } from "typedi";
 
 type IPostProject = {

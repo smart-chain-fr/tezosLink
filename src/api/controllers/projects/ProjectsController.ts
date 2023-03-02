@@ -3,7 +3,7 @@ import { Controller, Get, Post } from "@ControllerPattern/index";
 import { Service } from "typedi";
 import { ProjectEntity } from "@Common/ressources";
 import { IsNotEmpty, IsString, IsUUID, validateOrReject } from "class-validator";
-import ProjectService from "@Services/project/ProjectService";
+import ProjectsService from "@Services/project/ProjectsService";
 import ObjectHydrate from "@Common/helpers/ObjectHydrate";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
@@ -17,8 +17,8 @@ class Params {
 
 @Controller()
 @Service()
-export default class ProjectController extends ApiController {
-	constructor(private projectService: ProjectService) {
+export default class ProjectsController extends ApiController {
+	constructor(private projectService: ProjectsService) {
 		super();
 	}
 

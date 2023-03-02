@@ -1,38 +1,58 @@
 import StatusNode from "../../Elements/StatusNode";
 import StatusProxy from "../../Elements/StatusProxy";
 import BasePage from "@Components/Layouts/Base";
-import DefaultTemplate from "@Components/LayoutTemplates/DefaultTemplate"
+import DefaultTemplate from "@Components/LayoutTemplates/DefaultTemplate";
 import classes from "./classes.module.scss";
 
-type IProps = {
-	MainnetProxyStatus: boolean,
-	MainnetArchiveStatus: boolean,
-	MainnetRollingStatus: boolean,
-	TestnetName: string,
-	TestnetProxyStatus: boolean,
-	TestnetArchiveStatus: boolean,
-	TestnetRollingStatus: boolean,
-	Date: string
-}
+type IState = {};
 
-export default class StatusLayout extends BasePage<IProps> {
-	public override render(): JSX.Element {
-		return (
-			<DefaultTemplate title={"Status"}>
-				<div className={classes["root"]}>
-					<div className={classes["content"]}>
-						<h2>Services status</h2>
-						<StatusProxy proxyStatus={this.props.MainnetProxyStatus}
-							network={"Mainnet"} date={this.props.Date} />
-						<StatusNode nodeArchiveStatus={this.props.MainnetArchiveStatus}
-							nodeRollingStatus={this.props.MainnetRollingStatus} network={"Mainnet"} />
-						<StatusProxy proxyStatus={this.props.TestnetProxyStatus}
-							network={this.props.TestnetName} date={this.props.Date} />
-						<StatusNode nodeArchiveStatus={this.props.TestnetArchiveStatus}
-							nodeRollingStatus={this.props.TestnetRollingStatus} network={this.props.TestnetName} />
-					</div>
-				</div>
-			</DefaultTemplate>
-		);
-	}
+export type IProps = {
+  status: {
+    mainnetProxyStatus: boolean;
+    mainnetArchiveStatus: boolean;
+    mainnetRollingStatus: boolean;
+    testnetName: string;
+    testnetProxyStatus: boolean;
+    testnetArchiveStatus: boolean;
+    testnetRollingStatus: boolean;
+    date: string;
+  };
+};
+
+export default class StatusLayout extends BasePage<IProps, IState> {
+  public constructor(props: IProps) {
+    super(props);
+  }
+  public override render(): JSX.Element | null {
+    const status = this.props.status;
+    return (
+      <DefaultTemplate title={"Status"}>
+        <div className={classes["root"]}>
+          <div className={classes["content"]}>
+            <h2>Services status</h2>
+            <StatusProxy
+              proxyStatus={status!.mainnetProxyStatus}
+              network={"Mainnet"}
+              date={status.date!}
+            />
+            <StatusNode
+              nodeArchiveStatus={status!.mainnetArchiveStatus}
+              nodeRollingStatus={status.mainnetRollingStatus}
+              network={"Mainnet"}
+            />
+            <StatusProxy
+              proxyStatus={status.testnetProxyStatus}
+              network={status.testnetName}
+              date={status.date!}
+            />
+            <StatusNode
+              nodeArchiveStatus={status.testnetArchiveStatus}
+              nodeRollingStatus={status.testnetRollingStatus}
+              network={status.testnetName}
+            />
+          </div>
+        </div>
+      </DefaultTemplate>
+    );
+  }
 }

@@ -1,8 +1,10 @@
 import { Container } from "typedi";
-import ProjectController from "./ProjectController";
+import MetricsController from "./metrics/MetricsController";
+import ProjectsController from "./projects/ProjectsController";
 
 export default {
     start: () => {
-        Container.get(ProjectController);
+        Container.get(ProjectsController);
+        Container.get(MetricsController);
     }
 }
