@@ -1,16 +1,11 @@
-
 export enum ContentType {
 	JSON = "application/json",
 	FORM_DATA = "multipart/form-data;",
 }
 
-
 export default abstract class BaseApiService {
-	protected apiHostname = process.env["NEXT_PUBLIC_API_HOSTNAME"];
-	protected apiPort = process.env["NEXT_PUBLIC_API_PORT"] || "";
-	protected apiRootUrl = process.env["NEXT_PUBLIC_API_ROOT_URL"] || "";
-	protected backUrl = this.apiHostname + (this.apiPort ? `:${this.apiPort}` : "") + this.apiRootUrl;
-	
+	protected readonly backUrl = process.env["NEXT_PUBLIC_API_HOSTNAME"] || "";
+
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	protected constructor() {}
 
@@ -116,9 +111,9 @@ export default abstract class BaseApiService {
 	protected onError(error: unknown) {
 		console.error(error);
 	}
-
 }
 
 export interface IResponse {
 	http_status: number;
 }
+

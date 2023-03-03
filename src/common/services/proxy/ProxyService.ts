@@ -93,15 +93,15 @@ export default class ProxyService extends BaseService {
 		let response = "";
 
 		if (this.isRollingNodeRedirection(request.path)) {
+			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
 			const { data } = await axios.get(rollingURL.toString());
 			response = data;
-			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 		} else {
+			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
 			const { data } = await axios.get(archiveURL.toString());
 			response = data;
-			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 		}
 		// Logger les metrics
 		const metric = new MetricEntity();
