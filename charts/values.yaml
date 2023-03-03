@@ -66,7 +66,7 @@ api:
     pullPolicy: Always
 
   service:
-    type: ClusterIP
+    type: NodePort
     clusterIP: ""
     nodePorts:
       http: ""
@@ -133,8 +133,8 @@ web:
   replicas: 1
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-front
-    tag: v1.3.9
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend
+    tag: v1.3.16
     pullPolicy: Always
 
   service:
