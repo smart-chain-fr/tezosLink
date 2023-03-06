@@ -1,15 +1,14 @@
 import BaseApiService from "src/front/Api/BaseApiService"
 import { IProject } from "@Front/interfaces/interfaces"
-import { Service } from "typedi";
 
 type IPostProject = {
     title: string,
     network: string
 }
-@Service()
+
 export default class Project extends BaseApiService {
     private static instance: Project;
-    private readonly baseURl = this.backUrl.concat('/projects');
+    private baseURl = this.backUrl!.concat('/projects');
 
     private constructor() {
         super();
@@ -17,7 +16,8 @@ export default class Project extends BaseApiService {
 
     public static getInstance() {
         if (!this.instance) {
-            return new Project();
+            this.instance =  new Project();
+            return this.instance;
         } else {
             return this.instance;
         }
@@ -33,8 +33,9 @@ export default class Project extends BaseApiService {
         }
     }
 
-    public async getOneProject(uuid: string): Promise<IProject> {
+    public async getOneProject(uuid: string): Promise<IProject> {   
         const url = new URL(this.baseURl.concat('/').concat(uuid));
+        console.log("API URL FOR GET-------------",url);
         try {
             return await this.getRequest<IProject>(url);
         } catch (err) {
@@ -44,6 +45,7 @@ export default class Project extends BaseApiService {
     }
 
     public async postProject(params: IPostProject): Promise<IProject> {
+        console.log("API URL FOR POST-------------",this.baseURl);
         const url = new URL(this.baseURl);
         try {
             return await this.postRequest<IProject>(url, params);

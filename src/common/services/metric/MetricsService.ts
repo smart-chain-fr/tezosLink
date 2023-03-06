@@ -76,3 +76,4 @@ export default class MetricsService extends BaseService {
 		await this.metricRepository.removeOldMetricsBymonths(months);
 	}
 }
+

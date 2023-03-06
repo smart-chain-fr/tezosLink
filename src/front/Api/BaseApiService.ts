@@ -4,7 +4,7 @@ export enum ContentType {
 }
 
 export default abstract class BaseApiService {
-	protected readonly backUrl = process.env["NEXT_PUBLIC_API_HOSTNAME"] || "";
+	protected readonly backUrl = process.env["NEXT_PUBLIC_API_URL"]!;
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	protected constructor() {}
@@ -33,6 +33,7 @@ export default abstract class BaseApiService {
 	}
 
 	protected async postRequest<T>(url: URL, body: { [key: string]: unknown } = {}) {
+		console.log("API URL FOR POST-------------",url);
 		const request = async () =>
 			await fetch(url, {
 				method: "POST",

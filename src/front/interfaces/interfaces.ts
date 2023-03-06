@@ -1,19 +1,17 @@
 export interface IMetrics {
-    id: number,
-    path: string,
     uuid: string,
+    path: string,
     remote_address: string,
     date_requested: Date,
-    projectId: number,
+    projectUuid: string,
     project: IProject[],
     createdAt: Date,
     updatedAt: Date,
 }
 
 export interface IProject {
-    id: number,
-    title: string,
     uuid: string,
+    title: string,
     createdAt: Date,
     updatedAt: Date,
     network: string,
