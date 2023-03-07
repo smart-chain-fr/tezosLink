@@ -1,9 +1,8 @@
-import { BackendVariables } from "@Common/config/Variables";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 import Status from "@Front/Api/Status";
 import StatusLayout, { IProps } from "@Front/components/Layouts/Status";
+import { FrontendVariables } from "@Front/config/VariablesFront";
 import { GetServerSideProps } from "next";
-import Container from "typedi";
 
 export default function Route(props: IProps) {
   return <StatusLayout {...props} />;
@@ -37,7 +36,8 @@ async function getInstanceStatus(instance: Status, url: string) {
 }
 
 async function getStatus(): Promise<IProps["status"]> {
-  const variables = Container.get(BackendVariables);
+  const variables = FrontendVariables.getInstance();
+
 
   const instance = Status.getInstance();
 

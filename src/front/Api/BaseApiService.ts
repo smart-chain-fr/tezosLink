@@ -1,13 +1,22 @@
+import { FrontendVariables } from "@Front/config/VariablesFront";
+
+
 export enum ContentType {
 	JSON = "application/json",
 	FORM_DATA = "multipart/form-data;",
 }
 
 export default abstract class BaseApiService {
-	protected readonly backUrl = process.env["NEXT_PUBLIC_API_URL"]!;
+	private static baseUrl: string;
+	private static variables: FrontendVariables;
+	protected constructor() {
+		BaseApiService.variables ??= FrontendVariables.getInstance();
+		BaseApiService.baseUrl ??= BaseApiService.variables.NEXT_PUBLIC_API_URL;
+	}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	protected constructor() {}
+	protected getBaseUrl() {
+		return BaseApiService.baseUrl;
+	}
 
 	protected buildHeaders(contentType: ContentType) {
 		const headers = new Headers();
@@ -28,12 +37,10 @@ export default abstract class BaseApiService {
 				method: "GET",
 				headers: this.buildHeaders(ContentType.JSON),
 			});
-
 		return this.sendRequest<T>(request);
 	}
 
 	protected async postRequest<T>(url: URL, body: { [key: string]: unknown } = {}) {
-		console.log("API URL FOR POST-------------",url);
 		const request = async () =>
 			await fetch(url, {
 				method: "POST",

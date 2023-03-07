@@ -14,7 +14,7 @@
     "@Entities": "./dist/common/entities",
     "@System": "./dist/common/system",
     "@ControllerPattern": "./dist/common/system/controller-pattern",
-    "@Front": "./dist/front/*"
+    "@Front": "./dist/front"
   },
   "scripts": {
     "build": "next build && tsc",

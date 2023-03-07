@@ -8,7 +8,8 @@ type IPostProject = {
 
 export default class Project extends BaseApiService {
     private static instance: Project;
-    private baseURl = this.backUrl!.concat('/projects');
+    private baseUrl = this.getBaseUrl();
+    private readonly projectUrl = this.baseUrl.concat('/projects');
 
     private constructor() {
         super();
@@ -16,7 +17,7 @@ export default class Project extends BaseApiService {
 
     public static getInstance() {
         if (!this.instance) {
-            this.instance =  new Project();
+            this.instance =  new this();
             return this.instance;
         } else {
             return this.instance;
@@ -24,7 +25,7 @@ export default class Project extends BaseApiService {
     }
 
     public async getAllProject(): Promise<IProject[]> {
-        const url = new URL(this.baseURl);
+        const url = new URL(this.projectUrl);
         try {
             return await this.getRequest<IProject[]>(url);
         } catch (err) {
@@ -34,8 +35,7 @@ export default class Project extends BaseApiService {
     }
 
     public async getOneProject(uuid: string): Promise<IProject> {   
-        const url = new URL(this.baseURl.concat('/').concat(uuid));
-        console.log("API URL FOR GET-------------",url);
+        const url = new URL(this.projectUrl.concat('/').concat(uuid));
         try {
             return await this.getRequest<IProject>(url);
         } catch (err) {
@@ -45,8 +45,7 @@ export default class Project extends BaseApiService {
     }
 
     public async postProject(params: IPostProject): Promise<IProject> {
-        console.log("API URL FOR POST-------------",this.baseURl);
-        const url = new URL(this.baseURl);
+        const url = new URL(this.projectUrl);
         try {
             return await this.postRequest<IProject>(url, params);
         } catch (err) {

@@ -11,9 +11,9 @@ import { BackendVariables } from "@Common/config/Variables";
 (async () => {
 	const variables = await Container.get(BackendVariables).validate();
 
-	const port = variables.NEXT_PUBLIC_RPC_GATEWAY_PORT;
-	const rootUrl = variables.NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL;
-	const label = variables.NEXT_PUBLIC_RPC_GATEWAY_LABEL ?? "Unknown Service";
+	const port = variables.RPC_GATEWAY_PORT;
+	const rootUrl = variables.RPC_GATEWAY_ROOT_URL;
+	const label = variables.RPC_GATEWAY_LABEL ?? "Unknown Service";
 
 	Container.get(ExpressServer).init({
 		label,

@@ -12,7 +12,7 @@ export default class Status extends BaseApiService {
 
 	public static getInstance() {
 		if (!this.instance) {
-			return new Status();
+			return new this();
 		} else {
 			return this.instance;
 		}
