@@ -6,7 +6,7 @@ import routes from "@RpcGateway/controllers/index";
 import cors from "cors";
 import bodyParser from "body-parser";
 import errorHandler from "@Api/middlewares/ErrorHandler";
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 
 (async () => {
 	const variables = await Container.get(BackendVariables).validate();

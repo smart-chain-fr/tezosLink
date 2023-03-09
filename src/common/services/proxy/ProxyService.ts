@@ -9,7 +9,7 @@ import { IsNotEmpty, IsUUID, Validate } from "class-validator";
 import { Service } from "typedi";
 import IsRpcPathAllowed from "./validators/IsRpcPathAllowed";
 import IsValidProject from "./validators/IsValidProject";
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 
 export class RpcRequest {
 	@IsNotEmpty()
