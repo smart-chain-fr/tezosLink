@@ -1,5 +1,5 @@
 import { IHttpReponse, IStatusNode } from "@Common/system/interfaces/Interfaces";
-import BaseApiService from "src/front/Api/BaseApiService";
+import BaseApiService from "@Front/Api/BaseApiService";
 import { Service } from "typedi";
 
 @Service()

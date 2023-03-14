@@ -16,10 +16,7 @@ export class FrontendVariables {
 
 	public readonly NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL!: string;
 
-	public readonly NODE_ENV!: string;
-
 	constructor() {
-		this.NODE_ENV = process.env["NODE_ENV"]!;
 		this.WEB_LABEL = process.env["WEB_LABEL"]!;
 		this.WEB_PORT = process.env["WEB_PORT"]!;
 		this.WEB_ROOT_URL = process.env["WEB_ROOT_URL"]!;

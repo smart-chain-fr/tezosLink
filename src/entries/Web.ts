@@ -16,7 +16,7 @@ import dotenv from "dotenv";
 
 		Container.get(NextServer).init({
 			label,
-			isDev: frontVariables.NODE_ENV !== "production",
+			isDev: false,
 			port: parseInt(port),
 			rootUrl,
 		});

@@ -12,6 +12,7 @@ export default abstract class BaseApiService {
 	protected constructor() {
 		BaseApiService.variables ??= FrontendVariables.getInstance();
 		BaseApiService.baseUrl ??= BaseApiService.variables.NEXT_PUBLIC_API_URL;
+		console.log("BaseApiService", BaseApiService.baseUrl);
 	}
 
 	protected getBaseUrl() {

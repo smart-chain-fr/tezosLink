@@ -1,5 +1,4 @@
 import Dashboard from "@Components/Layouts/Dashboard";
-import Project from "src/front/Api/Project";
 import { IProject } from "@Front/interfaces/interfaces";
 import { GetServerSideProps } from "next";
 import {
@@ -8,6 +7,7 @@ import {
   getRpcUsage,
 } from "@Components/Layouts/Dashboard/extractData";
 import { isUUID } from "class-validator";
+import Project from "@Front/Api/Project";
 
 type requestByDay = {
   date: Date;
