@@ -9,7 +9,7 @@ export class InfrastructureMetrics {
   private constructor() {
     // Initialize the prom-client registry and collect default metrics
     this.registry = new Registry();
-    collectDefaultMetrics({ register: this.registry });
+    collectDefaultMetrics({ register: this.registry});
   }
 
   public static getInstance(): InfrastructureMetrics {

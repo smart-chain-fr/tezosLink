@@ -11,7 +11,8 @@ import { BackendVariables } from "@Common/config/variables/Variables";
 
 (async () => {
 	try {
-		const variables = await Container.get(BackendVariables).validate();
+		const variables = await Container.get(BackendVariables).validate(["api"]);
+		console.log(variables);
 
 		const port = variables.API_PORT;
 		const rootUrl = variables.API_ROOT_URL;

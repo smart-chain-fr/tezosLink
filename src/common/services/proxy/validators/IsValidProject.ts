@@ -4,6 +4,7 @@ import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface 
 import Container from "typedi";
 import { RpcRequest } from "../ProxyService";
 
+
 @ValidatorConstraint({ name: "IsValidProject" })
 export default class IsValidProject implements ValidatorConstraintInterface {
 	public async validate(uuid: string, args: ValidationArguments) {

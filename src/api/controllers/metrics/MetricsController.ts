@@ -55,6 +55,7 @@ export default class MetricsController extends ApiController {
 	@Get("/metrics/infrastructure")
 	protected async getInfrastructureMetrics(req: Request, res: Response) {
 		const allMetrics = await this.infrastructureService.getAllMetrics();
+		console.log(allMetrics);
 		if (!allMetrics) {
 			this.httpNotFoundRequest(res);
 			return;

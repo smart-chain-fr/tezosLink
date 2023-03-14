@@ -1,6 +1,7 @@
 import { InfrastructureMetrics } from "@Common/system/prometheus/InfrastructureMetrics";
 import { Gauge, Histogram, type MetricObjectWithValues, type MetricValue } from "prom-client";
 import { Service } from "typedi";
+import os from "os";
 
 @Service()
 export class InfrastructureService {
@@ -19,6 +20,7 @@ export class InfrastructureService {
 			name: "cpu_usage",
 			help: "Current CPU usage in bytes",
 			registers: [registry],
+			labelNames: ["hostname"],
 		});
 
 		this.ramUsage = new Gauge({
@@ -43,18 +45,20 @@ export class InfrastructureService {
 	}
 
 	public async getAllMetrics(): Promise<{
-		cpuUsage: MetricObjectWithValues<MetricValue<string>>;
+		cpuPercent: number;
 		ramUsage: MetricObjectWithValues<MetricValue<string>>;
 		networkUsage: MetricObjectWithValues<MetricValue<string>>;
 		restResponseTime: Histogram;
 	}> {
-		const cpuUsage = await this.cpuUsage.get();
+		const cpus = os.cpus();
+		const cpuPercent = cpus.reduce((acc, cpu) => acc + cpu.times.user / cpu.times.nice + cpu.times.sys / cpu.times.nice, 0) / cpus.length;
+		this.cpuUsage.set(cpuPercent);
 		const ramUsage = await this.ramUsage.get();
 		const networkUsage = await this.networkUsage.get();
 		const restResponseTime = this.restResponseTimeHistogram;
 
 		return {
-			cpuUsage,
+			cpuPercent,
 			ramUsage,
 			networkUsage,
 			restResponseTime,

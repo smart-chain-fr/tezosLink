@@ -4,52 +4,52 @@ import dotenv from "dotenv";
 
 @Service()
 export class BackendVariables {
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway", "api"] })
 	public readonly DATABASE_PORT!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway", "api"] })
 	public readonly DATABASE_HOSTNAME!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway", "api"] })
 	public readonly DATABASE_USER!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway", "api"] })
 	public readonly DATABASE_PASSWORD!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway", "api"] })
 	public readonly DATABASE_NAME!: string;
 
-	@IsOptional()
+	@IsOptional({ groups: ["api"] })
 	public readonly API_LABEL!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["api"] })
 	public readonly API_PORT!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["api"] })
 	public readonly API_ROOT_URL!: string;
 
-	@IsOptional()
+	@IsOptional({ groups: ["rpc_gateway"] })
 	public readonly RPC_GATEWAY_LABEL!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly RPC_GATEWAY_PORT!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly RPC_GATEWAY_ROOT_URL!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly ARCHIVE_NODES_URL!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly ARCHIVE_NODES_PORT!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly ROLLING_NODES_URL!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly ROLLING_NODES_PORT!: string;
 
-	@IsNotEmpty()
+	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly TEZOS_NETWORK!: string;
 
 	public readonly NODE_ENV = process.env.NODE_ENV;
@@ -73,8 +73,9 @@ export class BackendVariables {
 		this.ROLLING_NODES_PORT = process.env["ROLLING_NODES_PORT"]!;
 		this.TEZOS_NETWORK = process.env["TEZOS_NETWORK"]!;
 	}
-	public async validate() {
-		await validateOrReject(this);
+	public async validate(groups?: string[]) {
+		const validationOptions = groups ? { groups } : undefined;
+		await validateOrReject(this, validationOptions);
 		return this;
 	}
 }
