@@ -1,4 +1,4 @@
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 import Container from "typedi";
 
 export default abstract class BaseService {

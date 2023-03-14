@@ -7,7 +7,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import TezosLink from "@Common/databases/TezosLink";
 import errorHandler from "@Api/middlewares/ErrorHandler";
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 
 (async () => {
 	try {

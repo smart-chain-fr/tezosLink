@@ -1,4 +1,4 @@
-import IDatabaseConfig from "@Common/config/IDatabaseConfig";
+import IDatabaseConfig from "@Common/config/database/IDatabaseConfig";
 import DbProvider from "./DbProvider";
 
 export type { IDatabaseConfig };
