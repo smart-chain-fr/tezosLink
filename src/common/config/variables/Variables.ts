@@ -19,9 +19,6 @@ export class BackendVariables {
 	@IsNotEmpty()
 	public readonly DATABASE_NAME!: string;
 
-	@IsNotEmpty()
-	public readonly API_HOSTNAME!: string;
-
 	@IsOptional()
 	public readonly API_LABEL!: string;
 
@@ -64,7 +61,6 @@ export class BackendVariables {
 		this.DATABASE_USER = process.env["DATABASE_USER"]!;
 		this.DATABASE_PASSWORD = process.env["DATABASE_PASSWORD"]!;
 		this.DATABASE_NAME = process.env["DATABASE_NAME"]!;
-		this.API_HOSTNAME = process.env["API_HOSTNAME"]!;
 		this.API_LABEL = process.env["API_LABEL"]!;
 		this.API_PORT = process.env["API_PORT"]!;
 		this.API_ROOT_URL = process.env["API_ROOT_URL"]!;
