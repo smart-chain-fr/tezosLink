@@ -39,12 +39,7 @@
     "baseUrl": ".",
     "paths": {
       "@Api/*": ["src/api/*"],
-      "@Front/*": ["src/front/*"],
-      "@Assets/*": ["src/front/assets/*"],
-      "@Components/*": ["src/front/components/*"],
-      "@Themes/*": ["src/front/themes/*"],
       "@RpcGateway/*": ["src/rpc-gateway/*"],
-      "@Page/*": ["src/pages/*"],
       "@Services/*": ["src/common/services/*"],
       "@Repositories/*": ["src/common/repositories/*"],
       "@Entries/*": ["src/entries/*"],
@@ -74,7 +69,6 @@
     "isolatedModules": true
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx" ],
   "exclude": [
