@@ -1,18 +1,11 @@
 global:
-  ## @param nameOverride String to partially override `tezoslink.name` template with a string (will prepend the release name)
-  ##
-  nameOverride: ""
   
-  ## @param fullnameOverride String to fully override `tezoslink.fullname` template with a string
-  ##
-  fullnameOverride: ""
+  fullnameOverride: "" # Overrides the name of the app name, by default, name of the release
 
-  ## @param namespaceOverride String to fully override helpers.namespace
-  ##
-  namespaceOverride: ""
+  namespaceOverride: "" # Overrides the namespace to deploy the app, by default, current namespace
 
-# Can be injected as secret
-env:
+
+env: # Environment variables injected through the config maps
   DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
   DATABASE_PORT: "5432"
   DATABASE_USER: "tzbackendv2"
@@ -23,7 +16,6 @@ env:
   WEB_LABEL: "TezosLink"
   WEB_PORT: 3000
   WEB_ROOT_URL: "/"
-  NODE_ENV: production
 
   API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
   API_LABEL: "TezosLink API"
@@ -40,345 +32,297 @@ env:
   TESTNET_RPC_GATEWAY_PORT: 300
   TESTNET_RPC_GATEWAY_ROOT_URL: "/rpc"
 
-  # Concat
-  # RPC_GATEWAY_MAINNET_URL: "http://localhost:3002/rpc"
-  # RPC_GATEWAY_TESTNET_URL: "http://localhost:3002/rpc"
+  MAINNET_ARCHIVE_NODES_URL: localhost # URL or IP address of the mainnet archive node
+  MAINNET_ARCHIVE_NODES_PORT: port # Port of the mainnet archive node
+  MAINNET_ROLLING_NODES_URL:  localhost # URL or IP address of the mainnet rolling node
+  MAINNET_ROLLING_NODES_PORT: port # Port of the mainnet rolling node
 
-  MAINNET_ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
-  MAINNET_ARCHIVE_NODES_PORT: 443
-  MAINNET_ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
-  MAINNET_ROLLING_NODES_PORT: 443
-
-  TESTNET_ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
-  TESTNET_ARCHIVE_NODES_PORT: 443
-  TESTNET_ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
-  TESTNET_ROLLING_NODES_PORT: 443
-
-  # Utiliser la value dans la partie proxy
-  # TEZOS_NETWORK:
+  TESTNET_ARCHIVE_NODES_URL: localhost # URL or IP address of the testnet archive node
+  TESTNET_ARCHIVE_NODES_PORT: port # Port of the testnet archive node
+  TESTNET_ROLLING_NODES_URL: localhost # URL or IP address of the testnet rolling node
+  TESTNET_ROLLING_NODES_PORT: port # Port of the testnet rolling node
 
 api: 
-  enabled: true
-  replicas: 1
+
+  enabled: true # Enables the API service
+
+  replicas: 1 # Number of pods replicas desired for the API service 
+
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-api
-    tag: v1.3.10
-    pullPolicy: IfNotPresent
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-api # Repository containing the API image
+    tag: v1.3.10 # Version of the API image
+    pullPolicy: Always 
 
   service:
-    type: NodePort
-    clusterIP: ""
+    type: ClusterIP # Service type can be: ClusterIP, NodePort or LoadBalancer
+    clusterIP: "" # Specify private cluster IP
     nodePorts:
-      http: ""
-    loadBalancerIP: ""
-    loadBalancerSourceRanges: []
-    annotations: {}
+      http: "" # Node port to expose
+    loadBalancerSourceRanges: [] # Source Range allow list
+    annotations: {} # Service annotations
   
   ingress:  
-    enabled: false
+    enabled: false # Enables ingress creation
     tls:
-      secretName: api-tls
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      cert-manager.io/cluster-issuer: letsencrypt-prod 
-      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    labels: {}
+      secretName: # Name of the secret that contains or will contain the certificate
+    annotations: {} # Annotations of the ingress
+    labels: {} # Labels of the ingress
 
   serviceAccount:
-    create: true
-    annotations: {}
-    ## default name: api-sa
-    name: ""
+    create: false # Create a service account for the API
+    annotations: {} # Annotations of the API service account
+    name: "" # Default name: api-sa
 
-  # Secrets to be injected as environment variables
-  secret: []
+  secret: []  # Secrets to be injected as environment variables
     # SECRET_KEY: c2VjcmV0Cg==
 
-  additionalSecrets: []
+  additionalSecrets: [] # Additional secrets to mount as environment variables
 
   resources:
-    limits: {}
-    requests: {}
+    limits: {} # CPU and memory limits
+    requests: {} # CPU and memory requests
       # cpu: 100m
       # memory: 256Mi
   
   podSecurityContext:
-    enabled: true
-    runAsUser: 10000
-    runAsGroup:
-    fsGroup:
-    runAsNonRoot: true
+    enabled: true # Enables the pod security context 
+    runAsUser: 10000 # Uses the TezosLink to run the container
+    runAsGroup: # Sets the primary group ID
+    fsGroup: # Sets the owner of /data
+    runAsNonRoot: true # Start the process not using the root user (runAsUser field required)
 
   livenessProbe:
-    enabled: false
-    path: /health
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
+    enabled: false # Enables the liveness probe
+    path: /health # Route of the healthcheck endpoint
+    port: 8001 # Port of the healthcheck endpoint
+    initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+    periodSeconds: 10 # Frequency of the liveness test
+    timeoutSeconds: 5 # Timeout for probe responses
+    failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+    successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
   readinessProbe:
-    enabled: false
-    path: /health
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
+    enabled: false # Enables the liveness probe
+    path: /health # Route of the healthcheck endpoint
+    port: 8001 # Port of the healthcheck endpoint
+    initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+    periodSeconds: 10 # Frequency of the readiness test
+    timeoutSeconds: 5 # Timeout for probe responses
+    failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+    successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
 
 web:
 
-  enabled: true
+  enabled: true # Enables the front service
 
-  replicas: 1
+  replicas: 1 # Number of pods replicas desired for the front service 
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend
-    tag: v1.3.25
-    pullPolicy: IfNotPresent
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend # Repository containing the front image
+    tag: v1.3.25  # Version of the front image
+    pullPolicy: Always
 
   service:
-    type: ClusterIP
-    clusterIP: ""
+    type: ClusterIP # Service type can be: ClusterIP, NodePort or LoadBalancer
+    clusterIP: "" # Specify private cluster IP
     nodePorts:
-      http: ""
-    loadBalancerIP: ""
-    loadBalancerSourceRanges: []
-    annotations: {}
+      http: "" # Node port to expose
+    loadBalancerSourceRanges: [] # Source Range allow list
+    annotations: {} # Service annotations
 
   serviceAccount:
-    create: true
-    annotations: {}
-    ## default name: front-sa
-    name: ""
+    create: false # Create a service account for the API
+    annotations: {} # Annotations of the API service account
+    name: "" # Default name: front-sa
 
-  ingress: 
-    enabled: false
+  ingress:  
+    enabled: false # Enables ingress creation
     tls:
-      secretName: front-tls
-    labels: {}
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      cert-manager.io/cluster-issuer: letsencrypt-prod 
-      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      secretName: # Name of the secret that contains or will contain the certificate
+    annotations: {} # Annotations of the ingress
+    labels: {} # Labels of the ingress
 
-  env:
+  secret: []  # Secrets to be injected as environment variables
+    # SECRET_KEY: c2VjcmV0Cg==
 
-  secret: 
-    SECRET_KEY: c2VjcmV0Cg==
-    SECRET2: c2VjcmV0Cg==
-
-  additionalSecrets: []
+  additionalSecrets: [] # Additional secrets to mount as environment variables
 
   resources:
-    limits: {}
-    requests:
-      cpu: 100m
-      memory: 256M
+    limits: {} # CPU and memory limits
+    requests: {} # CPU and memory requests
+      # cpu: 100m
+      # memory: 256Mi
 
   podSecurityContext:
-    enabled: true
-    runAsUser: 0
-    runAsGroup:
-    fsGroup:
-    runAsNonRoot: false
+    enabled: true # Enables the pod security context 
+    runAsUser: 10000 # Uses the TezosLink to run the container
+    runAsGroup: # Sets the primary group ID
+    fsGroup: # Sets the owner of /data
+    runAsNonRoot: true # Start the process not using the root user (runAsUser field required)
 
   livenessProbe:
-    enabled: false
-    path: /health
-    initialDelaySeconds: 5
+    enabled: false # Enables the liveness probe
+    path: /health # Route of the healthcheck endpoint
+    port: 8001 # Port of the healthcheck endpoint
+    initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+    periodSeconds: 10 # Frequency of the liveness test
+    timeoutSeconds: 5 # Timeout for probe responses
+    failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+    successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
   readinessProbe:
-    enabled: false
-    path: /health
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
+    enabled: false # Enables the liveness probe
+    path: /health # Route of the healthcheck endpoint
+    port: 8001 # Port of the healthcheck endpoint
+    initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+    periodSeconds: 10 # Frequency of the readiness test
+    timeoutSeconds: 5 # Timeout for probe responses
+    failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+    successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
 
 rpcgateway:
+
   testnet:
-    enabled : true
-    replicaCount: 1
-    network: "TESTNET"
+
+    enabled: true # Enables the rpc service for tesnet
+
+    replicas: 1 # Number of pods replicas desired for the rpc service for testnet
+
+    network: "TESTNET" # Name of the testnet network
 
     image:
-      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
+      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy # Repository containing the rpc gateway image
+      tag: v1.3.9  # Version of the rpc gateway image
       pullPolicy: IfNotPresent
-      # Overrides the image tag whose default is the chart appVersion.
-      tag: v1.3.9
     
-    secret: 
-      SECRET_KEY: c2VjcmV0Cg==
-      SECRET2: c2VjcmV0Cg==
-      # required envs
+    secret: []  # Secrets to be injected as environment variables
+      # SECRET_KEY: c2VjcmV0Cg==
 
-    additionalSecrets: []
+    additionalSecrets: [] # Additional secrets to mount as environment variables
 
     serviceAccount:
-      create: true
-      annotations: {}
-      name: ""
-      automountServiceAccountToken: true
+      create: false # Create a service account for the API
+      annotations: {} # Annotations of the API service account
+      name: "" # Default name: testnet-rpcgateway-sa
     
-    ## Proxy Service
-    ##
     service:
-      type: ClusterIP
-      ports:
-        http: 8001
-      clusterIP: ""
+      type: ClusterIP # Service type can be: ClusterIP, NodePort or LoadBalancer
+      clusterIP: "" # Specify private cluster IP
       nodePorts:
-        http: ""
-      loadBalancerIP: ""
-      loadBalancerSourceRanges: []
-      externalTrafficPolicy: Cluster
-      healthCheckNodePort: ""
-      annotations: {}
-      extraPorts: []
-      sessionAffinity: None
-      sessionAffinityConfig: {}
+        http: "" # Node port to expose
+      loadBalancerSourceRanges: [] # Source Range allow list
+      annotations: {} # Service annotations
     
-    ingress: 
-      enabled: false
+    ingress:  
+      enabled: false # Enables ingress creation
       tls:
-        secretName: proxy1-tls
-      labels: {}
-      annotations:
-        kubernetes.io/ingress.class: nginx
-        cert-manager.io/cluster-issuer: letsencrypt-prod 
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        secretName: # Name of the secret that contains or will contain the certificate
+      annotations: {} # Annotations of the ingress
+      labels: {} # Labels of the ingress
     
     podSecurityContext:
-      enabled: true
-      runAsUser: 10000
-      runAsGroup:
-      fsGroup:
-      runAsNonRoot: true
+      enabled: true # Enables the pod security context 
+      runAsUser: 10000 # Uses the TezosLink to run the container
+      runAsGroup: # Sets the primary group ID
+      fsGroup: # Sets the owner of /data
+      runAsNonRoot: true # Start the process not using the root user (runAsUser field required)
     
     livenessProbe:
-      enabled: false
-      path: /health
-      port: 8001
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
+      enabled: false # Enables the liveness probe
+      path: /health # Route of the healthcheck endpoint
+      port: 8001 # Port of the healthcheck endpoint
+      initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+      periodSeconds: 10 # Frequency of the liveness test
+      timeoutSeconds: 5 # Timeout for probe responses
+      failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+      successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
     readinessProbe:
-      enabled: false
-      path: /health
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
+      enabled: false # Enables the liveness probe
+      path: /health # Route of the healthcheck endpoint
+      port: 8001 # Port of the healthcheck endpoint
+      initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+      periodSeconds: 10 # Frequency of the readiness test
+      timeoutSeconds: 5 # Timeout for probe responses
+      failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+      successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
     
     resources:
-      limits: {}
-      requests:
-        cpu: 100m
-        memory: 256Mi
+      limits: {} # CPU and memory limits
+      requests: {} # CPU and memory requests
+        # cpu: 100m
+        # memory: 256Mi
 
   mainnet:
-    enabled : false
-    replicaCount: 1
-    network: "MAINNET"
-    rpcNodeHost: "xxxxxxxxx"
+
+    enabled: false # Enables the rpc service for mainnet
+
+    replicas: 1 # Number of pods replicas desired for the rpc service for mainnet
+
+    network: "MAINNET" # Name of the mainnet network
 
     image:
-      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
+      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy # Repository containing the rpcgateway image
+      tag: v1.3.9 # Version of the rpc gateway image
       pullPolicy: IfNotPresent
-      # Overrides the image tag whose default is the chart appVersion.
-      tag: v1.3.9
-    
-    env:
-      DATABASE_USERNAME: "tz-backend"
-      DATABASE_PASSWORD: "Titi123!"
-      DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
-      ARCHIVE_NODES_URL: "archive-node.poc-tzk8s.svc.cluster.local"
-      TEZOS_ARCHIVE_PORT: "8732"
-      ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
-      TEZOS_ROLLING_PORT: "8732"
-      TEZOS_NETWORK: "mainnet"
-    
-    secret: 
-      SECRET_KEY: c2VjcmV0Cg==
-      SECRET2: c2VjcmV0Cg==
 
-    additionalSecrets: []
+    
+    secret: []  # Secrets to be injected as environment variables
+      # SECRET_KEY: c2VjcmV0Cg==
+
+    additionalSecrets: [] # Additional secrets to mount as environment variables
 
     serviceAccount:
-      create: true
-      annotations: {}
-      name: ""
-      automountServiceAccountToken: true
+      create: false # Create a service account for the API
+      annotations: {} # Annotations of the API service account
+      name: "" # Default name: mainnet-rpcgateway-sa
     
-    ## Proxy Service
-    ##
     service:
-      type: ClusterIP
-      ports:
-        http: 8001
-      clusterIP: ""
+      type: ClusterIP # Service type can be: ClusterIP, NodePort or LoadBalancer
+      clusterIP: "" # Specify private cluster IP
       nodePorts:
-        http: ""
-      loadBalancerIP: ""
-      loadBalancerSourceRanges: []
-      externalTrafficPolicy: Cluster
-      healthCheckNodePort: ""
-      annotations: {}
-      extraPorts: []
-      sessionAffinity: None
-      sessionAffinityConfig: {}
+        http: "" # Node port to expose
+      loadBalancerSourceRanges: [] # Source Range allow list
+      annotations: {} # Service annotations
     
-    ingress: 
-      enabled: false
+    ingress:  
+      enabled: false # Enables ingress creation
       tls:
-        secretName: proxy2-tls
-      labels: {}
-      annotations:
-        kubernetes.io/ingress.class: nginx
-        cert-manager.io/cluster-issuer: letsencrypt-prod 
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        secretName: # Name of the secret that contains or will contain the certificate
+      annotations: {} # Annotations of the ingress
+      labels: {} # Labels of the ingress
     
     podSecurityContext:
-      enabled: true
-      runAsUser: 10000
-      runAsGroup:
-      fsGroup:
-      runAsNonRoot: true
+      enabled: true # Enables the pod security context 
+      runAsUser: 10000 # Uses the TezosLink to run the container
+      runAsGroup: # Sets the primary group ID
+      fsGroup: # Sets the owner of /data
+      runAsNonRoot: true # Start the process not using the root user (runAsUser field required)
     
     livenessProbe:
-      enabled: false
-      path: /health
-      port: 8001
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
+      enabled: false # Enables the liveness probe
+      path: /health # Route of the healthcheck endpoint
+      port: 8001 # Port of the healthcheck endpoint
+      initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+      periodSeconds: 10 # Frequency of the liveness test
+      timeoutSeconds: 5 # Timeout for probe responses
+      failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+      successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
     readinessProbe:
-      enabled: false
-      path: /health
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
+      enabled: false # Enables the liveness probe
+      path: /health # Route of the healthcheck endpoint
+      port: 8001 # Port of the healthcheck endpoint
+      initialDelaySeconds: 5 # Initial delay before starting the healthcheck
+      periodSeconds: 10 # Frequency of the readiness test
+      timeoutSeconds: 5 # Timeout for probe responses
+      failureThreshold: 6 # The number of consecutive failed results needed to switch probe status to “Failure”
+      successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
     
     resources:
-      limits: {}
-      requests:
-        cpu: 100m
-        memory: 256Mi 
+      limits: {} # CPU and memory limits
+      requests: {} # CPU and memory requests
+        # cpu: 100m
+        # memory: 256Mi
