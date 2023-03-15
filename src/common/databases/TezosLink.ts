@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import DbProvider from "@Common/system/database";
 import dotenv from "dotenv";
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 
 dotenv.config();
 

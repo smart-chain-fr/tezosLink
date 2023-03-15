@@ -28,18 +28,18 @@ export default class MetricsService extends BaseService {
 	}
 
 	/**
-     * 
-     * @throws {Error} If metric is undefined
-     * @returns 
-     */
-		public async getCountRpcPath(uuid: string, from: Date, to: Date) : Promise<CountRpcPathUsage[]>{
-			const pathsCount = await this.metricRepository.countRpcPathUsage(uuid,from,to);
-			if (!pathsCount) return Promise.reject(new Error("Cannot get count of rpc path"));
-			return pathsCount;
-		}
+	 *
+	 * @throws {Error} If metric is undefined
+	 * @returns
+	 */
+	public async getCountRpcPath(uuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
+		const pathsCount = await this.metricRepository.countRpcPathUsage(uuid, from, to);
+		if (!pathsCount) return Promise.reject(new Error("Cannot get count of rpc path"));
+		return pathsCount;
+	}
 	/**
-	 * 	
-	 * @throws {Error} If metric is undefined	
+	 *
+	 * @throws {Error} If metric is undefined
 	 * @returns
 	 */
 	public async getCountAllMetrics(metricEntity: Partial<MetricEntity>): Promise<number> {
@@ -49,25 +49,25 @@ export default class MetricsService extends BaseService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws {Error} If metric is undefined
 	 * @returns
 	 */
-	public async getLastMetrics(uuid: string, limit: number): Promise<MetricEntity[]>{
-		return await this.metricRepository.findLastRequests(uuid,limit);
+	public async getLastMetrics(uuid: string, limit: number): Promise<MetricEntity[]> {
+		return await this.metricRepository.findLastRequests(uuid, limit);
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws {Error} If metric is undefined
 	 * @returns
 	 */
-	public async getRequestsByDay(uuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]>{
-		return await this.metricRepository.findRequestsByDay(uuid,from,to);
+	public async getRequestsByDay(uuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]> {
+		return await this.metricRepository.findRequestsByDay(uuid, from, to);
 	}
 
 	/**
-	 * 	
+	 *
 	 * @throws {Error} If metric is undefined
 	 * @returns
 	 */

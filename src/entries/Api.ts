@@ -7,15 +7,16 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import TezosLink from "@Common/databases/TezosLink";
 import errorHandler from "@Api/middlewares/ErrorHandler";
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 
 (async () => {
 	try {
-		const variables = await Container.get(BackendVariables).validate();
+		const variables = await Container.get(BackendVariables).validate(["api"]);
+		console.log(variables);
 
-		const port = variables.NEXT_PUBLIC_API_PORT;
-		const rootUrl = variables.NEXT_PUBLIC_API_ROOT_URL;
-		const label = variables.NEXT_PUBLIC_API_LABEL ?? "Unknown Service";
+		const port = variables.API_PORT;
+		const rootUrl = variables.API_ROOT_URL;
+		const label = variables.API_LABEL ?? "Unknown Service";
 		
 		Container.get(TezosLink).connect();
 		Container.get(ExpressServer).init({

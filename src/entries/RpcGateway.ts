@@ -6,14 +6,14 @@ import routes from "@RpcGateway/controllers/index";
 import cors from "cors";
 import bodyParser from "body-parser";
 import errorHandler from "@Api/middlewares/ErrorHandler";
-import { BackendVariables } from "@Common/config/Variables";
+import { BackendVariables } from "@Common/config/variables/Variables";
 
 (async () => {
-	const variables = await Container.get(BackendVariables).validate();
+	const variables = await Container.get(BackendVariables).validate(["rpc_gateway"]);
 
-	const port = variables.NEXT_PUBLIC_RPC_GATEWAY_PORT;
-	const rootUrl = variables.NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL;
-	const label = variables.NEXT_PUBLIC_RPC_GATEWAY_LABEL ?? "Unknown Service";
+	const port = variables.RPC_GATEWAY_PORT;
+	const rootUrl = variables.RPC_GATEWAY_ROOT_URL;
+	const label = variables.RPC_GATEWAY_LABEL ?? "Unknown Service";
 
 	Container.get(ExpressServer).init({
 		label,
