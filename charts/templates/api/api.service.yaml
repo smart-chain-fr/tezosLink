@@ -1,0 +1,30 @@
+{{- if .Values.api.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helpers.fullname" . }}-api-svc
+  namespace: {{ include "helpers.namespace" . | quote }}
+  labels: {{ include "helpers.labels.api" . | nindent 4 }}
+  annotations: 
+    {{ toYaml .Values.api.service.annotations | nindent 4 | trim }}
+spec:
+  type: {{ .Values.api.service.type }}
+{{- if .Values.api.service.clusterIP }}
+  clusterIP: {{ .Values.api.service.clusterIP }}
+{{- end }}
+{{- if .Values.api.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{- range .Values.api.service.loadBalancerSourceRanges}}
+    - {{ . | indent 4 }}
+{{- end}}
+{{- end }}
+  ports:
+    - port:  {{ .Values.env.API_PORT}}
+      name: http
+      targetPort: {{ .Values.env.API_PORT}}
+{{- if eq .Values.api.service.type "NodePort" }}
+      nodePort: {{ .Values.api.service.nodePorts.http }}
+{{- end }}
+  selector:
+{{- include "helpers.api.selectorLabels" . | nindent 8 }}
+{{- end }}
