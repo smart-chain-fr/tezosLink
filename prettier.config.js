@@ -8,7 +8,7 @@ module.exports = {
         singleQuote: false,
         trailingComma: "all",
         printWidth: 240,
-        endOfLine: "crlf",
+        endOfLine: "lf",
         semi: true,
       },
     },

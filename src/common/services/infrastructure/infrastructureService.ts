@@ -1,5 +1,5 @@
-import { InfrastructureMetrics } from "@Common/system/prometheus/InfrastructureMetrics";
-import { Gauge, Histogram, type MetricObjectWithValues, type MetricValue } from "prom-client";
+//import { InfrastructureMetrics } from "@Common/system/prometheus/InfrastructureMetrics";
+import { Gauge, Histogram, Registry, type MetricObjectWithValues, type MetricValue } from "prom-client";
 import { Service } from "typedi";
 import os from "os";
 
@@ -12,12 +12,13 @@ export class InfrastructureService {
 	private labels = {};
 
 	constructor() {
-		const factory = InfrastructureMetrics.getInstance();
-		const registry = factory.getRegistry();
+		//const instance = InfrastructureMetrics.getInstance();
+		const registry = new Registry();
 		const PROCESS_RESIDENT_MEMORY = "process_resident_memory_bytes_total";
+		const PROCESS_CPU_SECONDS = "process_cpu_seconds_total";
 
 		this.cpuUsage = new Gauge({
-			name: "cpu_usage",
+			name: PROCESS_CPU_SECONDS,
 			help: "Current CPU usage in bytes",
 			registers: [registry],
 			labelNames: ["hostname"],
@@ -50,6 +51,7 @@ export class InfrastructureService {
 		networkUsage: MetricObjectWithValues<MetricValue<string>>;
 		restResponseTime: Histogram;
 	}> {
+		console.log("Cpu usage: -----------------",this.cpuUsage);
 		const cpus = os.cpus();
 		const cpuPercent = cpus.reduce((acc, cpu) => acc + cpu.times.user / cpu.times.nice + cpu.times.sys / cpu.times.nice, 0) / cpus.length;
 		this.cpuUsage.set(cpuPercent);
@@ -88,4 +90,3 @@ function safeMemoryUsage(): NodeJS.MemoryUsage | void {
 		return;
 	}
 }
-
