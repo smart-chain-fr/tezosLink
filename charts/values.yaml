@@ -6,42 +6,41 @@ global:
 
 
 env: # Environment variables injected through the config maps
-  DATABASE_HOSTNAME: # Hostname of the database
-  DATABASE_PORT: # Port of the database
-  DATABASE_USER: # Database user
-  DATABASE_PASSWORD: # Database user password
-  DATABASE_NAME: # Database name
+  DATABASE_HOSTNAME: localhost # Hostname of the database
+  DATABASE_PORT: 5432 # Port of the database
+  DATABASE_USER: postgres # Database user
+  DATABASE_PASSWORD: postgres # Database user password
+  DATABASE_NAME: tezoslink # Database name
 
-  WEB_HOSTNAME: # Hostname of the frontend, will be used for the ingress if enabled 
-  WEB_LABEL: 
-  WEB_PORT: # Port of the frontend, can be set to null
+  WEB_HOSTNAME: localhost # Hostname of the frontend, will be used for the ingress if enabled 
+  WEB_LABEL: web
+  WEB_PORT: 3000 # Port of the frontend, can be set to null
   WEB_ROOT_URL: / # Root URL of the frontend
-  NODE_ENV: production # Change it to dev if running in dev environment
 
-  API_HOSTNAME: # Hostname of the API 
-  API_LABEL: # 
-  API_PORT: # Port of the API
-  API_ROOT_URL: # Root URL of the API
+  API_HOSTNAME: localhost # Hostname of the API 
+  API_LABEL: api # 
+  API_PORT: 3001 # Port of the API
+  API_ROOT_URL: /api # Root URL of the API
 
-  MAINNET_RPC_GATEWAY_HOSTNAME: # Hostname of the RPC gateway for mainnet
-  MAINNET_RPC_GATEWAY_LABEL: # 
-  MAINNET_RPC_GATEWAY_PORT: # Port of the RPC gateway for mainnet
-  MAINNET_RPC_GATEWAY_ROOT_URL: # Root URL of the RPC gateway for mainnet
+  MAINNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for mainnet
+  MAINNET_RPC_GATEWAY_LABEL: rpcgw
+  MAINNET_RPC_GATEWAY_PORT: 3002 # Port of the RPC gateway for mainnet
+  MAINNET_RPC_GATEWAY_ROOT_URL: /rpc-mainnet # Root URL of the RPC gateway for mainnet
 
-  TESTNET_RPC_GATEWAY_HOSTNAME: # Hostname of the RPC gateway for testnet
-  TESTNET_RPC_GATEWAY_LABEL: # 
-  TESTNET_RPC_GATEWAY_PORT: # Port pf the RPC gateway for testnet
-  TESTNET_RPC_GATEWAY_ROOT_URL: # Root URL of the RPC gateway for testnet
+  TESTNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for testnet
+  TESTNET_RPC_GATEWAY_LABEL: rpcgw 
+  TESTNET_RPC_GATEWAY_PORT: 3002 # Port pf the RPC gateway for testnet
+  TESTNET_RPC_GATEWAY_ROOT_URL: /rpc-testnet # Root URL of the RPC gateway for testnet
 
-  MAINNET_ARCHIVE_NODES_URL: # URL or IP address of the mainnet archive node
-  MAINNET_ARCHIVE_NODES_PORT: # Port of the mainnet archive node
-  MAINNET_ROLLING_NODES_URL:  # URL or IP address of the mainnet rolling node
-  MAINNET_ROLLING_NODES_PORT: # Port of the mainnet rolling node
+  MAINNET_ARCHIVE_NODES_URL: localhost # URL or IP address of the mainnet archive node
+  MAINNET_ARCHIVE_NODES_PORT: port # Port of the mainnet archive node
+  MAINNET_ROLLING_NODES_URL:  localhost # URL or IP address of the mainnet rolling node
+  MAINNET_ROLLING_NODES_PORT: port # Port of the mainnet rolling node
 
-  TESTNET_ARCHIVE_NODES_URL: # URL or IP address of the testnet archive node
-  TESTNET_ARCHIVE_NODES_PORT: # Port of the testnet archive node
-  TESTNET_ROLLING_NODES_URL: # URL or IP address of the testnet rolling node
-  TESTNET_ROLLING_NODES_PORT: # Port of the testnet rolling node
+  TESTNET_ARCHIVE_NODES_URL: localhost # URL or IP address of the testnet archive node
+  TESTNET_ARCHIVE_NODES_PORT: port # Port of the testnet archive node
+  TESTNET_ROLLING_NODES_URL: localhost # URL or IP address of the testnet rolling node
+  TESTNET_ROLLING_NODES_PORT: port # Port of the testnet rolling node
 
 api: 
 
@@ -184,6 +183,7 @@ web:
 
 
 rpcgateway:
+
   testnet:
 
     enabled: true # Enables the rpc service for tesnet

@@ -2,7 +2,7 @@
 Tezos-link
 ===========
 
-A Helm chart for Kubernetes
+A Helm chart to deploy an management dashboard for Tezos Nodes
 
 
 ## Configuration
@@ -13,36 +13,35 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | ------------------------ | ----------------------- | -------------- |
 | `global.fullnameOverride` | Overrides the name of the app name, by default, name of the release | `""` |
 | `global.namespaceOverride` | Overrides the namespace to deploy the app, by default, current namespace | `""` |
-| `env.DATABASE_HOSTNAME` | Hostname of the database | `null` |
-| `env.DATABASE_PORT` | Port of the database | `null` |
-| `env.DATABASE_USER` | Database user | `null` |
-| `env.DATABASE_PASSWORD` | Database user password | `null` |
-| `env.DATABASE_NAME` | Database name | `null` |
-| `env.WEB_HOSTNAME` | Hostname of the frontend, will be used for the ingress if enabled | `null` |
-| `env.WEB_LABEL` |  | `null` |
-| `env.WEB_PORT` | Port of the frontend, can be set to null | `null` |
+| `env.DATABASE_HOSTNAME` | Hostname of the database | `"localhost"` |
+| `env.DATABASE_PORT` | Port of the database | `5432` |
+| `env.DATABASE_USER` | Database user | `"postgres"` |
+| `env.DATABASE_PASSWORD` | Database user password | `"postgres"` |
+| `env.DATABASE_NAME` | Database name | `"tezoslink"` |
+| `env.WEB_HOSTNAME` | Hostname of the frontend, will be used for the ingress if enabled | `"localhost"` |
+| `env.WEB_LABEL` |  | `"web"` |
+| `env.WEB_PORT` | Port of the frontend, can be set to null | `3000` |
 | `env.WEB_ROOT_URL` | Root URL of the frontend | `"/"` |
-| `env.NODE_ENV` | Change it to dev if running in dev environment | `"production"` |
-| `env.API_HOSTNAME` | Hostname of the API | `null` |
-| `env.API_LABEL` |  | `null` |
-| `env.API_PORT` | Port of the API | `null` |
-| `env.API_ROOT_URL` | Root URL of the API | `null` |
-| `env.MAINNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for mainnet | `null` |
-| `env.MAINNET_RPC_GATEWAY_LABEL` |  | `null` |
-| `env.MAINNET_RPC_GATEWAY_PORT` | Port of the RPC gateway for mainnet | `null` |
-| `env.MAINNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for mainnet | `null` |
-| `env.TESTNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for testnet | `null` |
-| `env.TESTNET_RPC_GATEWAY_LABEL` |  | `null` |
-| `env.TESTNET_RPC_GATEWAY_PORT` | Port pf the RPC gateway for testnet | `null` |
-| `env.TESTNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for testnet | `null` |
-| `env.MAINNET_ARCHIVE_NODES_URL` | URL or IP address of the mainnet archive node | `null` |
-| `env.MAINNET_ARCHIVE_NODES_PORT` | Port of the mainnet archive node | `null` |
-| `env.MAINNET_ROLLING_NODES_URL` | URL or IP address of the mainnet rolling node | `null` |
-| `env.MAINNET_ROLLING_NODES_PORT` | Port of the mainnet rolling node | `null` |
-| `env.TESTNET_ARCHIVE_NODES_URL` | URL or IP address of the testnet archive node | `null` |
-| `env.TESTNET_ARCHIVE_NODES_PORT` | Port of the testnet archive node | `null` |
-| `env.TESTNET_ROLLING_NODES_URL` | URL or IP address of the testnet rolling node | `null` |
-| `env.TESTNET_ROLLING_NODES_PORT` | Port of the testnet rolling node | `null` |
+| `env.API_HOSTNAME` | Hostname of the API | `"localhost"` |
+| `env.API_LABEL` |  | `"api"` |
+| `env.API_PORT` | Port of the API | `3001` |
+| `env.API_ROOT_URL` | Root URL of the API | `"/api"` |
+| `env.MAINNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for mainnet | `"localhost"` |
+| `env.MAINNET_RPC_GATEWAY_LABEL` |  | `"rpcgw"` |
+| `env.MAINNET_RPC_GATEWAY_PORT` | Port of the RPC gateway for mainnet | `3002` |
+| `env.MAINNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for mainnet | `"/rpc-mainnet"` |
+| `env.TESTNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for testnet | `"localhost"` |
+| `env.TESTNET_RPC_GATEWAY_LABEL` |  | `"rpcgw"` |
+| `env.TESTNET_RPC_GATEWAY_PORT` | Port pf the RPC gateway for testnet | `3002` |
+| `env.TESTNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for testnet | `"/rpc-testnet"` |
+| `env.MAINNET_ARCHIVE_NODES_URL` | URL or IP address of the mainnet archive node | `"localhost"` |
+| `env.MAINNET_ARCHIVE_NODES_PORT` | Port of the mainnet archive node | `"port"` |
+| `env.MAINNET_ROLLING_NODES_URL` | URL or IP address of the mainnet rolling node | `"localhost"` |
+| `env.MAINNET_ROLLING_NODES_PORT` | Port of the mainnet rolling node | `"port"` |
+| `env.TESTNET_ARCHIVE_NODES_URL` | URL or IP address of the testnet archive node | `"localhost"` |
+| `env.TESTNET_ARCHIVE_NODES_PORT` | Port of the testnet archive node | `"port"` |
+| `env.TESTNET_ROLLING_NODES_URL` | URL or IP address of the testnet rolling node | `"localhost"` |
+| `env.TESTNET_ROLLING_NODES_PORT` | Port of the testnet rolling node | `"port"` |
 | `api.enabled` | Enables the API service | `true` |
 | `api.replicas` | Number of pods replicas desired for the API service | `1` |
 | `api.image.repository` | Repository containing the API image | `"rg.fr-par.scw.cloud/tezoslink/p1-api"` |

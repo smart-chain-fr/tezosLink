@@ -12,25 +12,7 @@ data:
   DATABASE_USER: {{ .Values.env.DATABASE_USER }}
   DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
   DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}
-  TEZOS_NETWORK: "" # unused in api only for RPC gateway
 
-  DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
-  DATABASE_PORT: "5432"
-  DATABASE_USER: "tzbackendv2"
-  DATABASE_PASSWORD: "Titi123v2"
-  DATABASE_NAME: "tezoslink"
 
-  API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
-  API_LABEL: "TezosLink API"
-  API_PORT: "3001"
-  API_ROOT_URL: "/api"
 
-  ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
-  ARCHIVE_NODES_PORT: "443"
-  ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
-  ROLLING_NODES_PORT: "443"
-
-  RPC_GATEWAY_LABEL: "" # unused in api only for RPC gateway
-  RPC_GATEWAY_PORT: "" # unused in api only for RPC gateway
-  RPC_GATEWAY_ROOT_URL: "" # unused in api only for RPC gateway
 
