@@ -39,15 +39,23 @@ spec:
           livenessProbe:
             httpGet:
               path: {{ .Values.api.livenessProbe.path }}
-              port: {{ .Values.env.NEXT_PUBLIC_API_PORT }}
+              port: {{ .Values.env.API_PORT }}
             initialDelaySeconds: {{ .Values.api.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.api.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.api.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.api.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.api.readinessProbe.successThreshold }}
           {{- end }}
           {{- if .Values.api.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: {{ .Values.api.readinessProbe.path }}
-              port: {{ .Values.env.NEXT_PUBLIC_API_PORT }}
+              port: {{ .Values.env.API_PORT }}
             initialDelaySeconds: {{ .Values.api.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.api.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.api.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.api.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.api.readinessProbe.successThreshold }}
           {{- end }}
       {{- if .Values.api.podSecurityContext.enabled }}
       securityContext: {{- omit .Values.api.podSecurityContext "enabled" | toYaml | nindent 8 }}

@@ -1,0 +1,386 @@
+global:
+  ## @param nameOverride String to partially override `tezoslink.name` template with a string (will prepend the release name)
+  ##
+  nameOverride: ""
+  
+  ## @param fullnameOverride String to fully override `tezoslink.fullname` template with a string
+  ##
+  fullnameOverride: ""
+
+  ## @param namespaceOverride String to fully override helpers.namespace
+  ##
+  namespaceOverride: ""
+
+# Can be injected as secret
+env:
+  DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
+  DATABASE_PORT: "5432"
+  DATABASE_USER: "tzbackendv2"
+  DATABASE_PASSWORD: "Titi123v2"
+  DATABASE_NAME: "tezoslink"
+
+  WEB_HOSTNAME: "test-web-svc.tezoslink-helm-test.svc.cluster.local"
+  WEB_LABEL: "TezosLink"
+  WEB_PORT: 3000
+  WEB_ROOT_URL: "/"
+  NODE_ENV: production
+
+  API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
+  API_LABEL: "TezosLink API"
+  API_PORT: 3001
+  API_ROOT_URL: "/api"
+
+  MAINNET_RPC_GATEWAY_HOSTNAME: "localhost"
+  MAINNET_RPC_GATEWAY_LABEL: "TezosLink RPC Gateway"
+  MAINNET_RPC_GATEWAY_PORT: 3002
+  MAINNET_RPC_GATEWAY_ROOT_URL: "/rpc"
+
+  TESTNET_RPC_GATEWAY_HOSTNAME: "localhost"
+  TESTNET_RPC_GATEWAY_LABEL: "TezosLink RPC Gateway"
+  TESTNET_RPC_GATEWAY_PORT: 300
+  TESTNET_RPC_GATEWAY_ROOT_URL: "/rpc"
+
+  # Concat
+  # RPC_GATEWAY_MAINNET_URL: "http://localhost:3002/rpc"
+  # RPC_GATEWAY_TESTNET_URL: "http://localhost:3002/rpc"
+
+  MAINNET_ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
+  MAINNET_ARCHIVE_NODES_PORT: 443
+  MAINNET_ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
+  MAINNET_ROLLING_NODES_PORT: 443
+
+  TESTNET_ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
+  TESTNET_ARCHIVE_NODES_PORT: 443
+  TESTNET_ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
+  TESTNET_ROLLING_NODES_PORT: 443
+
+  # Utiliser la value dans la partie proxy
+  # TEZOS_NETWORK:
+
+api: 
+  enabled: true
+  replicas: 1
+  image:
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-api
+    tag: v1.3.10
+    pullPolicy: Always
+
+  service:
+    type: NodePort
+    clusterIP: ""
+    nodePorts:
+      http: ""
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    annotations: {}
+  
+  ingress:  
+    enabled: false
+    tls:
+      secretName: api-tls
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod 
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    labels: {}
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    ## default name: api-sa
+    name: ""
+
+  # Secrets to be injected as environment variables
+  secret: []
+    # SECRET_KEY: c2VjcmV0Cg==
+
+  additionalSecrets: []
+
+  resources:
+    limits: {}
+    requests: {}
+      # cpu: 100m
+      # memory: 256Mi
+  
+  podSecurityContext:
+    enabled: true
+    runAsUser: 10000
+    runAsGroup:
+    fsGroup:
+    runAsNonRoot: true
+
+  livenessProbe:
+    enabled: false
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+
+  readinessProbe:
+    enabled: false
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+
+
+web:
+
+  enabled: true
+
+  replicas: 1
+
+  image:
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend
+    tag: v1.3.25
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    ports:
+      http: 8001
+    clusterIP: ""
+    nodePorts:
+      http: ""
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    annotations: {}
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    ## default name: front-sa
+    name: ""
+
+  ingress: 
+    enabled: false
+    tls:
+      secretName: front-tls
+    labels: {}
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod 
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+  env:
+
+  secret: 
+    SECRET_KEY: c2VjcmV0Cg==
+    SECRET2: c2VjcmV0Cg==
+
+  additionalSecrets: []
+
+  resources:
+    limits: {}
+    requests:
+      cpu: 100m
+      memory: 256M
+
+  podSecurityContext:
+    enabled: true
+    runAsUser: 0
+    runAsGroup:
+    fsGroup:
+    runAsNonRoot: false
+
+  livenessProbe:
+    enabled: false
+    path: /health
+    initialDelaySeconds: 5
+
+  readinessProbe:
+    enabled: false
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+
+
+rpcgateway:
+  testnet:
+    enabled : false
+    replicaCount: 1
+    network: "TESTNET"
+
+    image:
+      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: v1.3.9
+    
+    secret: 
+      SECRET_KEY: c2VjcmV0Cg==
+      SECRET2: c2VjcmV0Cg==
+      # required envs
+
+    additionalSecrets: []
+
+    serviceAccount:
+      create: true
+      annotations: {}
+      name: ""
+      automountServiceAccountToken: true
+    
+    ## Proxy Service
+    ##
+    service:
+      type: ClusterIP
+      ports:
+        http: 8001
+      clusterIP: ""
+      nodePorts:
+        http: ""
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      externalTrafficPolicy: Cluster
+      healthCheckNodePort: ""
+      annotations: {}
+      extraPorts: []
+      sessionAffinity: None
+      sessionAffinityConfig: {}
+    
+    ingress: 
+      enabled: false
+      tls:
+        secretName: proxy1-tls
+      labels: {}
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: letsencrypt-prod 
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    podSecurityContext:
+      enabled: true
+      runAsUser: 10000
+      runAsGroup:
+      fsGroup:
+      runAsNonRoot: true
+    
+    livenessProbe:
+      enabled: false
+      path: /health
+      port: 8001
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+
+    readinessProbe:
+      enabled: false
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    
+    resources:
+      limits: {}
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  mainnet:
+    enabled : false
+    replicaCount: 1
+    network: "MAINNET"
+    rpcNodeHost: "xxxxxxxxx"
+
+    image:
+      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: v1.3.9
+    
+    env:
+      DATABASE_USERNAME: "tz-backend"
+      DATABASE_PASSWORD: "Titi123!"
+      DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
+      ARCHIVE_NODES_URL: "archive-node.poc-tzk8s.svc.cluster.local"
+      TEZOS_ARCHIVE_PORT: "8732"
+      ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
+      TEZOS_ROLLING_PORT: "8732"
+      TEZOS_NETWORK: "mainnet"
+    
+    secret: 
+      SECRET_KEY: c2VjcmV0Cg==
+      SECRET2: c2VjcmV0Cg==
+
+    additionalSecrets: []
+
+    serviceAccount:
+      create: true
+      annotations: {}
+      name: ""
+      automountServiceAccountToken: true
+    
+    ## Proxy Service
+    ##
+    service:
+      type: ClusterIP
+      ports:
+        http: 8001
+      clusterIP: ""
+      nodePorts:
+        http: ""
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      externalTrafficPolicy: Cluster
+      healthCheckNodePort: ""
+      annotations: {}
+      extraPorts: []
+      sessionAffinity: None
+      sessionAffinityConfig: {}
+    
+    ingress: 
+      enabled: false
+      tls:
+        secretName: proxy2-tls
+      labels: {}
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: letsencrypt-prod 
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    podSecurityContext:
+      enabled: true
+      runAsUser: 10000
+      runAsGroup:
+      fsGroup:
+      runAsNonRoot: true
+    
+    livenessProbe:
+      enabled: false
+      path: /health
+      port: 8001
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+
+    readinessProbe:
+      enabled: false
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    
+    resources:
+      limits: {}
+      requests:
+        cpu: 100m
+        memory: 256Mi 

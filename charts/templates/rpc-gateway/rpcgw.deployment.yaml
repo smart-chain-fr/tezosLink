@@ -52,10 +52,10 @@ spec:
             httpGet:
               path: {{ $data.readinessProbe.path }}
               {{ if eq $network "testnet" }}
-              port: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_PORT }}
+              port: {{ $.Values.env.TESTNET_RPC_GATEWAY_PORT }}
               {{ end }}
               {{ if eq $network "mainnet" }}
-              port: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_PORT }}
+              port: {{ $.Values.env.MAINNET_RPC_GATEWAY_PORT }}
               {{ end }}
               scheme: HTTP
             initialDelaySeconds: {{ $data.readinessProbe.initialDelaySeconds }}

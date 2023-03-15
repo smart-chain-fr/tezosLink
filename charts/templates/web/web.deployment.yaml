@@ -41,6 +41,10 @@ spec:
               path: {{ .Values.env.WEB_ROOT_URL }}{{ .Values.web.livenessProbe.path }}
               port: {{ .Values.env.WEB_PORT }}
             initialDelaySeconds: {{ .Values.web.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.web.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.web.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.web.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.web.readinessProbe.successThreshold }}
           {{- end }}
           {{- if .Values.web.readinessProbe.enabled }}
           readinessProbe:
@@ -48,6 +52,10 @@ spec:
               path: {{ .Values.env.WEB_ROOT_URL }}{{ .Values.web.readinessProbe.path }}
               port: {{ .Values.env.WEB_PORT }}
             initialDelaySeconds: {{ .Values.web.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.web.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.web.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.web.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.web.readinessProbe.successThreshold }}
           {{- end }}
       {{- if .Values.web.podSecurityContext.enabled }}
       securityContext: {{- omit .Values.web.podSecurityContext "enabled" | toYaml | nindent 8 }}

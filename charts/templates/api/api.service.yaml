@@ -19,9 +19,9 @@ spec:
 {{- end}}
 {{- end }}
   ports:
-    - port:  {{ .Values.env.NEXT_PUBLIC_API_PORT}}
+    - port:  {{ .Values.env.API_PORT}}
       name: http
-      targetPort: {{ .Values.env.NEXT_PUBLIC_API_PORT}}
+      targetPort: {{ .Values.env.API_PORT}}
 {{- if eq .Values.api.service.type "NodePort" }}
       nodePort: {{ .Values.api.service.nodePorts.http }}
 {{- end }}

@@ -14,35 +14,35 @@ spec:
   tls:
   {{ if eq $network "testnet"}}
   - hosts: 
-      - {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
+      - {{ $.Values.env.TESTNET_RPC_GATEWAY_HOSTNAME }}
     secretName: {{ $data.ingress.tls.secretName }}
   rules:
-  - host: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
+  - host: {{ $.Values.env.TESTNET_RPC_GATEWAY_HOSTNAME }}
     http:
       paths:
-      - path: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL}}
+      - path: {{ $.Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}
         pathType: Prefix
         backend:
           service:
             name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-svc
             port:
-              number: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_PORT}}
+              number: {{ $.Values.env.TESTNET_RPC_GATEWAY_PORT}}
   {{ end }}
   {{ if eq $network "mainnet"}}
   - hosts: 
-      - {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
+      - {{ $.Values.env.MAINNET_RPC_GATEWAY_HOSTNAME }}
     secretName: {{ $data.ingress.tls.secretName }}
   rules:
-  - host: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
+  - host: {{ $.Values.env.MAINNET_RPC_GATEWAY_HOSTNAME }}
     http:
       paths:
-      - path: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL}}
+      - path: {{ $.Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}
         pathType: Prefix
         backend:
           service:
             name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-svc
             port:
-              number: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_PORT}}
+              number: {{ $.Values.env.MAINNET_RPC_GATEWAY_PORT}}
   {{ end }}
 {{- end }}
 {{ end }}

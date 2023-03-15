@@ -7,10 +7,10 @@ metadata:
   name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-cm
 data:
   {{ if eq $network "testnet" }}
-  NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME: {{ printf "http://%s" $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
-  NEXT_PUBLIC_RPC_GATEWAY_LABEL: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_LABEL }}
-  NEXT_PUBLIC_RPC_GATEWAY_PORT: {{ quote $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_PORT }}
-  NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL: {{ $.Values.env.TESTNET_NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL }}
+  RPC_GATEWAY_HOSTNAME: {{ printf "http://%s" $.Values.env.TESTNET_RPC_GATEWAY_HOSTNAME }}
+  RPC_GATEWAY_LABEL: {{ $.Values.env.TESTNET_RPC_GATEWAY_LABEL }}
+  RPC_GATEWAY_PORT: {{ quote $.Values.env.TESTNET_RPC_GATEWAY_PORT }}
+  RPC_GATEWAY_ROOT_URL: {{ $.Values.env.TESTNET_RPC_GATEWAY_ROOT_URL }}
   ARCHIVE_NODES_URL: {{ printf "http://%s" $.Values.env.TESTNET_ARCHIVE_NODES_URL }}
   ARCHIVE_NODES_PORT: {{ quote $.Values.env.TESTNET_ARCHIVE_NODES_PORT }}
   ROLLING_NODES_URL: {{ printf "http://%s" $.Values.env.TESTNET_ROLLING_NODES_URL }}
@@ -23,10 +23,10 @@ data:
   TEZOS_NETWORK: {{ $data.network }}
   {{ end }}
   {{ if eq $network "mainnet"}}
-  NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME: {{ printf "http://%s" $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME }}
-  NEXT_PUBLIC_RPC_GATEWAY_LABEL: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_LABEL }}
-  NEXT_PUBLIC_RPC_GATEWAY_PORT: {{ quote $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_PORT }}
-  NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL: {{ $.Values.env.MAINNET_NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL }}
+  RPC_GATEWAY_HOSTNAME: {{ printf "http://%s" $.Values.env.MAINNET_RPC_GATEWAY_HOSTNAME }}
+  RPC_GATEWAY_LABEL: {{ $.Values.env.MAINNET_RPC_GATEWAY_LABEL }}
+  RPC_GATEWAY_PORT: {{ quote $.Values.env.MAINNET_RPC_GATEWAY_PORT }}
+  RPC_GATEWAY_ROOT_URL: {{ $.Values.env.MAINNET_RPC_GATEWAY_ROOT_URL }}
   ARCHIVE_NODES_URL: {{ printf "http://%s" $.Values.env.MAINNET_ARCHIVE_NODES_URL }}
   ARCHIVE_NODES_PORT: {{ quote $.Values.env.MAINNET_ARCHIVE_NODES_PORT }}
   ROLLING_NODES_URL: {{ printf "http://%s" $.Values.env.MAINNET_ROLLING_NODES_URL }}
@@ -50,15 +50,15 @@ data:
   WEB_ROOT_URL: "/"
   NODE_ENV: production
 
-  NEXT_PUBLIC_API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
-  NEXT_PUBLIC_API_LABEL: "TezosLink API"
-  NEXT_PUBLIC_API_PORT: "3001"
-  NEXT_PUBLIC_API_ROOT_URL: "/api"
+  API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
+  API_LABEL: "TezosLink API"
+  API_PORT: "3001"
+  API_ROOT_URL: "/api"
 
 
   # Concat
-  # NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL: "http://localhost:3002/rpc"
-  # NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: "http://localhost:3002/rpc"
+  # RPC_GATEWAY_MAINNET_URL: "http://localhost:3002/rpc"
+  # RPC_GATEWAY_TESTNET_URL: "http://localhost:3002/rpc"
 
   ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
   ARCHIVE_NODES_PORT: "443"

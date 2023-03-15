@@ -11,17 +11,17 @@ metadata:
 spec:
   tls:
   - hosts: 
-      - {{ .Values.env.NEXT_PUBLIC_API_HOSTNAME }}
+      - {{ .Values.env.API_HOSTNAME }}
     secretName: {{ .Values.api.ingress.tls.secretName }}
   rules:
-  - host: {{ .Values.env.NEXT_PUBLIC_API_HOSTNAME }}
+  - host: {{ .Values.env.API_HOSTNAME }}
     http:
       paths:
-      - path: {{ .Values.env.NEXT_PUBLIC_API_ROOT_URL }}
+      - path: {{ .Values.env.API_ROOT_URL }}
         pathType: Prefix
         backend:
           service:
             name: {{ include "helpers.fullname" . }}-api-service
             port:
-              number: {{ .Values.env.NEXT_PUBLIC_API_PORT}}
+              number: {{ .Values.env.API_PORT}}
 {{- end -}}

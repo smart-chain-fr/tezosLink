@@ -3,47 +3,34 @@ kind: ConfigMap
 metadata:
   name: {{ include "helpers.fullname" .}}-api-cm
 data:
-  NEXT_PUBLIC_API_HOSTNAME: {{ printf "http://%s" .Values.env.NEXT_PUBLIC_API_HOSTNAME }}
-  NEXT_PUBLIC_API_LABEL: {{ .Values.env.NEXT_PUBLIC_API_LABEL }}
-  NEXT_PUBLIC_API_PORT: {{ quote .Values.env.NEXT_PUBLIC_API_PORT }}
-  NEXT_PUBLIC_API_ROOT_URL: {{ .Values.env.NEXT_PUBLIC_API_ROOT_URL }}
+  API_LABEL: {{ .Values.env.API_LABEL }}
+  API_PORT: {{ quote .Values.env.API_PORT }}
+  API_ROOT_URL: {{ .Values.env.API_ROOT_URL }}
+
   DATABASE_HOSTNAME: {{ .Values.env.DATABASE_HOSTNAME}}
   DATABASE_PORT: {{ quote .Values.env.DATABASE_PORT }}
   DATABASE_USER: {{ .Values.env.DATABASE_USER }}
   DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
   DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}
-  TEZOS_NETWORK: TESTNET
+  TEZOS_NETWORK: "" # unused in api only for RPC gateway
+
   DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
   DATABASE_PORT: "5432"
   DATABASE_USER: "tzbackendv2"
   DATABASE_PASSWORD: "Titi123v2"
   DATABASE_NAME: "tezoslink"
 
-  WEB_HOSTNAME: "test-web-svc.tezoslink-helm-test.svc.cluster.local"
-  WEB_LABEL: "TezosLink"
-  WEB_PORT: "3000"
-  WEB_ROOT_URL: "/"
-  NODE_ENV: production
-
-  NEXT_PUBLIC_API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
-  NEXT_PUBLIC_API_LABEL: "TezosLink API"
-  NEXT_PUBLIC_API_PORT: "3001"
-  NEXT_PUBLIC_API_ROOT_URL: "/api"
-
-
-  # Concat
-  # NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL: "http://localhost:3002/rpc"
-  # NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: "http://localhost:3002/rpc"
+  API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
+  API_LABEL: "TezosLink API"
+  API_PORT: "3001"
+  API_ROOT_URL: "/api"
 
   ARCHIVE_NODES_URL: "https://api.tez.ie/rpc/mainnet"
   ARCHIVE_NODES_PORT: "443"
   ROLLING_NODES_URL: "https://api.tez.ie/rpc/mainnet"
   ROLLING_NODES_PORT: "443"
 
-  NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: "localhost"
-  NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL: "localhost"
-  NEXT_PUBLIC_RPC_GATEWAY_HOSTNAME: "localhost"
-  NEXT_PUBLIC_RPC_GATEWAY_LABEL: "TezosLink RPC Gateway"
-  NEXT_PUBLIC_RPC_GATEWAY_PORT: "3002"
-  NEXT_PUBLIC_RPC_GATEWAY_ROOT_URL: "/rpc"
+  RPC_GATEWAY_LABEL: "" # unused in api only for RPC gateway
+  RPC_GATEWAY_PORT: "" # unused in api only for RPC gateway
+  RPC_GATEWAY_ROOT_URL: "" # unused in api only for RPC gateway
 
