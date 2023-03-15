@@ -63,7 +63,7 @@ api:
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/p1-api
     tag: v1.3.10
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   service:
     type: NodePort
@@ -138,12 +138,10 @@ web:
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend
     tag: v1.3.25
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
-    ports:
-      http: 8001
     clusterIP: ""
     nodePorts:
       http: ""
@@ -206,7 +204,7 @@ web:
 
 rpcgateway:
   testnet:
-    enabled : false
+    enabled : true
     replicaCount: 1
     network: "TESTNET"
 
