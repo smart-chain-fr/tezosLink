@@ -5,7 +5,7 @@ global:
   namespaceOverride: "" # Overrides the namespace to deploy the app, by default, current namespace
 
 
-env: # Environment variables injected through the config maps
+env: # Environment variables injected through the config maps, if needed they can be injected as secrets in the services part of the chart. The secrets will take precedence over the config maps.
   DATABASE_HOSTNAME: localhost # Hostname of the database
   DATABASE_PORT: 5432 # Port of the database
   DATABASE_USER: postgres # Database user
@@ -22,12 +22,12 @@ env: # Environment variables injected through the config maps
   API_PORT: 3001 # Port of the API
   API_ROOT_URL: /api # Root URL of the API
 
-  MAINNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for mainnet
+  MAINNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for mainnet, will be used for the ingress if enabled
   MAINNET_RPC_GATEWAY_LABEL: rpcgw
   MAINNET_RPC_GATEWAY_PORT: 3002 # Port of the RPC gateway for mainnet
   MAINNET_RPC_GATEWAY_ROOT_URL: /rpc-mainnet # Root URL of the RPC gateway for mainnet
 
-  TESTNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for testnet
+  TESTNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for testnet, will be used for the ingress if enabled
   TESTNET_RPC_GATEWAY_LABEL: rpcgw 
   TESTNET_RPC_GATEWAY_PORT: 3002 # Port pf the RPC gateway for testnet
   TESTNET_RPC_GATEWAY_ROOT_URL: /rpc-testnet # Root URL of the RPC gateway for testnet
