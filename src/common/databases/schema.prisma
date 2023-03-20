@@ -30,3 +30,15 @@ model Metric {
   updatedAt DateTime @updatedAt
   @@map("app_metrics")
 }
+
+model MetricInfrastructure {
+  uuid      String  @unique @db.VarChar(255) @id
+  pod  String @db.VarChar(255)
+  label String @db.VarChar(255)
+  value  String @db.VarChar(255)
+  date_requested  DateTime
+  type  String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("app_metrics_infrastructure")
+}
