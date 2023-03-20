@@ -93,7 +93,7 @@ export default class MetricsRepository extends BaseRepository {
 								date_requested: data.date_requested!,
 								project: {
 									connect: {
-										uuid: data.projectUuid!,
+										uuid: data.project!.uuid,
 									},
 								},
 							},

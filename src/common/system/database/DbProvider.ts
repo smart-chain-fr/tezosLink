@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import IDatabaseConfig from "../../config/database/IDatabaseConfig";
+import IDatabaseConfig from "../interfaces/database/IDatabaseConfig";
 import { BackendVariables } from "@Common/config/variables/Variables";
 import Container from "typedi";
 

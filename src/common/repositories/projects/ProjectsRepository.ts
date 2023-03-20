@@ -61,4 +61,3 @@ export default class ProjectsRepository extends BaseRepository {
 		}
 	}
 }
-

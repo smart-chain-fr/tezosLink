@@ -1,0 +1,22 @@
+import PodEntity from "./PodEntity";
+
+export default class MetricInfrastructureEntity {
+	public uuid!: string;
+
+	public podName!: string;
+
+	public label!: string;
+
+	public value!: string;
+
+	public date_requested!: Date;
+
+	public type!: string;
+
+	public pod!: PodEntity;
+
+	public createdAt?: Date;
+
+	public updatedAt?: Date;
+}
+

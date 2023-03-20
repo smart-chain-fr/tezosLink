@@ -4,12 +4,13 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import { InfrastructureService } from "@Services/infrastructure/infrastructureService";
+import MetricInfrastructureService from "@Services/infrastructure/MetricInfrastructureService";
+
 
 @Controller()
 @Service()
 export default class MetricsController extends ApiController {
-	constructor(private metricsService: MetricsService, private infrastructureService: InfrastructureService) {
+	constructor(private metricsService: MetricsService, private metricInfrastructureService: MetricInfrastructureService) {
 		super();
 	}
 
@@ -54,8 +55,8 @@ export default class MetricsController extends ApiController {
 
 	@Get("/metrics/infrastructure")
 	protected async getInfrastructureMetrics(req: Request, res: Response) {
-		const allMetrics = await this.infrastructureService.getAllMetrics();
-		if (!allMetrics) {
+		const allMetrics = await this.metricInfrastructureService.scrapMetrics();
+		/* if (!allMetrics) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
@@ -72,8 +73,8 @@ export default class MetricsController extends ApiController {
 			};
 		};
 		const allMetricsJSON = JSON.stringify(allMetrics, circularReplacer());
-		console.log(allMetricsJSON);
-		this.httpSuccess(res, allMetricsJSON);
+		console.log(allMetricsJSON); */
+		this.httpSuccess(res, allMetrics);
 	}
 }
 

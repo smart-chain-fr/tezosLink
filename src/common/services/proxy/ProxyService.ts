@@ -1,6 +1,6 @@
 import MetricsRepository from "@Common/repositories/metrics/MetricsRepository";
 import ProjectsRepository from "@Repositories/projects/ProjectsRepository";
-import MetricEntity from "@Common/ressources/MetricEntity";
+import MetricEntity from "@Common/ressources/metrics/MetricEntity";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 import { IHttpReponse, IStatusNode } from "@Common/system/interfaces/Interfaces";
 import BaseService from "@Services/BaseService";

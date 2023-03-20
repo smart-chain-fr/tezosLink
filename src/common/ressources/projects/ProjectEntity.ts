@@ -1,5 +1,5 @@
 import { IsNotEmpty } from "class-validator";
-import MetricEntity from "./MetricEntity";
+import MetricEntity from "../metrics/MetricEntity";
 
 export default class ProjectEntity {
 	public uuid!: string;
