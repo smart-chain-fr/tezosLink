@@ -8,6 +8,14 @@ A Helm chart to deploy an management dashboard for Tezos Nodes
 ## Configuration
 
 The following table lists the configurable parameters of the Tezos-link chart and their default values.
+For the environment variables they are injected using a configmap and they are all required as they set the required connections between the services. As some of the environment variables are confidential, you can also inject all the environment variables using secret(s). In each service part, there is a `secret` block where you can add additional enviroment variables, this secret will be created.
+You can also use existing secrets.
+The order of priority for the environment variables:
+
+- Existing secrets
+- Created secret
+- Configmap
+
 
 | Parameter                | Description             | Default        |
 | ------------------------ | ----------------------- | -------------- |
@@ -26,11 +34,11 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `env.API_LABEL` |  | `"api"` |
 | `env.API_PORT` | Port of the API | `3001` |
 | `env.API_ROOT_URL` | Root URL of the API | `"/api"` |
-| `env.MAINNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for mainnet | `"localhost"` |
+| `env.MAINNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for mainnet, will be used for the ingress if enabled | `"localhost"` |
 | `env.MAINNET_RPC_GATEWAY_LABEL` |  | `"rpcgw"` |
 | `env.MAINNET_RPC_GATEWAY_PORT` | Port of the RPC gateway for mainnet | `3002` |
 | `env.MAINNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for mainnet | `"/rpc-mainnet"` |
-| `env.TESTNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for testnet | `"localhost"` |
+| `env.TESTNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for testnet, will be used for the ingress if enabled | `"localhost"` |
 | `env.TESTNET_RPC_GATEWAY_LABEL` |  | `"rpcgw"` |
 | `env.TESTNET_RPC_GATEWAY_PORT` | Port pf the RPC gateway for testnet | `3002` |
 | `env.TESTNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for testnet | `"/rpc-testnet"` |
