@@ -17,7 +17,9 @@ spec:
       labels:
         {{- include "helpers.rpcgateway.selectorLabels" (dict "root" $ "network" $network) | nindent 8 }}
     spec:
+      {{ if $data.serviceAccount.create }}
       serviceAccountName: {{ $network }}-{{ .serviceAccount.name | default "rpcgateway-sa" }}
+      {{ end }}
       containers:
         - name: rpcgateway-{{ $network }}
           image: "{{ $data.image.repository }}:{{ $data.image.tag }}"
