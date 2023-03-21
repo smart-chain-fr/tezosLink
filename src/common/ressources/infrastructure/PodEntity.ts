@@ -3,9 +3,11 @@ import MetricInfrastructureEntity from "./MetricInfrastructureEntity";
 export default class PodEntity {
 	public name!: string;
 
-	public metricsInfrastructure?: MetricInfrastructureEntity[];
+	public phase!: string;
 
-	public active?: boolean;
+	public type!: string;
+
+	public metricsInfrastructure?: MetricInfrastructureEntity[];
 
 	public createdAt?: Date;
 

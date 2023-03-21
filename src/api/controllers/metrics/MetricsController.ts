@@ -5,12 +5,13 @@ import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
 import MetricInfrastructureService from "@Services/infrastructure/MetricInfrastructureService";
+import PodService from "@Services/infrastructure/PodService";
 
 
 @Controller()
 @Service()
 export default class MetricsController extends ApiController {
-	constructor(private metricsService: MetricsService, private metricInfrastructureService: MetricInfrastructureService) {
+	constructor(private metricsService: MetricsService, private metricInfrastructureService: MetricInfrastructureService, private podService: PodService) {
 		super();
 	}
 
@@ -74,6 +75,12 @@ export default class MetricsController extends ApiController {
 		};
 		const allMetricsJSON = JSON.stringify(allMetrics, circularReplacer());
 		console.log(allMetricsJSON); */
+		this.httpSuccess(res, allMetrics);
+	}
+
+	@Get("/metrics/pods")
+	protected async getInfrastructurePods(req: Request, res: Response) {
+		const allMetrics = await this.podService.scrapPods();
 		this.httpSuccess(res, allMetrics);
 	}
 }
