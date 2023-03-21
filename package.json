@@ -16,14 +16,15 @@
   },
   "scripts": {
     "build": "tsc",
-    "api:start": "node ./dist/entries/Api.js",
-    "rpc-gateway:start": "node ./dist/entries/RpcGateway.js",
+    "api:start": "prisma migrate deploy && node ./dist/entries/Api.js",
+    "rpc-gateway:start": "prisma migrate deploy && node ./dist/entries/RpcGateway.js",
     "dev": "nodemon -V",
-    "rpc-gateway:dev": "nodemon -V --exec 'tsc && npm run rpc-gateway:start'",
-    "api:dev": "nodemon -V --exec 'tsc && npm run api:start'",
+    "rpc-gateway:dev": "prisma migrate dev && nodemon -V --exec 'tsc && npm run rpc-gateway:start'",
+    "api:dev": "prisma migrate dev && nodemon -V --exec 'tsc && npm run api:start'",
     "build:test": "tsc && mocha ./dist/entries/Test.js",
     "format": "prettier --write src",
-    "migrate": ""
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy"
   },
   "repository": {
     "type": "git",
