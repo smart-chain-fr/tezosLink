@@ -40,11 +40,12 @@ export default class MetricsInfrastructureService extends BaseService {
 	}
 
 	public async scrapMetrics(): Promise<void> {
-		const cpuQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum by (pod) (rate(container_cpu_usage_seconds_total{}[1m]))`);
-		const response = (await axios.get(cpuQuery.toString())) as AxiosResponse;
-		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
-		const metrics = response.data.data.result as vectorMetrics;
-		console.log("data Hydrated---------", metrics);
+		const metricsCPU = await this.getCpuUsage("prometheus-kube-state-metrics-6fdfdd8dcc-xt2vm", new Date(), new Date());
+		console.log("data Hydrated---------", metricsCPU);
+		const metricsMemory = await this.getMemoryUsage("prometheus-kube-state-metrics-6fdfdd8dcc-xt2vm");
+		console.log("data Hydrated---------", metricsMemory);
+		const metricNetwork = await this.getNetworkUsage("prometheus-kube-state-metrics-6fdfdd8dcc-xt2vm");
+		console.log("data Hydrated---------", metricNetwork);
 		/* const { result } = data;
 		const metrics = result.map((metric: any) => {
 			const { metric: metricName, value } = metric;
@@ -69,28 +70,25 @@ export default class MetricsInfrastructureService extends BaseService {
 
 	public async getCpuUsage(pod: string, startDate: Date, endDate: Date): Promise<vectorMetrics> {
 		const namespace = this.variables.PROMETHEUS_NAMESPACE;
-		const cpuQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="${namespace}" pod="${pod}"}[1m]))`);
+		const cpuQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(rate(container_cpu_usage_seconds_total{namespace="${namespace}", pod!="${pod}"}[1m]))`);
 		const response = (await axios.get(cpuQuery.toString())) as AxiosResponse;
 		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
-		const metrics = response.data.data.result as vectorMetrics;
-		return metrics;
+		return response.data.data.result as vectorMetrics;
 	}
 
 	public async getMemoryUsage(pod: string): Promise<vectorMetrics> {
 		const namespace = this.variables.PROMETHEUS_NAMESPACE;
-		const memoryQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum by (pod) (container_memory_working_set_bytes{namespace="${namespace}" pod="${pod}"})`);
+		const memoryQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(container_memory_working_set_bytes{namespace="${namespace}, pod="${pod}"})`);
 		const response = (await axios.get(memoryQuery.toString())) as AxiosResponse;
 		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
-		const metrics = response.data.data.result as vectorMetrics;
-		return metrics;
+		return response.data.data.result as vectorMetrics;
 	}
 
 	public async getNetworkUsage(pod: string): Promise<vectorMetrics> {
 		const namespace = this.variables.PROMETHEUS_NAMESPACE;
-		const networkQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum by (pod) (rate(container_network_receive_bytes_total{namespace="${namespace}" pod="${pod}"}[1m]))`);
+		const networkQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(rate(container_network_receive_bytes_total{namespace="${namespace}", pod="${pod}"}[1m]))`);
 		const response = (await axios.get(networkQuery.toString())) as AxiosResponse;
 		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
-		const metrics = response.data.data.result as vectorMetrics;
-		return metrics;
+		return response.data.data.result as vectorMetrics;
 	}
 }
