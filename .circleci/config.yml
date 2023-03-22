@@ -115,5 +115,4 @@ workflows:
             branches:
               only: 
                 - main
-                - devops/chartexporter
 
