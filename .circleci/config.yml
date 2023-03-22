@@ -49,6 +49,44 @@ jobs:
               --set front.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-frontend'
               --set proxy.image.tag=$TAG 
               --set proxy.image.repository='rg.fr-par.scw.cloud/tezoslink/p1-proxy'
+  
+  package-helm-chart:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - helm/install-helm-client
+      - run:
+          name: Helm dependency build
+          command: helm dependency build charts
+      - run:
+          name: Helm lint
+          command: helm lint charts
+      - run:
+          name: Install Chart Releaser
+          command: |
+            cd /tmp
+            curl -sSL https://github.com/helm/chart-releaser/releases/download/v1.5.0/chart-releaser_1.5.0_linux_amd64.tar.gz --output cr.tar.gz
+            tar xzf cr.tar.gz
+            mv cr ~/bin/cr
+      - add_ssh_keys:
+          fingerprints:
+            - "0c:70:41:4f:0f:36:96:34:d5:5c:71:fb:a6:94:91:90"
+      - run:
+          name: Deploy Chart
+          command: |
+            git config user.email "devops@smart-chain.fr"
+            git config user.name "CircleCI Job"
+            helm package charts --destination .deploy
+            cr upload -o smart-chain-fr -r tezoslink -p .deploy
+            echo FINISHUPLOAD
+            git checkout gh-pages
+            cr index -i ./index.yaml -p .deploy -o smart-chain-fr -r tezoslink -c https://smart-chain-fr.github.io/tezosLink/
+            git add index.yaml
+            git commit -m "Automatic commit from CircleCI [skip ci]"
+            git push origin gh-pages
+
+
 
 
 workflows:
@@ -69,4 +107,13 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+
+  deploy-helm-chart:
+    jobs:
+      - package-helm-chart:
+          filters: 
+            branches:
+              only: 
+                - main
+                - devops/chartexporter
 
