@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "helpers.fullname" . }}-api
+  name: {{ include "helpers.fullname" . }}-tzlink-api
   namespace: {{ include "helpers.namespace" . | quote }}
   labels: {{ include "helpers.labels.api" . | nindent 4 }}
 spec:

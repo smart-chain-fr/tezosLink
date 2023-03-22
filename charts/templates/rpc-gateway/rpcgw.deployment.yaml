@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway
+  name: {{ $network }}-{{ include "helpers.fullname" $ }}-tzlink-rpcgateway
   namespace: {{ include "helpers.namespace" $| quote }}
   labels: {{ include "helpers.labels.rpcgateway" (dict "root" $ "network" $network)| nindent 4 }}
 spec:
