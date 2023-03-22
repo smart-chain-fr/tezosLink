@@ -1,5 +1,16 @@
 apiVersion: v1
 entries:
+  tezos-link:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2023-03-22T14:47:03.772229659Z"
+    description: A Helm chart to deploy an management dashboard for Tezos Nodes
+    digest: a2bb850453c40b14965f1a42af2e3129b3de47f368b8a3ca6f606b1d81ec2b83
+    name: tezos-link
+    type: application
+    urls:
+    - https://github.com/smart-chain-fr/tezosLink/releases/download/tezos-link-0.2.1/tezos-link-0.2.1.tgz
+    version: 0.2.1
   tezosLink:
   - apiVersion: v2
     appVersion: 0.0.1
@@ -137,4 +148,4 @@ entries:
     urls:
     - https://github.com/smart-chain-fr/tezosLink/releases/download/tezoslink-0.0.1/tezoslink-0.0.1.tgz
     version: 0.0.1
-generated: "2023-01-20T11:08:57.909409185Z"
+generated: "2023-03-22T14:47:03.772261741Z"
