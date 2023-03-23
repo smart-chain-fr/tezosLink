@@ -39,46 +39,27 @@ export default class MetricsInfrastructureService extends BaseService {
 		return metric;
 	}
 
-	public async scrapMetrics(): Promise<void> {
+	public async scrapMetricsByPod(pod: string): Promise<void> {
 
-		const metricsCPU = await this.getCpuUsage("prometheus-kube-state-metrics-6fdfdd8dcc-xt2vm", new Date(), new Date());
-		console.log("data Hydrated---------", metricsCPU);
-		const metricsMemory = await this.getMemoryUsage("prometheus-kube-state-metrics-6fdfdd8dcc-xt2vm");
-		console.log("data Hydrated---------", metricsMemory);
-		const metricNetwork = await this.getNetworkUsage("prometheus-kube-state-metrics-6fdfdd8dcc-xt2vm");
-		console.log("data Hydrated---------", metricNetwork);
-		/* const { result } = data;
-		const metrics = result.map((metric: any) => {
-			const { metric: metricName, value } = metric;
-			const { __name__: name, ...labels } = metricName;
-			return {
-				name,
-				labels,
-				value,
-			};
-		});
-		const metricInfrastructureEntity = metrics.map((metric: any) => {
-			const { name, labels, value } = metric;
-			return {
-				name,
-				labels,
-				value,
-			};
-		}); */
-		//console.log("metricInfrastructureEntity ---------",metricInfrastructureEntity);
-		//await this.saveMetric(metricInfrastructureEntity);
+		const metricsCPU = await this.getCpuUsage(pod, new Date(), new Date());
+		/** {TODO} */
+		console.log("data CPU---------", metricsCPU);
+	 	const metricsMemory = await this.getMemoryUsage(pod);
+		console.log("data Memory---------", metricsMemory);
+		const metricNetwork = await this.getNetworkUsage(pod);
+		console.log("data Network---------", metricNetwork);
 	}
 
 	public async getCpuUsage(pod: string, startDate: Date, endDate: Date): Promise<vectorMetrics> {
-		const namespace = this.variables.PROMETHEUS_NAMESPACE;
-		const cpuQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(container_cpu_usage_seconds_total{namespace="${namespace}") by`);
+		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
+		const cpuQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(container_cpu_usage_seconds_total{namespace="${namespace}" , pod!="${pod}"})`);
 		const response = (await axios.get(cpuQuery.toString())) as AxiosResponse;
 		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
 		return response.data.data.result as vectorMetrics;
 	}
 
 	public async getMemoryUsage(pod: string): Promise<vectorMetrics> {
-		const namespace = this.variables.PROMETHEUS_NAMESPACE;
+		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
 		const memoryQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(container_memory_working_set_bytes{namespace="${namespace}", pod!="${pod}"})`);
 		const response = (await axios.get(memoryQuery.toString())) as AxiosResponse;
 		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
@@ -86,8 +67,8 @@ export default class MetricsInfrastructureService extends BaseService {
 	}
 
 	public async getNetworkUsage(pod: string): Promise<vectorMetrics> {
-		const namespace = this.variables.PROMETHEUS_NAMESPACE;
-		const networkQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(rate(container_network_receive_bytes_total{namespace="${namespace}", pod="${pod}"}[1m]))`);
+		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
+		const networkQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(container_network_receive_bytes_total{namespace="${namespace}", pod="${pod}"})`);
 		const response = (await axios.get(networkQuery.toString())) as AxiosResponse;
 		if (response.status !== HttpCodes.SUCCESS) return Promise.reject(new Error("Cannot scrap prometheus metrics"));
 		return response.data.data.result as vectorMetrics;

@@ -23,7 +23,9 @@
     "api:dev": "nodemon -V --exec 'tsc && npm run api:start'",
     "build:test": "tsc && mocha ./dist/entries/Test.js",
     "format": "prettier --write src",
-    "migrate": ""
+    "migrate": "",
+    "cron:start": "node ./dist/entries/Crons.js",
+    "cron:dev": "nodemon -V --exec 'tsc && npm run cron:start'"
   },
   "repository": {
     "type": "git",

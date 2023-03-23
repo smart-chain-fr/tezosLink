@@ -27,6 +27,7 @@ export default class PodRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+	
 
 	public async findOne(podEntity: Partial<PodEntity>): Promise<PodEntity> {
 		try {
@@ -39,28 +40,50 @@ export default class PodRepository extends BaseRepository {
 		}
 	}
 
-	public async create(podEntity: Partial<PodEntity>): Promise<PodEntity> {
-        try {
-            const data = { ...podEntity };
-            const pod = await this.model.upsert({
-                where: { name: data.name! },
-                create: {
-                    name: data.name!,
-                    phase: data.phase!,
-                    type: data.type!,
-                },
-                update: {
-                    phase: data.phase!,
-                },
-                include: {
-                    MetricInfrastructure: true,
-                },
-            });
-    
-            return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), pod, { strategy: "exposeAll" });
-        } catch (error) {
-            throw new ORMBadQueryError((error as Error).message, error as Error);
-        }
-    }
+	// pods by running phase 
+	public async findRunningPods(limit: number): Promise<PodEntity[]> {
+		try {
+			// Use Math.min to limit the number of rows fetched
+			const rows = Math.min(limit || this.defaultFetchRows, this.maxFetchRows);
+			const pods = await this.model.findMany({
+				where: {
+					phase: "Running",
+				},
+				take: rows,
+			});
+			return ObjectHydrate.map<PodEntity>(PodEntity, pods, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	public async createOrUpdate(podEntity: Partial<PodEntity>): Promise<PodEntity> {
+		try {
+			const data = { ...podEntity };
+			const existingPod = await this.model.findUnique({
+				where: { name: data.name! },
+			});
+			if (existingPod && existingPod.phase === data.phase) {
+				// The phase is already up-to-date, so return the existing entity.
+				return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), existingPod, { strategy: "exposeAll" });
+			}
+			const pod = await this.model.upsert({
+				where: { name: data.name! },
+				create: {
+					name: data.name!,
+					phase: data.phase!,
+					type: data.type!,
+				},
+				update: { phase: data.phase! },
+				include: {
+					MetricInfrastructure: true,
+				},
+			});
+	
+			return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), pod, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
     
 }
