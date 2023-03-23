@@ -1,0 +1,13 @@
+{
+  "/_app": "pages/_app.js",
+  "/": "pages/index.html",
+  "/project-not-found": "pages/project-not-found.html",
+  "/new-project": "pages/new-project.html",
+  "/documentation": "pages/documentation.html",
+  "/show-project": "pages/show-project.html",
+  "/_error": "pages/_error.js",
+  "/404": "pages/404.html",
+  "/status": "pages/status.js",
+  "/dashboard/[uuid]": "pages/dashboard/[uuid].js",
+  "/_document": "pages/_document.js"
+}
