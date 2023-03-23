@@ -15,7 +15,7 @@ export default class PodRepository extends BaseRepository {
 		return this.database.getClient().pod;
 	}
 
-	public async findMany(query: Prisma.PodFindManyArgs): Promise<PodEntity[]> {
+	public async findManyByQuery(query: Prisma.PodFindManyArgs): Promise<PodEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);

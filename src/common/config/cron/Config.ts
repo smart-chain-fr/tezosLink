@@ -10,7 +10,7 @@ const Config: IConfig = {
 	jobs: [
 		{
 			name: "Scrape-metrics",
-			cronTime: Cron.createTimer({ second: "*/15" }),
+			cronTime: Cron.createTimer({ second: "*/60" }),
 			onTick: () => podService.scrapingPodsAndMetrics(),
 			enabled: true,
 		},

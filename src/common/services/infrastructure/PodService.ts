@@ -17,17 +17,68 @@ interface PrometheusPodData {
 	value: [number, string];
 }
 
+interface DeploymentsData {
+	total: number;
+	running: number;
+}
+
 @Service()
 export default class PodService extends BaseService {
 	constructor(private PodRepository: PodRepository, private variables: BackendVariables, private metricInfrastructureService: MetricsInfrastructureService) {
 		super();
 	}
 
+	public async getDeployedTezosLinkPods(type: string): Promise<DeploymentsData> {
+		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
+		const runningQuery = `${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(kube_pod_container_status_running{namespace="${namespace}", container="${type}"})`;
+		const totalQuery = `${this.variables.PROMETHEUS_URL}/api/v1/query?query=kube_deployment_status_replicas{deployment=~".*-${type}", namespace="${namespace}"}`;
+
+		const [runningResponse, totalResponse] = await Promise.all([axios.get(runningQuery), axios.get(totalQuery)]);
+
+		if (totalResponse.status !== HttpCodes.SUCCESS) {
+			throw new Error("Cannot scrap prometheus metrics");
+		}
+
+		const deploymentsData: DeploymentsData = totalResponse.data.data.result.map((data: { value: any[]; metric: { pod: any } }) => ({
+			total: Number(data.value[1]),
+			running: Number(runningResponse.data.data.result.find((result: { metric: { pod: any } }) => result.metric.pod === data.metric.pod)?.value[1] ?? 0),
+		}));
+
+		return deploymentsData;
+	}
+
+	public async getPodsAndMetrics(type: string): Promise<PodEntity[]> {
+		return (await this.PodRepository.findManyByQuery({
+			where: {
+				type,
+			},
+			include: {
+				MetricInfrastructure: true,
+			},
+		})) as PodEntity[];
+	}
+
+	/**
+	 * @throws {Error} If infrastructure Pod are undefined
+	 */
+	public async scrapingPodsAndMetrics(): Promise<void> {
+		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
+		console.info("Starting scraping pods & metrics from prometheus");
+		const pods = (await this.getPodsInNamespace(namespace)) as PodEntity[];
+		if (!pods) {
+			return Promise.reject(new Error("Cannot get pods from prometheus"));
+		}
+		await Promise.all(pods.map((pod) => this.saveOrUpdatePod(pod)));
+		const podsInDb = await this.PodRepository.findRunningPods(NaN);
+		await Promise.all(podsInDb.map((pod) => this.metricInfrastructureService.scrapMetricsByPodAndNamespace(pod.name,namespace)));
+		console.info("Finished scraping pods & metrics from prometheus");
+	}
+
 	/**
 	 * @throws {Error} If infrastructure Pod are undefined
 	 */
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<PodEntity[]> {
-		return await this.PodRepository.findMany(query);
+		return await this.PodRepository.findManyByQuery(query);
 	}
 	/**
 	 *
@@ -40,20 +91,7 @@ export default class PodService extends BaseService {
 		return pod;
 	}
 
-	public async scrapingPodsAndMetrics(): Promise<void> {
-		console.info("Starting scraping pods & metrics from prometheus");
-		const pods = await this.getPodsInNamespace() as PodEntity[];
-		if (!pods) {
-		  return Promise.reject(new Error("Cannot get pods from prometheus"));
-		}
-		await Promise.all(pods.map(pod => this.saveOrUpdatePod(pod)));
-		const podsInDb = await this.PodRepository.findRunningPods(NaN);
-		await Promise.all(podsInDb.map(pod => this.metricInfrastructureService.scrapMetricsByPod(pod.name)));
-		console.info("Finished scraping pods & metrics from prometheus");
-	  }
-
-	private async getPodsInNamespace(): Promise<PodEntity[]> {
-		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
+	private async getPodsInNamespace(namespace: string): Promise<PodEntity[]> {
 		const promQuery = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=kube_pod_status_phase{namespace="${namespace}"}`);
 		const response = await axios.get(promQuery.toString());
 		if (response.status !== HttpCodes.SUCCESS) return [];
@@ -67,7 +105,7 @@ export default class PodService extends BaseService {
 				podEntity.phase = pod.metric.phase;
 				const regex = /-tzlink-(rpcgateway|api|web|proxy)-[a-z0-9]+/;
 				const match = pod.metric.pod.match(regex);
-				podEntity.type = match ? match[1]! : "Unknown";
+				podEntity.type = match ? `tzlink-${match[1]}` : "Unknown";
 				return podEntity;
 			});
 

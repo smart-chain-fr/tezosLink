@@ -45,7 +45,7 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 					type: data.type!,
 					pod: {
 						connect: {
-							name: data.pod!.name!,
+							name: data.podName!,
 						},
 					},
 				},
