@@ -1,7 +1,5 @@
-import { it } from "@jest/globals";
+import VariablesTest from "@Tests/common/config/variables/VariablesTest";
 
 export default [
-	(() => {
-		it("does nothing", () => {})
-	})
+	VariablesTest
 ];
