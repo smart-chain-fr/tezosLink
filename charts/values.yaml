@@ -83,7 +83,7 @@ api:
     DATABASE_USERNAME: "tz-backend"
     DATABASE_PASSWORD: "Titi123!"
     DATABASE_URL: "tezoslink-postgresql.tezoslink-postgresql.svc.cluster.local:5432"
-    Port: 3001
+    API_PORT: 3001
 
   secret: []
     # SECRET_KEY: c2VjcmV0Cg==
@@ -182,7 +182,7 @@ front:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 
   env:
-    Port: 3000
+    WEB_PORT: 3000
 
   secret: 
     SECRET_KEY: c2VjcmV0Cg==
@@ -236,7 +236,7 @@ proxy:
       ROLLING_NODES_URL: "rolling-node.poc-tzk8s.svc.cluster.local"
       TEZOS_ROLLING_PORT: "8732"
       TEZOS_NETWORK: "testnet"
-      Port: 3002
+      NEXT_PUBLIC_RPC_GATEWAY_PORT: 3002
       # required envs
     
     secret: 
@@ -396,7 +396,7 @@ proxy:
         memory: 256Mi
 
   mainnet:
-    enabled : true
+    enabled : false
     replicaCount: 1
     network: "mainnet"
     rpcNodeHost: "xxxxxxxxx"
@@ -405,7 +405,7 @@ proxy:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "0.1.0"
+      tag: 0.1.0
     
     env:
       DATABASE_USERNAME: "tz-backend"
