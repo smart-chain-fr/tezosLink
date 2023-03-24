@@ -34,7 +34,7 @@ The installation of TezosLink is composed of several different Helm charts :
 
 - [Tezos-k8s](https://tezos-k8s.xyz/)
 - [Bitnami PostgreSQL](https://artifacthub.io/packages/helm/bitnami/postgresql)
-- tezos-link Helm charts (WIP)
+- [Tezos-link Helm charts ](https://github.com/smart-chain-fr/tezosLink/tree/dev/charts)
 - [Bitnami Prometheus](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
 
 ### Release version
