@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "helpers.name" -}}
-{{- default .Chart.Name .Values.global.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default .Chart.Name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -30,32 +30,31 @@ Common labels
 */}}
 {{- define "helpers.labels.common" -}}
 helm.sh/chart: {{ include "helpers.chart" . }}
-{{ include "helpers.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
 Proxy labels
 */}}
-{{- define "helpers.labels.proxy" -}}
-{{- include "helpers.labels.common" . }}
-app.kubernetes.io/component : {{ printf "%s-%s" "proxy" (lower .Values.proxy.network) }}
+{{- define "helpers.labels.rpcgateway" -}}
+{{- include "helpers.labels.common" .root }}
+app.kubernetes.io/component : {{ printf "%s-%s" "rpcgateway" .network }}
 {{- end }}
 
 {{/*
 Proxy testnet abels
 */}}
-{{- define "helpers.labels.testnet.proxy" -}}
+{{- define "helpers.labels.testnet.rpcgateway" -}}
 {{- include "helpers.labels.common" . }}
-app.kubernetes.io/component : {{ printf "%s-%s" "proxy" (lower .Values.proxy.testnet.network) }}
+app.kubernetes.io/component : {{ printf "%s-%s" "rpcgateway" (lower .Values.rpcgateway.testnet.network) }}
 {{- end }}
 
 {{/*
-front labels
+web labels
 */}}
-{{- define "helpers.labels.front" -}}
+{{- define "helpers.labels.web" -}}
 {{- include "helpers.labels.common" . }}
-app.kubernetes.io/component : front
+app.kubernetes.io/component : web
 {{- end }}
 
 {{/*
@@ -69,23 +68,22 @@ app.kubernetes.io/component : api
 {{/*
 Selector labels
 */}}
-{{- define "helpers.selectorLabels" -}}
-app.kubernetes.io/instance: {{ .Release.Name }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "helpers.rpcgateway.selectorLabels" -}}
+app.kubernetes.io/instance: {{ .root.Release.Name }}
+app.kubernetes.io/component: rpcgateway
+network: {{ .network }}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "helpers.proxy.selectorLabels" -}}
+{{- define "helpers.web.selectorLabels" -}}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "helpers.front.selectorLabels" -}}
-app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/component : front
+app.kubernetes.io/component : web
 {{- end }}
 
 {{/*
