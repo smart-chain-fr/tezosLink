@@ -60,4 +60,16 @@ export default class ProjectsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+
+	public async delete(projectEntity: Partial<ProjectEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: projectEntity.uuid,
+				},
+			});
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
 }
