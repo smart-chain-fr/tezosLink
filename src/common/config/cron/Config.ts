@@ -1,16 +1,20 @@
-import Cron, { IConfig } from "@Common/cron/";
-import { InfrastructureService } from "@Services/infrastructure/infrastructureService";
+import Cron from "@System/cron";
+import IConfig from "@System/cron/IConfig";
+import PodService from "@Services/infrastructure/PodService";
+
 import Container from "typedi";
 
-const infrastructureService = Container.get(InfrastructureService);
+const podService = Container.get(PodService);
 const Config: IConfig = {
 	binders: [],
-	jobs: [{
-		name: "Scrape-metrics",
-		cronTime: Cron.createTimer({ second: "0", minute: "0", hour: "*/1" }),
-		onTick: () => infrastructureService.getAllMetrics(),
-		enabled: false,
-	},],
+	jobs: [
+		{
+			name: "Scrape-metrics",
+			cronTime: Cron.createTimer({ second: "*/60" }),
+			onTick: () => podService.scrapingPodsAndMetrics(),
+			enabled: true,
+		},
+	],
 };
 
 export default Config;

@@ -7,3 +7,4 @@ export interface IStatusNode {
 	archive_node: IHttpReponse;
 	rolling_node: IHttpReponse;
 }
+

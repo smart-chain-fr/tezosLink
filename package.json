@@ -23,6 +23,8 @@
     "api:dev": "prisma migrate dev && nodemon -V --exec 'tsc && npm run api:start'",
     "build:test": "tsc && mocha ./dist/entries/Test.js",
     "format": "prettier --write src",
+    "cron:start": "node ./dist/entries/Crons.js",
+    "cron:dev": "nodemon -V --exec 'tsc && npm run cron:start'"
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy"
   },

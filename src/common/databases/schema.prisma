@@ -30,3 +30,26 @@ model Metric {
   updatedAt DateTime @updatedAt
   @@map("app_metrics")
 }
+
+model Pod {
+  name      String  @unique @db.VarChar(255)
+  phase  String @db.VarChar(255)
+  type  String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  MetricInfrastructure MetricInfrastructure[]
+  @@map("app_pods_infrastructure")
+}
+
+model MetricInfrastructure {
+  uuid      String  @unique @db.VarChar(255) @id
+  label String @db.VarChar(255)
+  value  String @db.VarChar(255)
+  date_requested  DateTime
+  type  String @db.VarChar(255)
+  pod   Pod  @relation(fields: [podName], references: [name])
+  podName  String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("app_metrics_infrastructure")
+}

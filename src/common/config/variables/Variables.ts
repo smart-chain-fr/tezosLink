@@ -52,6 +52,12 @@ export class BackendVariables {
 	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly TEZOS_NETWORK!: string;
 
+	@IsNotEmpty({ groups: ["api"] })
+	public readonly PROMETHEUS_URL!: string;
+
+	@IsNotEmpty({ groups: ["api"] })
+	public readonly PROMETHEUS_NAMESPACE_TEZOSLINK!: string;
+
 	public readonly NODE_ENV = process.env.NODE_ENV;
 
 	public constructor() {
@@ -72,6 +78,8 @@ export class BackendVariables {
 		this.ROLLING_NODES_URL = process.env["ROLLING_NODES_URL"]!;
 		this.ROLLING_NODES_PORT = process.env["ROLLING_NODES_PORT"]!;
 		this.TEZOS_NETWORK = process.env["TEZOS_NETWORK"]!;
+		this.PROMETHEUS_URL = process.env["PROMETHEUS_URL"]!;
+		this.PROMETHEUS_NAMESPACE_TEZOSLINK = process.env["PROMETHEUS_NAMESPACE_TEZOSLINK"]!;
 	}
 	public async validate(groups?: string[]) {
 		const validationOptions = groups ? { groups } : undefined;

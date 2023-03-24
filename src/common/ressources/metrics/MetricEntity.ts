@@ -1,4 +1,4 @@
-import ProjectEntity from "./ProjectEntity";
+import ProjectEntity from "../projects/ProjectEntity";
 
 export default class MetricEntity {
 	public uuid!: string;

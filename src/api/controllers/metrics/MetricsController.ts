@@ -4,12 +4,12 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import { InfrastructureService } from "@Services/infrastructure/infrastructureService";
+
 
 @Controller()
 @Service()
 export default class MetricsController extends ApiController {
-	constructor(private metricsService: MetricsService, private infrastructureService: InfrastructureService) {
+	constructor(private metricsService: MetricsService) {
 		super();
 	}
 
@@ -50,30 +50,6 @@ export default class MetricsController extends ApiController {
 			return;
 		}
 		this.httpSuccess(res, metrics);
-	}
-
-	@Get("/metrics/infrastructure")
-	protected async getInfrastructureMetrics(req: Request, res: Response) {
-		const allMetrics = await this.infrastructureService.getAllMetrics();
-		if (!allMetrics) {
-			this.httpNotFoundRequest(res);
-			return;
-		}
-		const circularReplacer = () => {
-			const seen = new WeakSet();
-			return (key: any, value: object | null) => {
-				if (typeof value === "object" && value !== null) {
-					if (seen.has(value)) {
-						return;
-					}
-					seen.add(value);
-				}
-				return value;
-			};
-		};
-		const allMetricsJSON = JSON.stringify(allMetrics, circularReplacer());
-		console.log(allMetricsJSON);
-		this.httpSuccess(res, allMetricsJSON);
 	}
 }
 
