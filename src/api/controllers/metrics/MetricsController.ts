@@ -15,6 +15,10 @@ export default class MetricsController extends ApiController {
 	@Get("/metrics")
 	protected async get(req: Request, res: Response) {
 		const query = processFindManyQuery(req.query);
+		if (!query) {
+			this.httpNotFoundRequest(res);
+			return;
+		}
 		this.httpSuccess(res, await this.metricsService.getByCriterias(query));
 	}
 
@@ -39,7 +43,7 @@ export default class MetricsController extends ApiController {
 			this.httpNotFoundRequest(res);
 			return;
 		}
-		this.httpSuccess(res, {count: metrics});
+		this.httpSuccess(res, { count: metrics });
 	}
 
 	//Get types of requests using a query
@@ -54,15 +58,11 @@ export default class MetricsController extends ApiController {
 		this.httpSuccess(res, metrics);
 	}
 
-	//Get last requests using a query
-	@Get("/metrics/lastrequests")
-	protected async getByLastRequests(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
-		const metrics = await this.metricsService.getLastMetrics(query.where.uuid, query.where.limit);
-		if (!metrics) {
-			this.httpNotFoundRequest(res);
-			return;
-		}
+	//Get requests for the world map component using a query
+	@Get("/metrics/world-map")
+	protected async getWorldMap(req: Request, res: Response) {
+		const metrics = await this.metricsService.worldMapMetrics();
 		this.httpSuccess(res, metrics);
 	}
+
 }

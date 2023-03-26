@@ -24,6 +24,8 @@ model Metric {
   path String @db.VarChar(255)
   remote_address  String @db.VarChar(255)
   date_requested  DateTime 	@db.Date()
+  status  String @db.VarChar(255)
+  node  String @db.VarChar(255)
   project   Project  @relation(fields: [projectUuid], references: [uuid])
   projectUuid String 
   createdAt DateTime @default(now())

@@ -10,6 +10,7 @@ import { Service } from "typedi";
 import IsRpcPathAllowed from "./validators/IsRpcPathAllowed";
 import IsValidProject from "./validators/IsValidProject";
 import { BackendVariables } from "@Common/config/variables/Variables";
+import { NodeType } from "@Common/enums/enums";
 
 export class RpcRequest {
 	@IsNotEmpty()
@@ -91,22 +92,27 @@ export default class ProxyService extends BaseService {
 		}
 
 		let response = "";
+		const metric = new MetricEntity();
 
 		if (this.isRollingNodeRedirection(request.path)) {
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
-			const { data } = await axios.get(rollingURL.toString());
+			const { data, status } = await axios.get(rollingURL.toString());
+			status !== HttpCodes.SUCCESS ? (metric.status = "Failed") : (metric.status = "Successfull");
+			metric.node = NodeType.ROLLING;
+
 			response = data;
 		} else {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
-			const { data } = await axios.get(archiveURL.toString());
+			const { data, status } = await axios.get(archiveURL.toString());
+			status !== HttpCodes.SUCCESS ? (metric.status = "Failed") : (metric.status = "Successfull");
+			metric.node = NodeType.ARCHIVE;
 			response = data;
 		}
-		// Logger les metrics
-		const metric = new MetricEntity();
-		Object.assign(metric, request, { project, dateRequested: new Date() });
 
+		Object.assign(metric, request, { project, dateRequested: new Date() });
+		// Logger les metrics
 		await this.saveMetric(metric);
 		return response;
 	}
@@ -117,4 +123,3 @@ export default class ProxyService extends BaseService {
 		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => pureUrl.includes(rollingpattern)));
 	}
 }
-

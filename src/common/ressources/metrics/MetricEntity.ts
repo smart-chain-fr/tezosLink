@@ -9,6 +9,10 @@ export default class MetricEntity {
 
 	public date_requested!: Date;
 
+	public node!: string;
+
+	public status!: string;
+
 	public projectUuid!: string;
 
 	public project!: ProjectEntity;

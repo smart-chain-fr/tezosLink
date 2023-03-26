@@ -17,6 +17,19 @@ export class CountRpcPathUsage {
 	count!: number;
 }
 
+type MetricQuery = {
+	where: {
+		uuid?: string;
+		node?: string;
+		from?: string;
+		to?: string;
+		type?: string;
+		status?: string;
+	};
+	_limit?: number;
+	_page?: number;
+};
+
 @Service()
 export default class MetricsRepository extends BaseRepository {
 	constructor(private database: TezosLink) {
@@ -29,13 +42,35 @@ export default class MetricsRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: Prisma.MetricFindManyArgs): Promise<MetricEntity[]> {
+	public async findMany(query: MetricQuery): Promise<MetricEntity[]> {
 		try {
-			// Use Math.min to limit the number of rows fetched
-			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
+			const { where, _page = 1, _limit } = query;
+			const { uuid, node, from, to, type: requestType, status } = where;
 
-			// Update the query with the limited limit
-			const metrics = await this.model.findMany({ ...query, take: limit });
+			// Use Math.max to limit the number of rows fetched
+			const limit = _limit && _limit < this.defaultFetchRows ? _limit : this.defaultFetchRows;
+			const skip = (Math.max(1, _page) - 1) * limit;
+
+			const whereClause: Prisma.MetricWhereInput = {
+				projectUuid: uuid,
+				node,
+				date_requested: {
+					gte: new Date(from!),
+					lte: new Date(to!),
+				},
+				path: {
+					contains: requestType,
+				},
+				status,
+			};
+
+			// Update the query with the limited limit, skip and where clause
+			const metrics = await this.model.findMany({
+				take: limit,
+				skip,
+				where: whereClause,
+			});
+
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -61,6 +96,8 @@ export default class MetricsRepository extends BaseRepository {
 					uuid: data.uuid!,
 					remote_address: data.remote_address!,
 					date_requested: data.date_requested!,
+					node: data.node!,
+					status: data.status!,
 					project: {
 						connect: {
 							uuid: data.project!.uuid!,
@@ -91,6 +128,8 @@ export default class MetricsRepository extends BaseRepository {
 								uuid: data.uuid!,
 								remote_address: data.remote_address!,
 								date_requested: data.date_requested!,
+								node: data.node!,
+								status: data.status!,
 								project: {
 									connect: {
 										uuid: data.project!.uuid,
@@ -137,7 +176,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Last requests for a specific project
-	public async findLastRequests(projectUuid: string, limit: number): Promise<MetricEntity[]> {
+	public async findAllRequestsByCriterias(projectUuid: string, limit: number): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
 			const rows = Math.min(limit || this.defaultFetchRows, this.maxFetchRows);
@@ -197,7 +236,22 @@ export default class MetricsRepository extends BaseRepository {
 						lte: to,
 					},
 				},
-			}) as Promise<number>; 
+			}) as Promise<number>;
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	// All requests for the world map
+	public async findAllRequestsWorldMap(): Promise<MetricEntity[]> {
+		try {
+			// Use Math.min to limit the number of rows fetched
+			const metrics = await this.model.findMany({
+				orderBy: {
+					date_requested: "desc",
+				},
+			});
+			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -220,4 +274,3 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 }
-
