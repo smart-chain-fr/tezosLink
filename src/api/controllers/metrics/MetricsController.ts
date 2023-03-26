@@ -62,7 +62,22 @@ export default class MetricsController extends ApiController {
 	@Get("/metrics/world-map")
 	protected async getWorldMap(req: Request, res: Response) {
 		const metrics = await this.metricsService.worldMapMetrics();
+		if (!metrics) {
+			this.httpNotFoundRequest(res);
+			return;
+		}
 		this.httpSuccess(res, metrics);
+	}
+
+	//Get paths available in the database
+	@Get("/metrics/paths")
+	protected async getPaths(req: Request, res: Response) {
+		const paths = await this.metricsService.getPathDictionary();
+		if (!paths) {
+			this.httpNotFoundRequest(res);
+			return;
+		}
+		this.httpSuccess(res, paths);
 	}
 
 }

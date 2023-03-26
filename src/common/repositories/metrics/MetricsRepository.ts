@@ -55,13 +55,11 @@ export default class MetricsRepository extends BaseRepository {
 				projectUuid: uuid,
 				node,
 				date_requested: {
-					gte: new Date(from!),
-					lte: new Date(to!),
+					gte: from ? new Date(from) : undefined,
+					lte: to ? new Date(to) : undefined,
 				},
-				path: {
-					contains: requestType,
-				},
-				status,
+				path: requestType || undefined,
+				status: status || undefined,
 			};
 
 			// Update the query with the limited limit, skip and where clause
@@ -273,4 +271,14 @@ export default class MetricsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+
+	public async findPathDictionary(): Promise<string[]> {
+		const paths = await this.model.findMany({
+			distinct: ['path'],
+			select: { path: true }
+		});
+	
+		return paths.map((path) => path.path);
+	}
+	
 }

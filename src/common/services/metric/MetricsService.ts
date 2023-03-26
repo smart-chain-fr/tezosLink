@@ -98,4 +98,13 @@ export default class MetricsService extends BaseService {
 		const data = Object.entries(countries).map(([country, count]) => ({ country, count }));
 		return { data };
 	}
+	/**
+	 *
+	 * @throws {Error} If metric is undefined
+	 * @returns
+	 */
+	public async getPathDictionary(): Promise<string[]> {
+		const paths = await this.metricRepository.findPathDictionary();
+		return paths;
+	}
 }
