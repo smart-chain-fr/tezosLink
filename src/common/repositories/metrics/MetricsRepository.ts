@@ -8,7 +8,7 @@ import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
 export class RequestsByDayMetrics {
-	date_requested!: Date;
+	date!: Date;
 	count!: number;
 }
 
@@ -176,7 +176,7 @@ export default class MetricsRepository extends BaseRepository {
 
 			response.forEach((item) => {
 				result.push({
-					date_requested: item.date_requested,
+					date: item.date_requested,
 					count: item._count.date_requested,
 				});
 			});
@@ -187,13 +187,17 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count all metrics by criterias for a specific project
-	public async countAll(projectUuid: string): Promise<number> {
+	public async countAll(projectUuid: string, from: Date, to: Date): Promise<number> {
 		try {
 			return this.model.count({
 				where: {
 					projectUuid: projectUuid,
+					date_requested: {
+						gte: from,
+						lte: to,
+					},
 				},
-			}) as Promise<number>;
+			}) as Promise<number>; 
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
