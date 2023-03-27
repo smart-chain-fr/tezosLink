@@ -40,7 +40,7 @@ export default class MetricsInfrastructureService extends BaseService {
 	/**
 	 * @throws {Error} If infrastructure metrics are undefined
 	 */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<MetricInfrastructureEntity[]> {
+	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricInfrastructureRepository.findMany(query);
 	}
 

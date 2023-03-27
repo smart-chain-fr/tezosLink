@@ -15,7 +15,7 @@ type MetricQuery = {
 		type?: string;
 	};
 	take?: number;
-	_page?: number;
+	skip?: number;
 };
 
 @Service()
@@ -30,14 +30,14 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: MetricQuery): Promise<MetricInfrastructureEntity[]> {
+	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			const { where, _page = 1, take } = query;
+			const { where, skip = 1, take } = query;
 			const { podName, from, to, type } = where;
 
-			// Use Math.max to limit the number of rows fetched
-			const limit = (take && take < this.defaultFetchRows) ? take : this.defaultFetchRows;
-			const skip = (Math.max(1, _page) - 1) * limit;
+			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
+			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
+			const offset = (page - 1) * limit;
 
 			const whereClause: Prisma.MetricInfrastructureWhereInput = {
 				podName,
@@ -48,13 +48,25 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 				type,
 			};
 
+			const totalCount = await this.model.count({ where: whereClause });
+
 			// Update the query with the limited limit, skip and where clause
 			const metrics = await this.model.findMany({
 				take: limit,
-				skip,
+				skip: offset,
 				where: whereClause,
+				orderBy: {
+					dateRequested: "desc",
+				},
 			});
-			return ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" });
+			const total = Math.ceil(totalCount / limit);
+			const metadata = {
+				count: metrics.length,
+				limit,
+				page,
+				total,
+			};
+			return { data: ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

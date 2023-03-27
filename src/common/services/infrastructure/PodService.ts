@@ -31,22 +31,27 @@ export default class PodService extends BaseService {
 	public async getDeployedTezosLinkPods(type: string): Promise<DeploymentsData> {
 		const namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
 		const runningQuery = `${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(kube_pod_container_status_running{namespace="${namespace}", container="${type}"})`;
-		const totalQuery = `${this.variables.PROMETHEUS_URL}/api/v1/query?query=kube_deployment_status_replicas{deployment=~".*-${type}", namespace="${namespace}"}`;
+		const totalQuery = `${this.variables.PROMETHEUS_URL}/api/v1/query?query=sum(kube_deployment_status_replicas{deployment=~".*-${type}", namespace="${namespace}"})`;
 
 		const [runningResponse, totalResponse] = await Promise.all([axios.get(runningQuery), axios.get(totalQuery)]);
+		console.log(runningResponse.data.data.result);
+		console.log(totalResponse.data.data.result);
 
 		if (totalResponse.status !== HttpCodes.SUCCESS) {
-			throw new Error("Cannot scrap prometheus metrics");
+			console.info("Cannot scrap prometheus metrics");
 		}
 
 		if (!totalResponse.data.data.result.length || !runningResponse.data.data.result.length) {
 			return { total: 0, running: 0 };
 		}
 
-		const deploymentsData: DeploymentsData = totalResponse.data.data.result.map((data: { value: any[]; metric: { pod: any } }) => ({
-			total: Number(data.value[1]) ?? 0,
-			running: Number(runningResponse.data.data.result.find((result: { metric: { pod: any } }) => result.metric.pod === data.metric.pod)?.value[1] ?? 0) ?? 0,
-		}));
+		const totalValue = Number(totalResponse.data.data.result[0].value[1]) ?? 0;
+		const runningValue = Number(runningResponse.data.data.result[0].value[1]) ?? 0;
+
+		const deploymentsData: DeploymentsData = {
+			total: totalValue,
+			running: runningValue,
+		};
 
 		return deploymentsData;
 	}

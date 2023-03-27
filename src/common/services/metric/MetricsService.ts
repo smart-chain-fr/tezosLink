@@ -14,7 +14,7 @@ export default class MetricsService extends BaseService {
 	/**
 	 * @throws {Error} If metrics are undefined
 	 */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; offset: number; total: number } }> {
+	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricRepository.findMany(query);
 	}
 	/**
@@ -24,7 +24,7 @@ export default class MetricsService extends BaseService {
 	 */
 	public async create(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity>> {
 		const metric = await this.metricRepository.create(metricEntity);
-		if (!metric) return Promise.reject(new Error("Cannot create metric"));
+		if (!metric) return Promise.reject("Cannot create metric");
 		return metric;
 	}
 
@@ -35,7 +35,7 @@ export default class MetricsService extends BaseService {
 	 */
 	public async getCountRpcPath(uuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
 		const pathsCount = await this.metricRepository.countRpcPathUsage(uuid, from, to);
-		if (!pathsCount) return Promise.reject(new Error("Cannot get count of rpc path"));
+		if (!pathsCount) return Promise.reject("Cannot get count of rpc path");
 		return pathsCount;
 	}
 	/**
@@ -45,7 +45,7 @@ export default class MetricsService extends BaseService {
 	 */
 	public async getCountAllMetricsByCriterias(uuid: string, from: Date, to: Date): Promise<number> {
 		const count = await this.metricRepository.countAll(uuid, from, to);
-		if (isNaN(count)) Promise.reject(new Error("Cannot get count of metrics"));
+		if (isNaN(count)) Promise.reject("Cannot get count of metrics");
 		return count;
 	}
 
