@@ -215,5 +215,17 @@ export default class MetricsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-}
 
+	// Delete metrics by UUID
+	public async delete(metricEntity: Partial<MetricEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: metricEntity.uuid,
+				},
+			});
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+}

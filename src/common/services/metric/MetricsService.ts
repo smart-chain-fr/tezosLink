@@ -75,5 +75,17 @@ export default class MetricsService extends BaseService {
 		const months = 3;
 		await this.metricRepository.removeOldMetricsBymonths(months);
 	}
-}
 
+	/**
+	 *
+	 * @throws {Error} If metric cannot be deleted
+	 * @returns
+	 */
+	public async delete(metricEntity: Partial<MetricEntity>): Promise<void> {
+		try {
+			await this.metricRepository.delete(metricEntity);
+		} catch (error) {
+			throw new Error("Cannot delete metric");
+		}
+	}
+}
