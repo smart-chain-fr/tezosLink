@@ -61,4 +61,3 @@ export default class ProjectsController extends ApiController {
 		this.httpCreated(res, await this.projectService.create(projectEntity));
 	}
 }
-

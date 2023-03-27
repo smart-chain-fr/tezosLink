@@ -35,7 +35,7 @@ model Metric {
 
 model Pod {
   name      String  @unique @db.VarChar(255)
-  phase  String @db.VarChar(255)
+  namespace  String @db.VarChar(255)
   type  String @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -31,6 +31,12 @@ interface MetricQuery {
 	type: MetricType;
 }
 
+/**
+ * Metric infrastructure service
+ * @export
+ * @class MetricsInfrastructureService
+ * @extends {BaseService}
+ * */
 @Service()
 export default class MetricsInfrastructureService extends BaseService {
 	constructor(private metricInfrastructureRepository: MetricsInfrastrucutreRepository, private variables: BackendVariables) {
@@ -38,12 +44,21 @@ export default class MetricsInfrastructureService extends BaseService {
 	}
 
 	/**
-	 * @throws {Error} If infrastructure metrics are undefined
-	 */
+	 * Get metrics by criterias
+	 * @param {ReturnType<typeof processFindManyQuery>} query
+	 * @returns {Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }>}
+	 * @memberof MetricsInfrastructureService
+	 * */
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricInfrastructureRepository.findMany(query);
 	}
-
+	/**
+	 * Scrap metrics by pod and namespace
+	 * @param {string} pod
+	 * @param {string} namespace
+	 * @returns {Promise<void>}
+	 * @memberof MetricsInfrastructureService
+	 * */
 	public async scrapMetricsByPodAndNamespace(pod: string, namespace: string): Promise<void> {
 		const metricQueries: MetricQuery[] = [
 			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_LIMIT },
@@ -84,16 +99,22 @@ export default class MetricsInfrastructureService extends BaseService {
 	}
 
 	/**
-	 *
-	 * @throws {Error} If infrastructure metric cannot be created
-	 * @returns
-	 */
+	 * Save metric
+	 * @param {Partial<MetricInfrastructureEntity>} metricInfrastructureEntity
+	 * @returns {Promise<Partial<MetricInfrastructureEntity>>}
+	 * @memberof MetricsInfrastructureService
+	 * */
 	private async saveMetric(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<Partial<MetricInfrastructureEntity>> {
 		const metric = await this.metricInfrastructureRepository.create(metricInfrastructureEntity);
 		if (!metric) return Promise.reject(new Error("Cannot create infrastructure metric"));
 		return metric;
 	}
-
+	/**
+	 * Get prometheus query result
+	 * @param {string} query
+	 * @returns {Promise<PrometheusQueryResult>}
+	 * @memberof MetricsInfrastructureService
+	 * */
 	private async getPrometheusQueryResult(query: string): Promise<PrometheusQueryResult> {
 		const url = new URL(`${this.variables.PROMETHEUS_URL}/api/v1/query?query=${query}`);
 

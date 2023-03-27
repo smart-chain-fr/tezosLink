@@ -58,6 +58,12 @@ export class BackendVariables {
 	@IsNotEmpty({ groups: ["api"] })
 	public readonly PROMETHEUS_NAMESPACE_TEZOSLINK!: string;
 
+	@IsNotEmpty({ groups: ["api"] })
+	public readonly PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET!: string;
+
+	@IsNotEmpty({ groups: ["api"] })
+	public readonly PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET!: string;
+
 	public readonly NODE_ENV = process.env.NODE_ENV;
 
 	public constructor() {
@@ -80,6 +86,8 @@ export class BackendVariables {
 		this.TEZOS_NETWORK = process.env["TEZOS_NETWORK"]!;
 		this.PROMETHEUS_URL = process.env["PROMETHEUS_URL"]!;
 		this.PROMETHEUS_NAMESPACE_TEZOSLINK = process.env["PROMETHEUS_NAMESPACE_TEZOSLINK"]!;
+		this.PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET = process.env["PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET"]!;
+		this.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET = process.env["PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET"]!;
 	}
 	public async validate(groups?: string[]) {
 		const validationOptions = groups ? { groups } : undefined;

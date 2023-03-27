@@ -4,35 +4,42 @@ import BaseService from "@Services/BaseService";
 import { type processFindManyQuery } from "prisma-query";
 import { Service } from "typedi";
 
+/**
+ * Projects service
+ * @export
+ * @class ProjectsService
+ * @extends {BaseService}
+ * */
 @Service()
 export default class ProjectsService extends BaseService {
 	constructor(private projectRepository: ProjectsRepository) {
 		super();
 	}
 
-	/**
-	 * @throws {Error} If projects are undefined
-	 */
+	/** Get all projects by criterias
+	 * @param query
+	 * @returns {Promise<ProjectEntity[]>}
+	 * @memberof ProjectsService
+	 * */
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<ProjectEntity[]> {
 		return this.projectRepository.findMany(query);
 	}
 	/**
-	 * @throws {Error} If project is undefined
-	 */
+	 * Get project by uuid
+	 * @param {Partial<ProjectEntity>} projectEntity
+	 * @returns {Promise<Partial<ProjectEntity>>}
+	 * @memberof ProjectsService
+	 * */
 	public async getByUUID(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
-		const project = await this.projectRepository.findOne(projectEntity);
-		if (!project) Promise.reject(new Error("Cannot get project by uuid"));
-		return project;
+		return await this.projectRepository.findOne(projectEntity);
 	}
 	/**
-	 *
-	 * @throws {Error} If project cannot be created
-	 * @returns
-	 */
+	 * Create a project
+	 * @param {Partial<ProjectEntity>} projectEntity
+	 * @returns {Promise<Partial<ProjectEntity>>}
+	 * @memberof ProjectsService
+	 * */
 	public async create(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
-		const project = await this.projectRepository.create(projectEntity);
-		if (!project) Promise.reject(new Error("Cannot create project"));
-		return project;
+		return await this.projectRepository.create(projectEntity);
 	}
 }
-

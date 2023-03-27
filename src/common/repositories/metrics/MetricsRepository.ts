@@ -171,7 +171,6 @@ export default class MetricsRepository extends BaseRepository {
 						lte: to,
 					},
 				},
-				
 			});
 			response.forEach((item) => {
 				result.push({
