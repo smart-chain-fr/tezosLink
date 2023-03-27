@@ -140,7 +140,7 @@ export default class MetricsRepository extends BaseRepository {
 	public async findLastRequests(projectUuid: string, limit: number): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
-			const rows = Math.min(limit || this.defaultFetchRows, this.maxFetchRows);
+			const rows = Math.min(Math.max(0, limit) || this.defaultFetchRows, this.maxFetchRows);
 			const metrics = await this.model.findMany({
 				where: {
 					projectUuid: projectUuid,
