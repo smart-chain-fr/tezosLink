@@ -43,7 +43,8 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `env.TESTNET_ROLLING_NODES_PORT` | Port of the testnet rolling node | `"port"` |
 | `env.PROMETHEUS_URL` | Endpoint to connect to Prometheus | `"localhost"` |
 | `env.PROMETHEUS_NAMESPACE_TEZOSLINK` | Kubernetes namespace where TezosLink is deployed | `"namespace"` |
-| `env.PROMETHEUS_NAMESPACE_TEZOS_K8S` | Kubernetes namespace where TezosK8s is deployed | `"namespace"` |
+| `env.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET` | Kubernetes namespace where TezosK8s is deployed | `"namespace"` |
+| `env.PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET` | Kubernetes namespace where TezosK8s is deployed | `"namespace"` |
 | `api.enabled` | Enables the API service | `true` |
 | `api.replicas` | Number of pods replicas desired for the API service | `1` |
 | `api.image.repository` | Repository containing the API image | `"rg.fr-par.scw.cloud/tezoslink/p1-api"` |

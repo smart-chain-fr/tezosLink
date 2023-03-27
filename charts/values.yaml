@@ -43,8 +43,9 @@ env: # Environment variables injected through the config maps, if needed they ca
 
   PROMETHEUS_URL: localhost # Endpoint to connect to Prometheus
   PROMETHEUS_NAMESPACE_TEZOSLINK: namespace # Kubernetes namespace where TezosLink is deployed
-  PROMETHEUS_NAMESPACE_TEZOS_K8S: namespace # Kubernetes namespace where TezosK8s is deployed
-
+  PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: namespace # Kubernetes namespace where TezosK8s is deployed
+  PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: namespace # Kubernetes namespace where TezosK8s is deployed
+  
 api: 
 
   enabled: true # Enables the API service
