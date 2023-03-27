@@ -39,9 +39,13 @@ export default class PodService extends BaseService {
 			throw new Error("Cannot scrap prometheus metrics");
 		}
 
+		if (!totalResponse.data.data.result.length || !runningResponse.data.data.result.length) {
+			return { total: 0, running: 0 };
+		}
+
 		const deploymentsData: DeploymentsData = totalResponse.data.data.result.map((data: { value: any[]; metric: { pod: any } }) => ({
-			total: Number(data.value[1]),
-			running: Number(runningResponse.data.data.result.find((result: { metric: { pod: any } }) => result.metric.pod === data.metric.pod)?.value[1] ?? 0),
+			total: Number(data.value[1]) ?? 0,
+			running: Number(runningResponse.data.data.result.find((result: { metric: { pod: any } }) => result.metric.pod === data.metric.pod)?.value[1] ?? 0) ?? 0,
 		}));
 
 		return deploymentsData;

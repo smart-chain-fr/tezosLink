@@ -23,7 +23,7 @@ model Metric {
   uuid      String  @unique @db.VarChar(255) @id
   path String @db.VarChar(255)
   remoteAddress  String @db.VarChar(255)
-  dateRequested  DateTime 	@db.Date()
+  dateRequested  DateTime 	@db.Timestamp()
   status  String @db.VarChar(255)
   node  String @db.VarChar(255)
   project   Project  @relation(fields: [projectUuid], references: [uuid])
@@ -46,7 +46,7 @@ model Pod {
 model MetricInfrastructure {
   uuid      String  @unique @db.VarChar(255) @id
   value  String @db.VarChar(255)
-  dateRequested  DateTime
+  dateRequested  DateTime @db.Timestamp()
   type  String @db.VarChar(255)
   pod   Pod  @relation(fields: [podName], references: [name])
   podName  String @db.VarChar(255)

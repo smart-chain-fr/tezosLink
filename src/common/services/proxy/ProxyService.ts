@@ -98,7 +98,7 @@ export default class ProxyService extends BaseService {
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
 			const { data, status } = await axios.get(rollingURL.toString());
-			status !== HttpCodes.SUCCESS ? (metric.status = "Failed") : (metric.status = "Successfull");
+			status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
 			metric.node = NodeType.ROLLING;
 
 			response = data;
@@ -106,7 +106,7 @@ export default class ProxyService extends BaseService {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
 			const { data, status } = await axios.get(archiveURL.toString());
-			status !== HttpCodes.SUCCESS ? (metric.status = "Failed") : (metric.status = "Successfull");
+			status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
 			metric.node = NodeType.ARCHIVE;
 			response = data;
 		}
