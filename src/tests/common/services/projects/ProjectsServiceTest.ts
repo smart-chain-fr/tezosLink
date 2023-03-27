@@ -8,7 +8,7 @@ import ProjectEntity from "@Entities/projects/ProjectEntity"
 import ProjectsService from "@Services/project/ProjectsService";
 
 export default () => {
-	describe("ProjectsRepository", () => {
+	describe("ProjectsService", () => {
 		let projectsService: ProjectsService;
 
 		const projectEntity =
