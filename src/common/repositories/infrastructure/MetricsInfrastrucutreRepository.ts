@@ -14,7 +14,7 @@ type MetricQuery = {
 		to?: string;
 		type?: string;
 	};
-	_limit?: number;
+	take?: number;
 	_page?: number;
 };
 
@@ -32,11 +32,11 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 
 	public async findMany(query: MetricQuery): Promise<MetricInfrastructureEntity[]> {
 		try {
-			const { where, _page = 1, _limit } = query;
+			const { where, _page = 1, take } = query;
 			const { podName, from, to, type } = where;
 
 			// Use Math.max to limit the number of rows fetched
-			const limit = _limit && _limit < this.defaultFetchRows ? _limit : this.defaultFetchRows;
+			const limit = (take && take < this.defaultFetchRows) ? take : this.defaultFetchRows;
 			const skip = (Math.max(1, _page) - 1) * limit;
 
 			const whereClause: Prisma.MetricInfrastructureWhereInput = {

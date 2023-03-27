@@ -26,7 +26,7 @@ type MetricQuery = {
 		type?: string;
 		status?: string;
 	};
-	_limit?: number;
+	take?: number;
 	_page?: number;
 };
 
@@ -42,15 +42,14 @@ export default class MetricsRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[], metadata: { count: number, limit: number, offset: number, total: number } }> {
+	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; offset: number; total: number } }> {
 		try {
-			const { where, _page = 1, _limit } = query;
+			const { where, _page = 1, take } = query;
 			const { projectUuid, node, from, to, type: requestType, status } = where;
-	
+
 			// Use Math.max to limit the number of rows fetched
-			const limit = _limit && _limit < this.defaultFetchRows ? _limit : this.defaultFetchRows;
+			const limit = take && take < this.defaultFetchRows ? take : this.defaultFetchRows;
 			const offset = (Math.max(1, _page) - 1) * limit;
-	
 			const whereClause: Prisma.MetricWhereInput = {
 				projectUuid,
 				node,
@@ -61,17 +60,17 @@ export default class MetricsRepository extends BaseRepository {
 				path: requestType || undefined,
 				status: status || undefined,
 			};
-	
+
 			// Count the total number of matching records
 			const count = await this.model.count({ where: whereClause });
-	
+
 			// Update the query with the limited limit, offset, and where clause
 			const metrics = await this.model.findMany({
 				take: limit,
 				skip: offset,
 				where: whereClause,
 			});
-	
+
 			// Create the metadata object
 			const metadata = {
 				count,
@@ -79,14 +78,13 @@ export default class MetricsRepository extends BaseRepository {
 				offset,
 				total: count,
 			};
-	
+
 			// Return the result as an object with 'data' and 'metadata' properties
 			return { data: ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-	
 
 	public async findOne(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity> | null> {
 		try {
