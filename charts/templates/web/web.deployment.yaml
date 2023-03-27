@@ -19,7 +19,7 @@ spec:
       serviceAccountName: {{ default .Values.web.serviceAccount.name "web-sa" }}
       {{ end }}
       containers:
-        - name: {{ include "helpers.fullname" . }}-web
+        - name: tzlink-web
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
           image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
           resources: 

@@ -8,14 +8,6 @@ A Helm chart to deploy an management dashboard for Tezos Nodes
 ## Configuration
 
 The following table lists the configurable parameters of the Tezos-link chart and their default values.
-For the environment variables they are injected using a configmap and they are all required as they set the required connections between the services. As some of the environment variables are confidential, you can also inject all the environment variables using secret(s). In each service part, there is a `secret` block where you can add additional enviroment variables, this secret will be created.
-You can also use existing secrets.
-The order of priority for the environment variables:
-
-- Existing secrets
-- Created secret
-- Configmap
-
 
 | Parameter                | Description             | Default        |
 | ------------------------ | ----------------------- | -------------- |
@@ -26,19 +18,18 @@ The order of priority for the environment variables:
 | `env.DATABASE_USER` | Database user | `"postgres"` |
 | `env.DATABASE_PASSWORD` | Database user password | `"postgres"` |
 | `env.DATABASE_NAME` | Database name | `"tezoslink"` |
-| `env.WEB_HOSTNAME` | Hostname of the frontend, will be used for the ingress if enabled | `"localhost"` |
 | `env.WEB_LABEL` |  | `"web"` |
-| `env.WEB_PORT` | Port of the frontend, can be set to null | `3000` |
+| `env.WEB_PORT` | Port of the frontend, only used to setup the server | `3000` |
 | `env.WEB_ROOT_URL` | Root URL of the frontend | `"/"` |
-| `env.API_HOSTNAME` | Hostname of the API | `"localhost"` |
+| `env.API_HOSTNAME` | Endpoint needed for communication with the frontend | `"localhost"` |
 | `env.API_LABEL` |  | `"api"` |
 | `env.API_PORT` | Port of the API | `3001` |
 | `env.API_ROOT_URL` | Root URL of the API | `"/api"` |
-| `env.MAINNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for mainnet, will be used for the ingress if enabled | `"localhost"` |
+| `env.MAINNET_RPC_GATEWAY_HOSTNAME` | Endpoint used by the frontend | `"localhost"` |
 | `env.MAINNET_RPC_GATEWAY_LABEL` |  | `"rpcgw"` |
 | `env.MAINNET_RPC_GATEWAY_PORT` | Port of the RPC gateway for mainnet | `3002` |
 | `env.MAINNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for mainnet | `"/rpc-mainnet"` |
-| `env.TESTNET_RPC_GATEWAY_HOSTNAME` | Hostname of the RPC gateway for testnet, will be used for the ingress if enabled | `"localhost"` |
+| `env.TESTNET_RPC_GATEWAY_HOSTNAME` | Endpoint used by the frontend | `"localhost"` |
 | `env.TESTNET_RPC_GATEWAY_LABEL` |  | `"rpcgw"` |
 | `env.TESTNET_RPC_GATEWAY_PORT` | Port pf the RPC gateway for testnet | `3002` |
 | `env.TESTNET_RPC_GATEWAY_ROOT_URL` | Root URL of the RPC gateway for testnet | `"/rpc-testnet"` |
@@ -50,6 +41,9 @@ The order of priority for the environment variables:
 | `env.TESTNET_ARCHIVE_NODES_PORT` | Port of the testnet archive node | `"port"` |
 | `env.TESTNET_ROLLING_NODES_URL` | URL or IP address of the testnet rolling node | `"localhost"` |
 | `env.TESTNET_ROLLING_NODES_PORT` | Port of the testnet rolling node | `"port"` |
+| `env.PROMETHEUS_URL` | Endpoint to connect to Prometheus | `"localhost"` |
+| `env.PROMETHEUS_NAMESPACE_TEZOSLINK` | Kubernetes namespace where TezosLink is deployed | `"namespace"` |
+| `env.PROMETHEUS_NAMESPACE_TEZOS_K8S` | Kubernetes namespace where TezosK8s is deployed | `"namespace"` |
 | `api.enabled` | Enables the API service | `true` |
 | `api.replicas` | Number of pods replicas desired for the API service | `1` |
 | `api.image.repository` | Repository containing the API image | `"rg.fr-par.scw.cloud/tezoslink/p1-api"` |
@@ -61,6 +55,7 @@ The order of priority for the environment variables:
 | `api.service.loadBalancerSourceRanges` | Source Range allow list | `[]` |
 | `api.service.annotations` | Service annotations | `{}` |
 | `api.ingress.enabled` | Enables ingress creation | `false` |
+| `api.ingress.host` | URL of the api ingress | `null` |
 | `api.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `api.ingress.annotations` | Annotations of the ingress | `{}` |
 | `api.ingress.labels` | Labels of the ingress | `{}` |
@@ -106,6 +101,7 @@ The order of priority for the environment variables:
 | `web.serviceAccount.annotations` | Annotations of the API service account | `{}` |
 | `web.serviceAccount.name` | Default name: front-sa | `""` |
 | `web.ingress.enabled` | Enables ingress creation | `false` |
+| `web.ingress.host` | URL of the web ingress | `null` |
 | `web.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `web.ingress.annotations` | Annotations of the ingress | `{}` |
 | `web.ingress.labels` | Labels of the ingress | `{}` |
@@ -151,6 +147,7 @@ The order of priority for the environment variables:
 | `rpcgateway.testnet.service.loadBalancerSourceRanges` | Source Range allow list | `[]` |
 | `rpcgateway.testnet.service.annotations` | Service annotations | `{}` |
 | `rpcgateway.testnet.ingress.enabled` | Enables ingress creation | `false` |
+| `rpcgateway.testnet.ingress.host` | URL of the testnet rpc gateway | `null` |
 | `rpcgateway.testnet.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `rpcgateway.testnet.ingress.annotations` | Annotations of the ingress | `{}` |
 | `rpcgateway.testnet.ingress.labels` | Labels of the ingress | `{}` |
@@ -194,6 +191,7 @@ The order of priority for the environment variables:
 | `rpcgateway.mainnet.service.loadBalancerSourceRanges` | Source Range allow list | `[]` |
 | `rpcgateway.mainnet.service.annotations` | Service annotations | `{}` |
 | `rpcgateway.mainnet.ingress.enabled` | Enables ingress creation | `false` |
+| `rpcgateway.mainnet.ingress.host` | URL of the mainnet rpc gateway | `null` |
 | `rpcgateway.mainnet.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `rpcgateway.mainnet.ingress.annotations` | Annotations of the ingress | `{}` |
 | `rpcgateway.mainnet.ingress.labels` | Labels of the ingress | `{}` |
@@ -220,6 +218,21 @@ The order of priority for the environment variables:
 | `rpcgateway.mainnet.readinessProbe.successThreshold` | The number of consecutive success results needed to switch probe status to “Success” | `1` |
 | `rpcgateway.mainnet.resources.limits` | CPU and memory limits | `{}` |
 | `rpcgateway.mainnet.resources.requests` | CPU and memory requests | `{}` |
+| `cron.enabled` |  | `true` |
+| `cron.image.repository` | Repository containing the rpcgateway image | `"rg.fr-par.scw.cloud/tezoslink/p1-cron"` |
+| `cron.image.tag` | Version of the rpc gateway image | `"v1.4.0"` |
+| `cron.image.pullPolicy` |  | `"Always"` |
+| `cron.resources.limits.cpu` |  | `"200m"` |
+| `cron.resources.limits.memory` |  | `"256Mi"` |
+| `cron.resources.requests.cpu` |  | `"100m"` |
+| `cron.resources.requests.memory` |  | `"128Mi"` |
+| `cron.secret` | Secrets to be injected as environment variables | `[]` |
+| `cron.additionalSecrets` | Additional secrets to mount as environment variables | `[]` |
+| `cron.podSecurityContext.enabled` | Enables the pod security context | `true` |
+| `cron.podSecurityContext.runAsUser` | Uses the TezosLink to run the container | `10000` |
+| `cron.podSecurityContext.runAsGroup` | Sets the primary group ID | `null` |
+| `cron.podSecurityContext.fsGroup` | Sets the owner of /data | `null` |
+| `cron.podSecurityContext.runAsNonRoot` | Start the process not using the root user (runAsUser field required) | `true` |
 
 
 

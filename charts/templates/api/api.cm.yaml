@@ -13,6 +13,8 @@ data:
   DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
   DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}
 
+  DEV_PRISMA_STUDIO_DB_URL: "postgres://{{ $.Values.env.DATABASE_USER }}:{{ $.Values.env.DATABASE_PASSWORD }}@{{ $.Values.env.DATABASE_HOSTNAME}}:{{ $.Values.env.DATABASE_PORT }}/{{ $.Values.env.DATABASE_NAME }}"
+
 
 
 

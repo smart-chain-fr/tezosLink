@@ -19,7 +19,7 @@ spec:
       serviceAccountName: {{ default .Values.api.serviceAccount.name "api-sa" }}
       {{ end }}
       containers:
-        - name: {{ include "helpers.fullname" . }}-api
+        - name: tzlink-api
           imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
           resources: 
