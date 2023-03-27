@@ -58,9 +58,39 @@ export default () => {
 			});
 
 			it("can create entities", async () => {
-				console.log(metricEntity);
 				const createdEntity = await metricsService.create(metricEntity);
 				expect(createdEntity).toBeDefined();
+				metricsService.delete(createdEntity);
+			});
+		});
+
+		describe("⤞ Postcondition tests", () => {
+			it("can delete newly created entities", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				expect(metricsService.delete(createdEntity)).resolves.toBeUndefined();
+			});
+
+			it("can find newly created entities", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toMatchObject([createdEntity]);
+				metricsService.delete(createdEntity);
+			});
+
+			it("can get the last metric", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toHaveLength(1);
+				metricsService.delete(createdEntity);
+			});
+
+			it("is safe to ask for zero last metrics", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				expect(metricsService.getLastMetrics(projectEntity.uuid!, 0)).resolves.toMatchObject([createdEntity]);
+				metricsService.delete(createdEntity);
+			});
+
+			it("is safe to ask for a negative number of last metrics", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				expect(metricsService.getLastMetrics(projectEntity.uuid!, -1)).resolves.toMatchObject([createdEntity]);
 				metricsService.delete(createdEntity);
 			});
 		});
