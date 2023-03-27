@@ -22,8 +22,8 @@ model Project {
 model Metric {
   uuid      String  @unique @db.VarChar(255) @id
   path String @db.VarChar(255)
-  remote_address  String @db.VarChar(255)
-  date_requested  DateTime 	@db.Date()
+  remoteAddress  String @db.VarChar(255)
+  dateRequested  DateTime 	@db.Date()
   status  String @db.VarChar(255)
   node  String @db.VarChar(255)
   project   Project  @relation(fields: [projectUuid], references: [uuid])
@@ -45,9 +45,8 @@ model Pod {
 
 model MetricInfrastructure {
   uuid      String  @unique @db.VarChar(255) @id
-  label String @db.VarChar(255)
   value  String @db.VarChar(255)
-  date_requested  DateTime
+  dateRequested  DateTime
   type  String @db.VarChar(255)
   pod   Pod  @relation(fields: [podName], references: [name])
   podName  String @db.VarChar(255)

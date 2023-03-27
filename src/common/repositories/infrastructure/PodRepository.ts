@@ -21,7 +21,8 @@ export default class PodRepository extends BaseRepository {
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
 
 			// Update the query with the limited limit
-			const pods = await this.model.findMany({ ...query, take: limit });
+			console.log("query", query);
+			const pods = await this.model.findMany({ ...query, take: limit, include: { MetricInfrastructure: true } });
 			return ObjectHydrate.map<PodEntity>(PodEntity, pods, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -33,6 +34,9 @@ export default class PodRepository extends BaseRepository {
 		try {
 			const pod = (await this.model.findFirst({
 				where: podEntity,
+				include: {
+					MetricInfrastructure: true,
+				},
 			})) as PodEntity;
 			return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), pod, { strategy: "exposeAll" });
 		} catch (error) {

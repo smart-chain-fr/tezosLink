@@ -58,6 +58,12 @@ export default class PodService extends BaseService {
 		})) as PodEntity[];
 	}
 
+	public async getOnePodAndMetrics(projectEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
+		const project = await this.PodRepository.findOne(projectEntity);
+		if (!project) Promise.reject(new Error("Cannot get pod by name"));
+		return project;
+	}
+
 	/**
 	 * @throws {Error} If infrastructure Pod are undefined
 	 */
@@ -70,7 +76,7 @@ export default class PodService extends BaseService {
 		}
 		await Promise.all(pods.map((pod) => this.saveOrUpdatePod(pod)));
 		const podsInDb = await this.PodRepository.findRunningPods(NaN);
-		await Promise.all(podsInDb.map((pod) => this.metricInfrastructureService.scrapMetricsByPodAndNamespace(pod.name,namespace)));
+		await Promise.all(podsInDb.map((pod) => this.metricInfrastructureService.scrapMetricsByPodAndNamespace(pod.name, namespace)));
 		console.info("Finished scraping pods & metrics from prometheus");
 	}
 

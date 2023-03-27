@@ -7,6 +7,17 @@ import BaseRepository from "@Repositories/BaseRepository";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
+type MetricQuery = {
+	where: {
+		podName: string;
+		from?: string;
+		to?: string;
+		type?: string;
+	};
+	_limit?: number;
+	_page?: number;
+};
+
 @Service()
 export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	constructor(private database: TezosLink) {
@@ -19,13 +30,30 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: Prisma.MetricInfrastructureFindManyArgs): Promise<MetricInfrastructureEntity[]> {
+	public async findMany(query: MetricQuery): Promise<MetricInfrastructureEntity[]> {
 		try {
-			// Use Math.min to limit the number of rows fetched
-			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
+			const { where, _page = 1, _limit } = query;
+			const { podName, from, to, type } = where;
 
-			// Update the query with the limited limit
-			const metrics = await this.model.findMany({ ...query, take: limit });
+			// Use Math.max to limit the number of rows fetched
+			const limit = _limit && _limit < this.defaultFetchRows ? _limit : this.defaultFetchRows;
+			const skip = (Math.max(1, _page) - 1) * limit;
+
+			const whereClause: Prisma.MetricInfrastructureWhereInput = {
+				podName,
+				dateRequested: {
+					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
+				},
+				type,
+			};
+
+			// Update the query with the limited limit, skip and where clause
+			const metrics = await this.model.findMany({
+				take: limit,
+				skip,
+				where: whereClause,
+			});
 			return ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -39,9 +67,8 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 			const metric = await this.model.create({
 				data: {
 					uuid: data.uuid!,
-					label: data.label!,
 					value: data.value!,
-					date_requested: data.date_requested!,
+					dateRequested: data.dateRequested!,
 					type: data.type!,
 					pod: {
 						connect: {

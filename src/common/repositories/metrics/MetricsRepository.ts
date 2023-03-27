@@ -19,7 +19,7 @@ export class CountRpcPathUsage {
 
 type MetricQuery = {
 	where: {
-		uuid?: string;
+		projectUuid: string;
 		node?: string;
 		from?: string;
 		to?: string;
@@ -45,22 +45,23 @@ export default class MetricsRepository extends BaseRepository {
 	public async findMany(query: MetricQuery): Promise<MetricEntity[]> {
 		try {
 			const { where, _page = 1, _limit } = query;
-			const { uuid, node, from, to, type: requestType, status } = where;
+			const { projectUuid, node, from, to, type: requestType, status } = where;
 
 			// Use Math.max to limit the number of rows fetched
 			const limit = _limit && _limit < this.defaultFetchRows ? _limit : this.defaultFetchRows;
 			const skip = (Math.max(1, _page) - 1) * limit;
 
 			const whereClause: Prisma.MetricWhereInput = {
-				projectUuid: uuid,
+				projectUuid,
 				node,
-				date_requested: {
-					gte: from ? new Date(from) : undefined,
-					lte: to ? new Date(to) : undefined,
+				dateRequested: {
+					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 				},
 				path: requestType || undefined,
 				status: status || undefined,
 			};
+
 
 			// Update the query with the limited limit, skip and where clause
 			const metrics = await this.model.findMany({
@@ -68,7 +69,6 @@ export default class MetricsRepository extends BaseRepository {
 				skip,
 				where: whereClause,
 			});
-
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -92,8 +92,8 @@ export default class MetricsRepository extends BaseRepository {
 				data: {
 					path: data.path!,
 					uuid: data.uuid!,
-					remote_address: data.remote_address!,
-					date_requested: data.date_requested!,
+					remoteAddress: data.remoteAddress!,
+					dateRequested: data.dateRequested!,
 					node: data.node!,
 					status: data.status!,
 					project: {
@@ -124,8 +124,8 @@ export default class MetricsRepository extends BaseRepository {
 							data: {
 								path: data.path!,
 								uuid: data.uuid!,
-								remote_address: data.remote_address!,
-								date_requested: data.date_requested!,
+								remoteAddress: data.remoteAddress!,
+								dateRequested: data.dateRequested!,
 								node: data.node!,
 								status: data.status!,
 								project: {
@@ -155,7 +155,7 @@ export default class MetricsRepository extends BaseRepository {
 				},
 				where: {
 					projectUuid: ProjectUuid,
-					date_requested: {
+					dateRequested: {
 						gte: from,
 						lte: to,
 					},
@@ -184,7 +184,7 @@ export default class MetricsRepository extends BaseRepository {
 				},
 				take: rows,
 				orderBy: {
-					date_requested: "desc",
+					dateRequested: "desc",
 				},
 			});
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
@@ -198,13 +198,13 @@ export default class MetricsRepository extends BaseRepository {
 		try {
 			const result: RequestsByDayMetrics[] = [];
 			const response = await this.model.groupBy({
-				by: ["date_requested"],
+				by: ["dateRequested"],
 				_count: {
-					date_requested: true,
+					dateRequested: true,
 				},
 				where: {
 					projectUuid: projectUuid,
-					date_requested: {
+					dateRequested: {
 						gte: from,
 						lte: to,
 					},
@@ -213,8 +213,8 @@ export default class MetricsRepository extends BaseRepository {
 
 			response.forEach((item) => {
 				result.push({
-					date: item.date_requested,
-					count: item._count.date_requested,
+					date: item.dateRequested,
+					count: item._count.dateRequested,
 				});
 			});
 			return ObjectHydrate.map<RequestsByDayMetrics>(RequestsByDayMetrics, result, { strategy: "exposeAll" });
@@ -229,7 +229,7 @@ export default class MetricsRepository extends BaseRepository {
 			return this.model.count({
 				where: {
 					projectUuid: projectUuid,
-					date_requested: {
+					dateRequested: {
 						gte: from,
 						lte: to,
 					},
@@ -246,7 +246,7 @@ export default class MetricsRepository extends BaseRepository {
 			// Use Math.min to limit the number of rows fetched
 			const metrics = await this.model.findMany({
 				orderBy: {
-					date_requested: "desc",
+					dateRequested: "desc",
 				},
 			});
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
@@ -262,7 +262,7 @@ export default class MetricsRepository extends BaseRepository {
 			date.setMonth(date.getMonth() - months);
 			this.model.deleteMany({
 				where: {
-					date_requested: {
+					dateRequested: {
 						lte: date,
 					},
 				},
@@ -271,14 +271,16 @@ export default class MetricsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	// Find all paths
 	public async findPathDictionary(): Promise<string[]> {
-		const paths = await this.model.findMany({
-			distinct: ['path'],
-			select: { path: true }
-		});
-	
-		return paths.map((path) => path.path);
+		try {
+			const paths = await this.model.findMany({
+				distinct: ["path"],
+				select: { path: true },
+			});
+			return paths.map((path) => path.path);
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
 	}
-	
 }

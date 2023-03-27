@@ -15,6 +15,22 @@ interface PrometheusQueryResult {
 	};
 }
 
+enum MetricType {
+	CPU_USAGE = "cpu-usage",
+	CPU_LIMIT = "cpu-limit",
+	CPU_REQUESTED = "cpu-requested",
+	RAM_USAGE = "ram-usage",
+	RAM_LIMIT = "ram-limit",
+	RAM_REQUESTED = "ram-requested",
+	NETWORK_RECEIVE = "network-receive",
+	NETWORK_TRANSMIT = "network-transmit",
+}
+
+interface MetricQuery {
+	query: string;
+	type: MetricType;
+}
+
 @Service()
 export default class MetricsInfrastructureService extends BaseService {
 	constructor(private metricInfrastructureRepository: MetricsInfrastrucutreRepository, private variables: BackendVariables) {
@@ -29,78 +45,39 @@ export default class MetricsInfrastructureService extends BaseService {
 	}
 
 	public async scrapMetricsByPodAndNamespace(pod: string, namespace: string): Promise<void> {
-		const cpuRequest = `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="cpu"}`;
-		const cpuLimit = `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="cpu"}`;
-		const cpuUsage = `container_cpu_usage_seconds_total{namespace="${namespace}",pod="${pod}"}`;
-
-		const memoryRequest = `container_memory_working_set_bytes{namespace="${namespace}",pod="${pod}"}`;
-
-		const networkReceive = `container_network_receive_bytes_total{namespace="${namespace}",pod="${pod}"}`;
-		const networkTransmit = `container_network_transmit_bytes_total{namespace="${namespace}",pod="${pod}"}`;
+		const metricQueries: MetricQuery[] = [
+			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_LIMIT },
+			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_REQUESTED },
+			{ query: `container_cpu_usage_seconds_total{namespace="${namespace}",pod="${pod}"}`, type: MetricType.CPU_USAGE },
+			{ query: `container_memory_working_set_bytes{namespace="${namespace}",pod="${pod}"}`, type: MetricType.RAM_USAGE },
+			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="memory"}`, type: MetricType.RAM_LIMIT },
+			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="memory"}`, type: MetricType.RAM_REQUESTED },
+			{ query: `container_network_receive_bytes_total{namespace="${namespace}",pod="${pod}"}`, type: MetricType.NETWORK_RECEIVE },
+			{ query: `container_network_transmit_bytes_total{namespace="${namespace}",pod="${pod}"}`, type: MetricType.NETWORK_TRANSMIT },
+		];
 
 		try {
-			const [cpuRequests, cpuLimits, cpuUsages, memoryUsages, networkReceives, networkTransmits] = await Promise.all([
-				this.getPrometheusQueryResult(cpuRequest),
-				this.getPrometheusQueryResult(cpuLimit),
-				this.getPrometheusQueryResult(cpuUsage),
-				this.getPrometheusQueryResult(memoryRequest),
-				this.getPrometheusQueryResult(networkReceive),
-				this.getPrometheusQueryResult(networkTransmit),
-			]);
+			const queryResults = await Promise.all(metricQueries.map((metricQuery) => this.getPrometheusQueryResult(metricQuery.query)));
 
-			// save cpu metrics
-			cpuRequests.data.result.forEach(async (result: any) => {
-				const podName = result.metric.pod;
-				const requestValue = result.value[1];
-				const limit = cpuLimits.data.result.find((result: any) => result.metric.pod === podName)?.value[1];
-				const usage = cpuUsages.data.result.find((result: any) => result.metric.pod === podName)?.value[1];
-				const cpuMetric: Partial<MetricInfrastructureEntity> = {
-					podName,
-					label: "cpu",
-					value: JSON.stringify({
-						request: requestValue,
-						limit,
-						usage,
-					}),
-					date_requested: new Date(),
-					type: "cpu",
-				};
-				await this.saveMetric(cpuMetric);
-			});
+			// save metrics
+			const metrics = queryResults.map((queryResult, index) => ({
+				value: queryResult?.data?.result?.[0]?.value?.[1] ?? undefined,
+				type: metricQueries[index]!.type ?? "",
+			}));
 
-			// save memory metrics
-			memoryUsages.data.result.forEach(async (result: any) => {
-				const podName = result.metric.pod;
-				const memoryUsage = result.value[1];
-				const memoryMetric: Partial<MetricInfrastructureEntity> = {
-					podName,
-					label: "memory",
-					value: JSON.stringify({
-						usage: memoryUsage,
+			await Promise.all(
+				metrics
+					.filter((metric) => metric.value !== undefined)
+					.map((metric) => {
+						const metricEntity: Partial<MetricInfrastructureEntity> = {
+							podName: pod,
+							value: metric.value!,
+							dateRequested: new Date(),
+							type: metric.type!,
+						};
+						return this.saveMetric(metricEntity);
 					}),
-					date_requested: new Date(),
-					type: "memory",
-				};
-				await this.saveMetric(memoryMetric);
-			});
-
-			// save network metrics
-			networkReceives.data.result.forEach(async (result: any) => {
-				const podName = result.metric.pod;
-				const receive = result.value[1];
-				const transmit = networkTransmits.data.result.find((result: any) => result.metric.pod === podName)?.value[1];
-				const networkMetric: Partial<MetricInfrastructureEntity> = {
-					podName,
-					label: "network",
-					value: JSON.stringify({
-						receive,
-						transmit,
-					}),
-					date_requested: new Date(),
-					type: "network",
-				};
-				await this.saveMetric(networkMetric);
-			});
+			);
 		} catch (error) {
 			console.error(`Cannot scrap prometheus metrics: ${error}`);
 		}

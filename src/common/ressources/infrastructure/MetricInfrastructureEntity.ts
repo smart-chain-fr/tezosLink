@@ -5,11 +5,9 @@ export default class MetricInfrastructureEntity {
 
 	public podName!: string;
 
-	public label!: string;
-
 	public value!: string;
 
-	public date_requested!: Date;
+	public dateRequested!: Date;
 
 	public type!: string;
 
