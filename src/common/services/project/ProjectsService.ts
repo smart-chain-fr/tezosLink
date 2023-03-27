@@ -34,5 +34,16 @@ export default class ProjectsService extends BaseService {
 		if (!project) Promise.reject(new Error("Cannot create project"));
 		return project;
 	}
+	/**
+	 *
+	 * @throws {Error} If project cannot be deleted
+	 * @returns
+	 */
+	public async delete(projectEntity: Partial<ProjectEntity>): Promise<void> {
+		try {
+			await this.projectRepository.delete(projectEntity);
+		} catch (error) {
+			throw new Error("Cannot delete project");
+		}
+	}
 }
-
