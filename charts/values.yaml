@@ -12,22 +12,21 @@ env: # Environment variables injected through the config maps, if needed they ca
   DATABASE_PASSWORD: postgres # Database user password
   DATABASE_NAME: tezoslink # Database name
 
-  WEB_HOSTNAME: localhost # Hostname of the frontend, will be used for the ingress if enabled 
   WEB_LABEL: web
-  WEB_PORT: 3000 # Port of the frontend, can be set to null
+  WEB_PORT: 3000 # Port of the frontend, only used to setup the server
   WEB_ROOT_URL: / # Root URL of the frontend
 
-  API_HOSTNAME: localhost # Hostname of the API 
-  API_LABEL: api # 
+  API_HOSTNAME: localhost # Endpoint needed for communication with the frontend
+  API_LABEL: api 
   API_PORT: 3001 # Port of the API
   API_ROOT_URL: /api # Root URL of the API
 
-  MAINNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for mainnet, will be used for the ingress if enabled
-  MAINNET_RPC_GATEWAY_LABEL: rpcgw
+  MAINNET_RPC_GATEWAY_HOSTNAME: localhost # Endpoint used by the frontend
+  MAINNET_RPC_GATEWAY_LABEL: rpcgw 
   MAINNET_RPC_GATEWAY_PORT: 3002 # Port of the RPC gateway for mainnet
   MAINNET_RPC_GATEWAY_ROOT_URL: /rpc-mainnet # Root URL of the RPC gateway for mainnet
 
-  TESTNET_RPC_GATEWAY_HOSTNAME: localhost # Hostname of the RPC gateway for testnet, will be used for the ingress if enabled
+  TESTNET_RPC_GATEWAY_HOSTNAME: localhost # Endpoint used by the frontend
   TESTNET_RPC_GATEWAY_LABEL: rpcgw 
   TESTNET_RPC_GATEWAY_PORT: 3002 # Port pf the RPC gateway for testnet
   TESTNET_RPC_GATEWAY_ROOT_URL: /rpc-testnet # Root URL of the RPC gateway for testnet
@@ -41,6 +40,10 @@ env: # Environment variables injected through the config maps, if needed they ca
   TESTNET_ARCHIVE_NODES_PORT: port # Port of the testnet archive node
   TESTNET_ROLLING_NODES_URL: localhost # URL or IP address of the testnet rolling node
   TESTNET_ROLLING_NODES_PORT: port # Port of the testnet rolling node
+
+  PROMETHEUS_URL: localhost # Endpoint to connect to Prometheus
+  PROMETHEUS_NAMESPACE_TEZOSLINK: namespace # Kubernetes namespace where TezosLink is deployed
+  PROMETHEUS_NAMESPACE_TEZOS_K8S: namespace # Kubernetes namespace where TezosK8s is deployed
 
 api: 
 
@@ -63,6 +66,7 @@ api:
   
   ingress:  
     enabled: false # Enables ingress creation
+    host: # URL of the api ingress
     tls:
       secretName: # Name of the secret that contains or will contain the certificate
     annotations: {} # Annotations of the ingress
@@ -138,6 +142,7 @@ web:
 
   ingress:  
     enabled: false # Enables ingress creation
+    host: # URL of the web ingress
     tls:
       secretName: # Name of the secret that contains or will contain the certificate
     annotations: {} # Annotations of the ingress
@@ -217,6 +222,7 @@ rpcgateway:
     
     ingress:  
       enabled: false # Enables ingress creation
+      host:  # URL of the testnet rpc gateway
       tls:
         secretName: # Name of the secret that contains or will contain the certificate
       annotations: {} # Annotations of the ingress
@@ -289,6 +295,7 @@ rpcgateway:
     
     ingress:  
       enabled: false # Enables ingress creation
+      host: # URL of the mainnet rpc gateway
       tls:
         secretName: # Name of the secret that contains or will contain the certificate
       annotations: {} # Annotations of the ingress
@@ -326,3 +333,32 @@ rpcgateway:
       requests: {} # CPU and memory requests
         # cpu: 100m
         # memory: 256Mi
+
+cron: 
+  enabled: true
+
+  image:
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-cron # Repository containing the rpcgateway image
+    tag: v1.4.0 # Version of the rpc gateway image
+    pullPolicy: Always
+
+  resources:
+    limits: # CPU and memory limits
+      cpu: 200m
+      memory: 256Mi
+    requests: # CPU and memory requests
+      cpu: 100m
+      memory: 128Mi
+
+  
+  secret: []  # Secrets to be injected as environment variables
+    # SECRET_KEY: c2VjcmV0Cg==
+
+  additionalSecrets: [] # Additional secrets to mount as environment variables
+
+  podSecurityContext:
+    enabled: true # Enables the pod security context 
+    runAsUser: 10000 # Uses the TezosLink to run the container
+    runAsGroup: # Sets the primary group ID
+    fsGroup: # Sets the owner of /data
+    runAsNonRoot: true # Start the process not using the root user (runAsUser field required)

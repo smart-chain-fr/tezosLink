@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helpers.fullname" .}}-cron-cm
+data:
+
+  PROMETHEUS_URL: {{ .Values.env.PROMETHEUS_URL}}
+  PROMETHEUS_NAMESPACE_TEZOSLINK: {{ .Values.env.PROMETHEUS_NAMESPACE_TEZOSLINK}}
+  PROMETHEUS_NAMESPACE_TEZOS_K8S: {{ .Values.env.PROMETHEUS_NAMESPACE_TEZOS_K8S}}
+  DATABASE_HOSTNAME: {{ .Values.env.DATABASE_HOSTNAME}}
+  DATABASE_PORT: {{ quote .Values.env.DATABASE_PORT }}
+  DATABASE_USER: {{ .Values.env.DATABASE_USER }}
+  DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
+  DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}

@@ -6,6 +6,7 @@ kind: ConfigMap
 metadata:
   name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-cm
 data:
+  DEV_PRISMA_STUDIO_DB_URL: "postgres://{{ $.Values.env.DATABASE_USER }}:{{ $.Values.env.DATABASE_PASSWORD }}@{{ $.Values.env.DATABASE_HOSTNAME}}:{{ $.Values.env.DATABASE_PORT }}/{{ $.Values.env.DATABASE_NAME }}"
   {{ if eq $network "testnet" }}
   RPC_GATEWAY_LABEL: {{ $.Values.env.TESTNET_RPC_GATEWAY_LABEL }}
   RPC_GATEWAY_PORT: {{ quote $.Values.env.TESTNET_RPC_GATEWAY_PORT }}

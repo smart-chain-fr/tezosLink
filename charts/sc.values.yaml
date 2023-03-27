@@ -6,41 +6,44 @@ global:
 
 
 env: # Environment variables injected through the config maps
-  DATABASE_HOSTNAME: "postgres-postgresql.tzlink.svc.cluster.local"
+  DATABASE_HOSTNAME: "tezoslinkv2-postgresql.tezoslink-postgresql.svc.cluster.local"
   DATABASE_PORT: "5432"
-  DATABASE_USER: "postgres"
-  DATABASE_PASSWORD: "9MvsMkNmrh"
+  DATABASE_USER: "tzbackendv2"
+  DATABASE_PASSWORD: "Titi123v2"
   DATABASE_NAME: "tezoslink"
 
-  WEB_HOSTNAME: "test-web-svc.tezoslink-helm-test.svc.cluster.local"
   WEB_LABEL: "TezosLink"
   WEB_PORT: 3000
   WEB_ROOT_URL: "/"
 
-  API_HOSTNAME: "test-api-svc.tezoslink-helm-test.svc.cluster.local"
+  API_HOSTNAME: "api.stg.tzlink.smart-chain.fr" # Endpoint that will be used by the front, add port if needed
   API_LABEL: "TezosLink API"
   API_PORT: 3001
   API_ROOT_URL: "/api"
 
-  MAINNET_RPC_GATEWAY_HOSTNAME: "localhost"
+  MAINNET_RPC_GATEWAY_HOSTNAME: "mainnet.rpc.stg.tzlink.smart-chain.fr" # Endpoint that will be used by the front
   MAINNET_RPC_GATEWAY_LABEL: "TezosLink RPC Gateway"
   MAINNET_RPC_GATEWAY_PORT: 3002
   MAINNET_RPC_GATEWAY_ROOT_URL: "/rpc"
 
-  TESTNET_RPC_GATEWAY_HOSTNAME: "localhost"
+  TESTNET_RPC_GATEWAY_HOSTNAME: "testnet.rpc.stg.tzlink.smart-chain.fr" # Endpoint that will be used by the front
   TESTNET_RPC_GATEWAY_LABEL: "TezosLink RPC Gateway"
-  TESTNET_RPC_GATEWAY_PORT: 300
+  TESTNET_RPC_GATEWAY_PORT: 3002
   TESTNET_RPC_GATEWAY_ROOT_URL: "/rpc"
 
-  MAINNET_ARCHIVE_NODES_URL: localhost # URL or IP address of the mainnet archive node
-  MAINNET_ARCHIVE_NODES_PORT: port # Port of the mainnet archive node
-  MAINNET_ROLLING_NODES_URL:  localhost # URL or IP address of the mainnet rolling node
-  MAINNET_ROLLING_NODES_PORT: port # Port of the mainnet rolling node
+  MAINNET_ARCHIVE_NODES_URL: archive-node.poc-tzk8s.svc.cluster.local # URL or IP address of the mainnet archive node
+  MAINNET_ARCHIVE_NODES_PORT: 8732 # Port of the mainnet archive node
+  MAINNET_ROLLING_NODES_URL:  rolling-node.poc-tzk8s.svc.cluster.local # URL or IP address of the mainnet rolling node
+  MAINNET_ROLLING_NODES_PORT: 8732 # Port of the mainnet rolling node
 
-  TESTNET_ARCHIVE_NODES_URL: localhost # URL or IP address of the testnet archive node
-  TESTNET_ARCHIVE_NODES_PORT: port # Port of the testnet archive node
-  TESTNET_ROLLING_NODES_URL: localhost # URL or IP address of the testnet rolling node
-  TESTNET_ROLLING_NODES_PORT: port # Port of the testnet rolling node
+  TESTNET_ARCHIVE_NODES_URL: archive-node.poc-tzk8s-limanet.svc.cluster.local # URL or IP address of the testnet archive node
+  TESTNET_ARCHIVE_NODES_PORT: 8732 # Port of the testnet archive node
+  TESTNET_ROLLING_NODES_URL: rolling-node.poc-tzk8s.svc.cluster.local # URL or IP address of the testnet rolling node
+  TESTNET_ROLLING_NODES_PORT: 8732 # Port of the testnet rolling node
+
+  PROMETHEUS_URL: http://kube-prometheus-prometheus.kube-prometheus.svc.cluster.local:9090
+  PROMETHEUS_NAMESPACE_TEZOSLINK: tezoslink-helm-test
+  PROMETHEUS_NAMESPACE_TEZOS_K8S: poc-tzk8s
 
 api: 
 
@@ -62,10 +65,15 @@ api:
     annotations: {} # Service annotations
   
   ingress:  
-    enabled: false # Enables ingress creation
+    enabled: true # Enables ingress creation
+    host: "api.stg.tzlink.smart-chain.fr"
     tls:
-      secretName: # Name of the secret that contains or will contain the certificate
-    annotations: {} # Annotations of the ingress
+      secretName: api-tls # Name of the secret that contains or will contain the certificate
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     labels: {} # Labels of the ingress
 
   serviceAccount:
@@ -139,10 +147,15 @@ web:
     name: "" # Default name: front-sa
 
   ingress:  
-    enabled: false # Enables ingress creation
+    enabled: true # Enables ingress creation
+    host: web.stg.tzlink.smart-chain.fr
     tls:
-      secretName: # Name of the secret that contains or will contain the certificate
-    annotations: {} # Annotations of the ingress
+      secretName: web-tls # Name of the secret that contains or will contain the certificate
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     labels: {} # Labels of the ingress
 
   secret: []  # Secrets to be injected as environment variables
@@ -197,7 +210,7 @@ rpcgateway:
     image:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy # Repository containing the rpc gateway image
       tag: v1.4.0  # Version of the rpc gateway image
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
     
     secret: []  # Secrets to be injected as environment variables
       # SECRET_KEY: c2VjcmV0Cg==
@@ -218,10 +231,15 @@ rpcgateway:
       annotations: {} # Service annotations
     
     ingress:  
-      enabled: false # Enables ingress creation
+      enabled: true # Enables ingress creation
+      host: "testnet.rpc.stg.tzlink.smart-chain.fr"
       tls:
-        secretName: # Name of the secret that contains or will contain the certificate
-      annotations: {} # Annotations of the ingress
+        secretName: testnet-rpc-tls # Name of the secret that contains or will contain the certificate
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
       labels: {} # Labels of the ingress
     
     podSecurityContext:
@@ -268,7 +286,7 @@ rpcgateway:
     image:
       repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy # Repository containing the rpcgateway image
       tag: v1.4.0 # Version of the rpc gateway image
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
 
     
     secret: []  # Secrets to be injected as environment variables
@@ -290,10 +308,15 @@ rpcgateway:
       annotations: {} # Service annotations
     
     ingress:  
-      enabled: false # Enables ingress creation
+      enabled: true # Enables ingress creation
+      host: "mainnet.rpc.stg.tzlink.smart-chain.fr"
       tls:
-        secretName: # Name of the secret that contains or will contain the certificate
-      annotations: {} # Annotations of the ingress
+        secretName: mainnet-rpc-tls # Name of the secret that contains or will contain the certificate
+      annotations: 
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
       labels: {} # Labels of the ingress
     
     podSecurityContext:
@@ -328,3 +351,32 @@ rpcgateway:
       requests: {} # CPU and memory requests
         # cpu: 100m
         # memory: 256Mi
+
+cron: 
+  enabled: true
+
+  image:
+    repository: rg.fr-par.scw.cloud/tezoslink/p1-cron # Repository containing the rpcgateway image
+    tag: v1.4.0 # Version of the rpc gateway image
+    pullPolicy: Always
+
+  resources:
+    limits: # CPU and memory limits
+      cpu: 200m
+      memory: 256Mi
+    requests: # CPU and memory requests
+      cpu: 100m
+      memory: 128Mi
+
+  
+  secret: []  # Secrets to be injected as environment variables
+    # SECRET_KEY: c2VjcmV0Cg==
+
+  additionalSecrets: [] # Additional secrets to mount as environment variables
+
+  podSecurityContext:
+    enabled: true # Enables the pod security context 
+    runAsUser: 10000 # Uses the TezosLink to run the container
+    runAsGroup: # Sets the primary group ID
+    fsGroup: # Sets the owner of /data
+    runAsNonRoot: true # Start the process not using the root user (runAsUser field required)

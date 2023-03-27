@@ -14,10 +14,10 @@ spec:
   tls:
   {{ if eq $network "testnet"}}
   - hosts: 
-      - {{ $.Values.env.TESTNET_RPC_GATEWAY_HOSTNAME }}
+      - {{ $data.ingress.host }}
     secretName: {{ $data.ingress.tls.secretName }}
   rules:
-  - host: {{ $.Values.env.TESTNET_RPC_GATEWAY_HOSTNAME }}
+  - host: {{ $data.ingress.host }}
     http:
       paths:
       - path: {{ $.Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}
@@ -30,10 +30,10 @@ spec:
   {{ end }}
   {{ if eq $network "mainnet"}}
   - hosts: 
-      - {{ $.Values.env.MAINNET_RPC_GATEWAY_HOSTNAME }}
+      - {{ $data.ingress.host }}
     secretName: {{ $data.ingress.tls.secretName }}
   rules:
-  - host: {{ $.Values.env.MAINNET_RPC_GATEWAY_HOSTNAME }}
+  - host: {{ $data.ingress.host }}
     http:
       paths:
       - path: {{ $.Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}
