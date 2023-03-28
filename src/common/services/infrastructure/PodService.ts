@@ -47,7 +47,8 @@ export default class PodService extends BaseService {
 
 		switch (type) {
 			case "tzlink-web":
-			case "tzlink-rpcgateway":
+			case "mainnet-tzlink-rpcgateway":
+			case "testnet-tzlink-rpcgateway":
 			case "tzlink-api":
 				namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOSLINK;
 				runningQuery = `${prometheusUrl}/api/v1/query?query=sum(kube_pod_container_status_running{namespace="${namespace}", container="${type}"})`;

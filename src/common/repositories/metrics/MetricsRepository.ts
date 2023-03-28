@@ -8,7 +8,7 @@ import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
 export class RequestsByDayMetrics {
-	date!: Date;
+	date!: string;
 	count!: number;
 }
 
@@ -156,7 +156,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count Rpc path usage for a specific project
-	public async countRpcPathUsage(ProjectUuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
+	public async countRpcPathUsage(ProjectUuid: string, from: string, to: string): Promise<CountRpcPathUsage[]> {
 		try {
 			const result: CountRpcPathUsage[] = [];
 			const response = await this.model.groupBy({
@@ -167,8 +167,8 @@ export default class MetricsRepository extends BaseRepository {
 				where: {
 					projectUuid: ProjectUuid,
 					dateRequested: {
-						gte: from,
-						lte: to,
+						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 					},
 				},
 			});
@@ -205,7 +205,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Find Requests by Day for a specific project
-	public async findRequestsByDay(projectUuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]> {
+	public async findRequestsByDay(projectUuid: string, from?: string, to?: string): Promise<RequestsByDayMetrics[]> {
 		try {
 			const result: RequestsByDayMetrics[] = [];
 			const response = await this.model.groupBy({
@@ -216,8 +216,8 @@ export default class MetricsRepository extends BaseRepository {
 				where: {
 					projectUuid: projectUuid,
 					dateRequested: {
-						gte: from,
-						lte: to,
+						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 					},
 				},
 				orderBy: {
@@ -227,7 +227,7 @@ export default class MetricsRepository extends BaseRepository {
 
 			response.forEach((item) => {
 				result.push({
-					date: item.dateRequested,
+					date: item.dateRequested.toISOString(),
 					count: item._count.dateRequested,
 				});
 			});
@@ -238,14 +238,14 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count all metrics by criterias for a specific project
-	public async countAll(projectUuid: string, from: Date, to: Date): Promise<number> {
+	public async countAll(projectUuid: string, from: string, to: string): Promise<number> {
 		try {
 			return this.model.count({
 				where: {
 					projectUuid: projectUuid,
 					dateRequested: {
-						gte: from,
-						lte: to,
+						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 					},
 				},
 			}) as Promise<number>;
@@ -273,11 +273,11 @@ export default class MetricsRepository extends BaseRepository {
 	public async removeOldMetricsBymonths(months: number): Promise<void> {
 		try {
 			const date = new Date();
-			date.setMonth(date.getMonth() - months);
+			date.setMonth(date.getMonth() - Math.abs(months));
 			this.model.deleteMany({
 				where: {
 					dateRequested: {
-						lte: date,
+						lte: new Date(date),
 					},
 				},
 			});

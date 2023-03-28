@@ -5,9 +5,21 @@ import { type processFindManyQuery } from "prisma-query";
 import { Service } from "typedi";
 import * as geoip from "geoip-lite";
 
+type queryParameters = {
+	projectUuid: string;
+	from?: string;
+	to?: string;
+	by?: string;
+	limit?: number;
+};
+
+enum EDateBy {
+	day = "day",
+	hour = "hour",
+}
+
 /**
  * Metrics service
- * @export
  * @class MetricsService
  * @extends {BaseService}
  * */
@@ -25,6 +37,7 @@ export default class MetricsService extends BaseService {
 	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricRepository.findMany(query);
 	}
+
 	/**
 	 * Create a metric
 	 * @param {Partial<MetricEntity>} metricEntity
@@ -37,50 +50,54 @@ export default class MetricsService extends BaseService {
 
 	/**
 	 * Get count of metrics by criterias
-	 * @param {string} uuid
-	 * @param {Date} from
-	 * @param {Date} to
+	 * @param {queryParameters} query
 	 * @returns {Promise<number>}
 	 * @memberof MetricsService
 	 * */
-	public async getCountRpcPath(uuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
-		return await this.metricRepository.countRpcPathUsage(uuid, from, to);
+	public async getCountRpcPath(query: queryParameters): Promise<CountRpcPathUsage[]> {
+		const { projectUuid, from, to } = query;
+		return await this.metricRepository.countRpcPathUsage(projectUuid, from!, to!);
 	}
+
 	/**
 	 * Get count of metrics by criterias
-	 * @param {string} uuid
-	 * @param {Date} from
-	 * @param {Date} to
+	 * @param {queryParameters} query
 	 * @returns {Promise<number>}
 	 * @memberof MetricsService
 	 * */
-	public async getCountAllMetricsByCriterias(uuid: string, from: Date, to: Date): Promise<number> {
-		const count = await this.metricRepository.countAll(uuid, from, to);
+	public async getCountAllMetricsByCriterias(query: queryParameters): Promise<number> {
+		const { projectUuid, from, to } = query;
+		const count = await this.metricRepository.countAll(projectUuid, from!, to!);
 		if (isNaN(count)) Promise.reject("Cannot get count of metrics");
 		return count;
 	}
 
 	/**
-	 * Get latest metrics
-	 * @param {string} uuid
-	 * @param {number} limit
-	 * @returns {Promise<MetricEntity[]>}
-	 * @memberof MetricsService
-	 * */
-	public async getLastMetrics(uuid: string, limit: number): Promise<MetricEntity[]> {
-		return await this.metricRepository.findAllRequestsByCriterias(uuid, limit);
-	}
-
-	/**
 	 * Get metrics by day
-	 * @param {string} uuid
-	 * @param {Date} from
-	 * @param {Date} to
+	 * @param {queryParameters} query
 	 * @returns {Promise<RequestsByDayMetrics[]>}
 	 * @memberof MetricsService
 	 * */
-	public async getRequestsByDay(uuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]> {
-		return await this.metricRepository.findRequestsByDay(uuid, from, to);
+	public async getRequestsByDay(query: queryParameters): Promise<RequestsByDayMetrics[]> {
+		const { projectUuid, from, to, by = EDateBy.hour } = query;
+
+		const results = await this.metricRepository.findRequestsByDay(projectUuid, from, to);
+
+		const formattedResults: RequestsByDayMetrics[] = results.reduce((acc: any, curr) => {
+			const currentDate = new Date(curr.date).toISOString();
+			const date = by === "hour" ? currentDate.substring(0, 13) + ":00:00.941Z" : currentDate.substring(0, 10) + "T00:00:00.941Z";
+			const existing: any = acc.find((item: any) => item.date === date);
+
+			if (existing) {
+				existing.count += curr.count;
+			} else {
+				acc.push({ date, count: curr.count });
+			}
+
+			return acc;
+		}, []);
+
+		return formattedResults;
 	}
 
 	/**

@@ -63,12 +63,12 @@ export default class MetricsInfrastructureService extends BaseService {
 		const metricQueries: MetricQuery[] = [
 			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_LIMIT },
 			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_REQUESTED },
-			{ query: `container_cpu_usage_seconds_total{namespace="${namespace}",pod="${pod}"}`, type: MetricType.CPU_USAGE },
+			{ query: `rate(container_cpu_usage_seconds_total{namespace="${namespace}",pod="${pod}"}[1m])`, type: MetricType.CPU_USAGE },
 			{ query: `container_memory_working_set_bytes{namespace="${namespace}",pod="${pod}"}`, type: MetricType.RAM_USAGE },
 			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="memory"}`, type: MetricType.RAM_LIMIT },
 			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="memory"}`, type: MetricType.RAM_REQUESTED },
-			{ query: `container_network_receive_bytes_total{namespace="${namespace}",pod="${pod}"}`, type: MetricType.NETWORK_RECEIVE },
-			{ query: `container_network_transmit_bytes_total{namespace="${namespace}",pod="${pod}"}`, type: MetricType.NETWORK_TRANSMIT },
+			{ query: `rate(container_network_receive_bytes_total{namespace="${namespace}",pod="${pod}"}[1m])`, type: MetricType.NETWORK_RECEIVE },
+			{ query: `rate(container_network_transmit_bytes_total{namespace="${namespace}",pod="${pod}"}[1m])`, type: MetricType.NETWORK_TRANSMIT },
 		];
 
 		try {

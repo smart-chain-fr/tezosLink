@@ -4,19 +4,29 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import { IsDateString, IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
+import {  IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
 import { plainToClass } from "class-transformer";
 
-export class RequestsQuery {
-	@IsUUID()
-	uuid!: string;
 
-	@IsDateString()
+export class requestsQuery {
+	@IsUUID()
+	@IsNotEmpty()
+	projectUuid!: string;
+
+	@IsOptional()
 	from!: string;
 
-	@IsDateString()
+	@IsOptional()
 	to!: string;
+
+	@IsOptional()
+	by?: string;
 }
+/**
+ * Query for get metrics
+ * @class queryProcessFindManyQuery
+ * @extends {processFindManyQuery}
+ * */
 export class queryProcessFindManyQuery {
 	@IsUUID()
 	@IsNotEmpty()
@@ -72,7 +82,7 @@ export default class MetricsController extends ApiController {
 
 	@Get("/metrics/my-requests")
 	protected async getByRequestsByDay(req: Request, res: Response) {
-		const query = plainToClass(RequestsQuery, req.query);
+		const query = plainToClass(requestsQuery, req.query);
 
 		const errors = await validate(query);
 		if (errors.length > 0) {
@@ -80,14 +90,14 @@ export default class MetricsController extends ApiController {
 			return;
 		}
 
-		const metrics = await this.metricsService.getRequestsByDay(query.uuid, new Date(query.from), new Date(query.to));
+		const metrics = await this.metricsService.getRequestsByDay(query);
 		this.httpSuccess(res, metrics);
 	}
 
 	//Get types of requests using a query
 	@Get("/metrics/type-of-requests")
 	protected async getRpcUsage(req: Request, res: Response) {
-		const query = plainToClass(RequestsQuery, req.query);
+		const query = plainToClass(requestsQuery, req.query);
 		try {
 			await validateOrReject(query, { forbidUnknownValues: false });
 		} catch (error) {
@@ -95,21 +105,21 @@ export default class MetricsController extends ApiController {
 			return;
 		}
 
-		const metrics = await this.metricsService.getCountRpcPath(query.uuid, new Date(query.from), new Date(query.to));
+		const metrics = await this.metricsService.getCountRpcPath(query);
 		this.httpSuccess(res, metrics);
 	}
 
 	//Get count-Requests using a query
 	@Get("/metrics/count-requests")
 	protected async getCountRequests(req: Request, res: Response) {
-		const query = plainToClass(RequestsQuery, req.query);
+		const query = plainToClass(requestsQuery, req.query);
 		try {
 			await validateOrReject(query, { forbidUnknownValues: false });
 		} catch (error) {
 			this.httpBadRequest(res, error);
 			return;
 		}
-		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query.uuid, new Date(query.from), new Date(query.to));
+		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query);
 		if (isNaN(metrics)) {
 			this.httpNotFoundRequest(res);
 			return;
