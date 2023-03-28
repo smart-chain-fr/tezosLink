@@ -49,6 +49,12 @@ export default () => {
 				const createdEntity = await projectsService.create(projectEntity);
 				await expect(projectsService.delete(createdEntity)).resolves.toBeUndefined();
 			});
+
+			it("can find newly created entities", async () => {
+				const createdEntity = await projectsService.create(projectEntity);
+				await expect(projectsService.getByUUID(createdEntity)).resolves.toEqual(createdEntity);
+				await projectsService.delete(createdEntity);
+			});
 		});
 	});
 };

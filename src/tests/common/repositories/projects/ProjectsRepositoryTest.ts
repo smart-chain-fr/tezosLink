@@ -49,6 +49,12 @@ export default () => {
 				const createdEntity = await projectsRepository.create(projectEntity);
 				await expect(projectsRepository.delete(createdEntity)).resolves.toBeUndefined();
 			});
+
+			it("can find newly created entities", async () => {
+				const createdEntity = await projectsRepository.create(projectEntity);
+				await expect(projectsRepository.findOne(createdEntity)).resolves.toEqual(createdEntity);
+				await projectsRepository.delete(createdEntity);
+			});
 		});
 	});
 };
