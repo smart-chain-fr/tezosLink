@@ -61,4 +61,17 @@ export default class PodService extends BaseService {
 
 		return pods;
 	}
+
+	/**
+	 *
+	 * @throws {Error} If pod cannot be deleted
+	 * @returns
+	 */
+	public async delete(podEntity: Partial<PodEntity>): Promise<void> {
+		try {
+			await this.PodRepository.delete(podEntity);
+		} catch (error) {
+			throw new Error("Cannot delete pod");
+		}
+	}
 }

@@ -56,11 +56,23 @@ export default class PodRepository extends BaseRepository {
                     MetricInfrastructure: true,
                 },
             });
-    
+
             return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), pod, { strategy: "exposeAll" });
         } catch (error) {
             throw new ORMBadQueryError((error as Error).message, error as Error);
         }
     }
-    
+
+	// Delete pods by name
+	public async delete(podEntity: Partial<PodEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					name: podEntity.name!,
+				},
+			});
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
 }
