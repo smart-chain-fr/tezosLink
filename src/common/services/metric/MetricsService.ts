@@ -43,7 +43,7 @@ export default class MetricsService extends BaseService {
 	 * @returns
 	 */
 	public async getCountAllMetrics(metricEntity: Partial<MetricEntity>): Promise<number> {
-		const count = await this.metricRepository.countAll(metricEntity.uuid!);
+		const count = await this.metricRepository.countAll(metricEntity.projectUuid!);
 		if (isNaN(count)) Promise.reject(new Error("Cannot get count of metrics"));
 		return count;
 	}
