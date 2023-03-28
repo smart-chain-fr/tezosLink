@@ -31,19 +31,19 @@ env: # Environment variables injected through the config maps
   TESTNET_RPC_GATEWAY_PORT: 3002
   TESTNET_RPC_GATEWAY_ROOT_URL: "/rpc"
 
-  MAINNET_ARCHIVE_NODES_URL: archive-node.poc-tzk8s.svc.cluster.local # URL or IP address of the mainnet archive node
-  MAINNET_ARCHIVE_NODES_PORT: 8732 # Port of the mainnet archive node
-  MAINNET_ROLLING_NODES_URL:  rolling-node.poc-tzk8s.svc.cluster.local # URL or IP address of the mainnet rolling node
-  MAINNET_ROLLING_NODES_PORT: 8732 # Port of the mainnet rolling node
+  MAINNET_ARCHIVE_NODES_URL: mainnet-archive-link.smart-node.com # URL or IP address of the mainnet archive node
+  MAINNET_ARCHIVE_NODES_PORT: 443 # Port of the mainnet archive node
+  MAINNET_ROLLING_NODES_URL:  mainnet-rolling-link.smart-node.com # URL or IP address of the mainnet rolling node
+  MAINNET_ROLLING_NODES_PORT: 443 # Port of the mainnet rolling node
 
-  TESTNET_ARCHIVE_NODES_URL: archive-node.poc-tzk8s-limanet.svc.cluster.local # URL or IP address of the testnet archive node
-  TESTNET_ARCHIVE_NODES_PORT: 8732 # Port of the testnet archive node
-  TESTNET_ROLLING_NODES_URL: rolling-node.poc-tzk8s.svc.cluster.local # URL or IP address of the testnet rolling node
-  TESTNET_ROLLING_NODES_PORT: 8732 # Port of the testnet rolling node
+  TESTNET_ARCHIVE_NODES_URL: ghostnet-archive-link.smart-node.com # URL or IP address of the testnet archive node
+  TESTNET_ARCHIVE_NODES_PORT: 443 # Port of the testnet archive node
+  TESTNET_ROLLING_NODES_URL: ghostnet-rolling-link.smart-node.com # URL or IP address of the testnet rolling node
+  TESTNET_ROLLING_NODES_PORT: 443 # Port of the testnet rolling node
 
   PROMETHEUS_URL: http://kube-prometheus-prometheus.kube-prometheus.svc.cluster.local:9090
   PROMETHEUS_NAMESPACE_TEZOSLINK: tezoslink-helm-test
-  PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: poc-tzk8s-limanet
+  PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: tzk8s-testnet
   PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: poc-tzk8s
 
 api: 
@@ -54,7 +54,7 @@ api:
 
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/api # Repository containing the API image
-    tag: v1.5.0 # Version of the API image
+    tag: v1.5.2 # Version of the API image
     pullPolicy: Always 
 
   service:
@@ -131,7 +131,7 @@ web:
 
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/p1-web # Repository containing the front image
-    tag: v1.5.1  # Version of the front image
+    tag: v1.5.3  # Version of the front image
     pullPolicy: Always
 
   service:
@@ -165,10 +165,12 @@ web:
   additionalSecrets: [] # Additional secrets to mount as environment variables
 
   resources:
-    limits: {} # CPU and memory limits
-    requests: {} # CPU and memory requests
-      # cpu: 100m
-      # memory: 256Mi
+    limits:  # CPU and memory limits
+      cpu: 100m
+      memory: 256Mi
+    requests: # CPU and memory requests
+      cpu: 100m
+      memory: 256Mi
 
   podSecurityContext:
     enabled: true # Enables the pod security context 
@@ -358,7 +360,7 @@ cron:
 
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/cron # Repository containing the rpcgateway image
-    tag: v1.5.0 # Version of the rpc gateway image
+    tag: v1.5.2 # Version of the rpc gateway image
     pullPolicy: Always
 
   resources:
