@@ -43,7 +43,7 @@ export default () => {
 		});
 
 		afterAll(async () => {
-			projectsService.delete(projectEntity);
+			await projectsService.delete(projectEntity);
 		});
 
 		describe("🗹 Validity tests", () => {
@@ -52,7 +52,7 @@ export default () => {
 					ObjectHydrate.hydrate(new MetricEntity(),
 						{ uuid: uuidv4() }
 					);
-				expect(
+				await expect(
 					metricsService.delete(metricEntityWithUUID)
 				).rejects.toBeInstanceOf(Error);
 			});
@@ -60,53 +60,53 @@ export default () => {
 			it("can create entities", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
 				expect(createdEntity).toBeDefined();
-				metricsService.delete(createdEntity);
+				await metricsService.delete(createdEntity);
 			});
 		});
 
 		describe("⤞ Postcondition tests", () => {
 			it("can delete newly created entities", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
-				expect(metricsService.delete(createdEntity)).resolves.toBeUndefined();
+				await expect(metricsService.delete(createdEntity)).resolves.toBeUndefined();
 			});
 
 			it("can find newly created entities", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
-				expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toMatchObject([createdEntity]);
-				metricsService.delete(createdEntity);
+				await expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toMatchObject([createdEntity]);
+				await metricsService.delete(createdEntity);
 			});
 
 			it("can get the last metric", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
-				expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toHaveLength(1);
-				metricsService.delete(createdEntity);
+				await expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toHaveLength(1);
+				await metricsService.delete(createdEntity);
 			});
 
 			it("is safe to ask for zero last metrics", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
-				expect(metricsService.getLastMetrics(projectEntity.uuid!, 0)).resolves.toMatchObject([createdEntity]);
-				metricsService.delete(createdEntity);
+				await expect(metricsService.getLastMetrics(projectEntity.uuid!, 0)).resolves.toMatchObject([createdEntity]);
+				await metricsService.delete(createdEntity);
 			});
 
 			it("is safe to ask for a negative number of last metrics", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
-				expect(metricsService.getLastMetrics(projectEntity.uuid!, -1)).resolves.toMatchObject([createdEntity]);
-				metricsService.delete(createdEntity);
+				await expect(metricsService.getLastMetrics(projectEntity.uuid!, -1)).resolves.toMatchObject([createdEntity]);
+				await metricsService.delete(createdEntity);
 			});
 
-			it("has a metric count down to zero for non-existing project uuid", () => {
+			it("has a metric count down to zero for non-existing project uuid", async () => {
 				const badMetricEntity: MetricEntity =
 					ObjectHydrate.hydrate(
 						new MetricEntity(),
 						{ ...metricEntity, projectUuid: uuidv4() }
 					);
-				expect(metricsService.getCountAllMetrics(badMetricEntity)).resolves.toBe(0);
+				await expect(metricsService.getCountAllMetrics(badMetricEntity)).resolves.toBe(0);
 			});
 
 			it("has the right metrics count after one insertion", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
-				expect(metricsService.getCountAllMetrics(createdEntity)).resolves.toBe(1);
-				metricsService.delete(createdEntity);
+				await expect(metricsService.getCountAllMetrics(createdEntity)).resolves.toBe(1);
+				await metricsService.delete(createdEntity);
 			});
 		});
 	});

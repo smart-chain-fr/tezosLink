@@ -22,7 +22,7 @@ export default () => {
 
 		describe("🗹 Validity tests", () => {
 			it("cannot delete entities without a valid uuid", async () => {
-				expect(
+				await expect(
 					projectsRepository.delete(projectEntity)
 				).rejects.toBeInstanceOf(Error);
 			});
@@ -32,7 +32,7 @@ export default () => {
 					ObjectHydrate.hydrate(new ProjectEntity(),
 						{ title: "title", network: "network", uuid: uuidv4() }
 					);
-				expect(
+				await expect(
 					projectsRepository.delete(projectEntityWithUUID)
 				).rejects.toBeInstanceOf(Error);
 			});
@@ -40,14 +40,14 @@ export default () => {
 			it("can create entities", async () => {
 				const createdEntity = await projectsRepository.create(projectEntity);
 				expect(createdEntity).toBeDefined();
-				projectsRepository.delete(createdEntity);
+				await projectsRepository.delete(createdEntity);
 			});
 		});
 
 		describe("⤞ Postcondition tests", () => {
 			it("can delete newly created entities", async () => {
 				const createdEntity = await projectsRepository.create(projectEntity);
-				expect(projectsRepository.delete(createdEntity)).resolves.toBeUndefined();
+				await expect(projectsRepository.delete(createdEntity)).resolves.toBeUndefined();
 			});
 		});
 	});

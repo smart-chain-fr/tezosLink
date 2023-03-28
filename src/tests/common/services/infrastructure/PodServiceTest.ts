@@ -20,7 +20,7 @@ export default () => {
 
 		describe("🗹 Validity tests", () => {
 			it("cannot delete entities without an existing name", async () => {
-				expect(
+				await expect(
 					podService.delete(podEntity)
 				).rejects.toBeInstanceOf(Error);
 			});
