@@ -93,6 +93,21 @@ export default () => {
 				expect(metricsService.getLastMetrics(projectEntity.uuid!, -1)).resolves.toMatchObject([createdEntity]);
 				metricsService.delete(createdEntity);
 			});
+
+			it("has a metric count down to zero for non-existing project uuid", () => {
+				const badMetricEntity: MetricEntity =
+					ObjectHydrate.hydrate(
+						new MetricEntity(),
+						{ ...metricEntity, projectUuid: uuidv4() }
+					);
+				expect(metricsService.getCountAllMetrics(badMetricEntity)).resolves.toBe(0);
+			});
+
+			it("has the right metrics count after one insertion", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				expect(metricsService.getCountAllMetrics(createdEntity)).resolves.toBe(1);
+				metricsService.delete(createdEntity);
+			});
 		});
 	});
 };
