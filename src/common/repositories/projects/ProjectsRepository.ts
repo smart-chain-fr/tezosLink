@@ -32,7 +32,13 @@ export default class ProjectsRepository extends BaseRepository {
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		try {
 			const project = (await this.model.findFirst({
-				where: projectEntity,
+				where: {
+					...projectEntity,
+					Metrics: { every: {} },
+				},
+				include: {
+					Metrics: true,
+				},
 			})) as ProjectEntity;
 			return ObjectHydrate.hydrate<ProjectEntity>(new ProjectEntity(), project, { strategy: "exposeAll" });
 		} catch (error) {
