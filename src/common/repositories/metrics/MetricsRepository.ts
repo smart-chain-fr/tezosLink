@@ -27,7 +27,7 @@ type MetricQuery = {
 		status?: string;
 	};
 	take?: number;
-	_page?: number;
+	skip?: number;
 };
 
 @Service()
@@ -42,14 +42,14 @@ export default class MetricsRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; offset: number; total: number } }> {
+	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			const { where, _page = 1, take } = query;
+			const { where, skip = 0, take = 10 } = query;
 			const { projectUuid, node, from, to, type: requestType, status } = where;
 
-			// Use Math.max to limit the number of rows fetched
-			const limit = take && take < this.defaultFetchRows ? take : this.defaultFetchRows;
-			const offset = (Math.max(1, _page) - 1) * limit;
+			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
+			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
+			const offset = (page - 1) * limit;
 			const whereClause: Prisma.MetricWhereInput = {
 				projectUuid,
 				node,
@@ -61,25 +61,25 @@ export default class MetricsRepository extends BaseRepository {
 				status: status || undefined,
 			};
 
-			// Count the total number of matching records
-			const count = await this.model.count({ where: whereClause });
+			const totalCount = await this.model.count({ where: whereClause });
 
-			// Update the query with the limited limit, offset, and where clause
 			const metrics = await this.model.findMany({
 				take: limit,
 				skip: offset,
 				where: whereClause,
+				orderBy: {
+					dateRequested: "desc",
+				},
 			});
 
-			// Create the metadata object
+			const total = Math.ceil(totalCount / limit);
 			const metadata = {
-				count,
+				count: metrics.length,
 				limit,
-				offset,
-				total: count,
+				page,
+				total,
 			};
 
-			// Return the result as an object with 'data' and 'metadata' properties
 			return { data: ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -219,6 +219,9 @@ export default class MetricsRepository extends BaseRepository {
 						gte: from,
 						lte: to,
 					},
+				},
+				orderBy: {
+					dateRequested: "desc",
 				},
 			});
 

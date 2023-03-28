@@ -50,11 +50,15 @@ export default class MetricsController extends ApiController {
 		try {
 			await validateOrReject(params, { forbidUnknownValues: true });
 		} catch (error) {
-			this.httpBadRequest(res, error);
+			this.httpNotFoundRequest(res, error);
 			return;
 		}
 
 		const deployemts = await this.podService.getOnePodAndMetrics(params);
+		if (!deployemts) {
+			this.httpNotFoundRequest(res);
+			return;
+		}
 		this.httpSuccess(res, deployemts);
 	}
 
@@ -78,7 +82,7 @@ export default class MetricsController extends ApiController {
 		const query = processFindManyQuery(req.query);
 		query.where = { ...query.where, podName: params.name };
 		try {
-			await validateOrReject(params, { forbidUnknownValues: false });
+			await validateOrReject(params, { forbidUnknownValues: true });
 		} catch (error) {
 			this.httpBadRequest(res, error);
 			return;

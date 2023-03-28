@@ -4,7 +4,34 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import { validateOrReject } from "class-validator";
+import { IsDateString, IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
+import { plainToClass } from "class-transformer";
+
+export class RequestsQuery {
+	@IsUUID()
+	uuid!: string;
+
+	@IsDateString()
+	from!: string;
+
+	@IsDateString()
+	to!: string;
+}
+export class queryProcessFindManyQuery {
+	@IsUUID()
+	@IsNotEmpty()
+	projectUuid!: string;
+
+	@IsOptional()
+	@IsInt()
+	@Min(0)
+	skip?: number;
+
+	@IsOptional()
+	@IsInt()
+	@Min(1)
+	take?: number;
+}
 
 @Controller()
 @Service()
@@ -12,64 +39,82 @@ export default class MetricsController extends ApiController {
 	constructor(private metricsService: MetricsService) {
 		super();
 	}
-
+	//Get metrics using a query
 	@Get("/metrics")
 	protected async get(req: Request, res: Response) {
 		const query = processFindManyQuery(req.query);
-		try {
-			await validateOrReject(query, { forbidUnknownValues: false });
-		} catch (error) {
-			this.httpBadRequest(res, error);
+
+		const metricsQuery = plainToClass(queryProcessFindManyQuery, {
+			projectUuid: query.where ? query.where.projectUuid : null,
+			skip: query.skip,
+			take: query.take,
+		});
+
+		const errors = await validate(metricsQuery);
+		if (errors.length > 0) {
+			this.httpBadRequest(res, errors);
 			return;
 		}
-		this.httpSuccess(res, await this.metricsService.getByCriterias(query));
+
+		const metrics = await this.metricsService.getByCriterias({
+			where: {
+				...query.where,
+				projectUuid: metricsQuery.projectUuid,
+			},
+			skip: metricsQuery.skip,
+			take: metricsQuery.take,
+			orderBy: query.orderBy,
+			include: query.include,
+		});
+
+		this.httpSuccess(res, metrics);
 	}
 
-	//Get requestsByDay using a query
 	@Get("/metrics/my-requests")
 	protected async getByRequestsByDay(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
+		const query = plainToClass(RequestsQuery, req.query);
+
+		const errors = await validate(query);
+		if (errors.length > 0) {
+			this.httpBadRequest(res, errors);
+			return;
+		}
+
+		const metrics = await this.metricsService.getRequestsByDay(query.uuid, new Date(query.from), new Date(query.to));
+		this.httpSuccess(res, metrics);
+	}
+
+	//Get types of requests using a query
+	@Get("/metrics/type-of-requests")
+	protected async getRpcUsage(req: Request, res: Response) {
+		const query = plainToClass(RequestsQuery, req.query);
 		try {
 			await validateOrReject(query, { forbidUnknownValues: false });
 		} catch (error) {
 			this.httpBadRequest(res, error);
 			return;
 		}
-		const metrics = await this.metricsService.getRequestsByDay(query.where.uuid, new Date(query.where.from), new Date(query.where.to));
+
+		const metrics = await this.metricsService.getCountRpcPath(query.uuid, new Date(query.from), new Date(query.to));
 		this.httpSuccess(res, metrics);
 	}
 
 	//Get count-Requests using a query
 	@Get("/metrics/count-requests")
 	protected async getCountRequests(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
+		const query = plainToClass(RequestsQuery, req.query);
 		try {
 			await validateOrReject(query, { forbidUnknownValues: false });
 		} catch (error) {
 			this.httpBadRequest(res, error);
 			return;
 		}
-		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query.where.uuid, new Date(query.where.from), new Date(query.where.to));
+		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query.uuid, new Date(query.from), new Date(query.to));
 		if (isNaN(metrics)) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
 		this.httpSuccess(res, { count: metrics });
-	}
-
-	//Get types of requests using a query
-	@Get("/metrics/type-of-requests")
-	protected async getRpcUsage(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
-		try {
-			await validateOrReject(query, { forbidUnknownValues: false });
-		} catch (error) {
-			this.httpBadRequest(res, error);
-			return;
-		}
-
-		const metrics = await this.metricsService.getCountRpcPath(query.where.uuid, new Date(query.where.from), new Date(query.where.to));
-		this.httpSuccess(res, metrics);
 	}
 
 	//Get requests for the world map component using a query
