@@ -13,7 +13,7 @@ export default () => {
 
 		const podEntity: PodEntity =
 			ObjectHydrate.hydrate(new PodEntity(),
-				{ name: "name", phase: "phase", type: "type" }
+				{ name: "name", namespace: "namespace", type: "type" }
 			);
 
 		beforeAll(async () => {
@@ -30,27 +30,27 @@ export default () => {
 			it("can create entities", async () => {
 				const newEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
-						{ name: uuidv4(), phase: "phase", type: "type" }
+						{ name: uuidv4(), namespace: "namespace", type: "type" }
 					);
-				const createdEntity = await podService.savePod(newEntity);
+				const createdEntity = await podService.saveOrUpdatePod(newEntity);
 				expect(createdEntity).toBeDefined();
 				await podService.delete(createdEntity);
 			});
 		});
 
 		describe("⤞ Postcondition tests", () => {
-			it("updates only the phase property on existing entities name", async () => {
+			it("updates only the namespace property on existing entities name", async () => {
 				const newEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
-						{ name: uuidv4(), phase: "phase", type: "type" }
+						{ name: uuidv4(), namespace: "namespace", type: "type" }
 					);
 				const updatedEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
-						{ ...newEntity, phase: "other_phase", type: "other_type" }
+						{ ...newEntity, namespace: "other_namespace", type: "other_type" }
 					)
-				await podService.savePod(newEntity);
-				await expect(podService.savePod(updatedEntity)).resolves.toMatchObject(
-					{ ...newEntity, phase: updatedEntity.phase }
+				await podService.saveOrUpdatePod(newEntity);
+				await expect(podService.saveOrUpdatePod(updatedEntity)).resolves.toMatchObject(
+					{ ...newEntity, namespace: updatedEntity.namespace }
 				);
 				await podService.delete(newEntity);
 			});

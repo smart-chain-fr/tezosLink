@@ -1,0 +1,39 @@
+{{ if .Values.cron.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helpers.fullname" . }}-tzlink-cron
+  namespace: {{ include "helpers.namespace" . | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tzlink-component: cron
+  template:
+    metadata:
+      labels:
+        tzlink-component: cron
+    spec:
+      containers:
+        - name: tzlink-cron
+          imagePullPolicy: {{ .Values.cron.image.pullPolicy }}
+          image: "{{ .Values.cron.image.repository }}:{{ .Values.cron.image.tag }}"
+          resources: 
+            {{ toYaml .Values.cron.resources | nindent 12 | trim }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "helpers.fullname" . }}-cron-cm
+            {{ if .Values.cron.secret }}
+            - secretRef:
+                name: {{ include "helpers.fullname" . }}-cron-secret
+            {{ end }}
+            {{ range .Values.cron.additionalSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{ end }}
+      {{- if .Values.cron.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.cron.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+{{ end }}     
+
+        

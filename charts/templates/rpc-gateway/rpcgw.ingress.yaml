@@ -1,0 +1,48 @@
+{{ range $network, $data := .Values.rpcgateway }}
+---
+{{- if and $data.enabled $data.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-ing
+  namespace: {{ include "helpers.namespace" $ | quote }}
+  annotations: 
+    {{ toYaml $data.ingress.annotations | nindent 4 }}
+  labels:
+    {{ toYaml $data.ingress.labels | nindent 4 }}
+spec:
+  tls:
+  {{ if eq $network "testnet"}}
+  - hosts: 
+      - {{ $data.ingress.host }}
+    secretName: {{ $data.ingress.tls.secretName }}
+  rules:
+  - host: {{ $data.ingress.host }}
+    http:
+      paths:
+      - path: {{ $.Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-svc
+            port:
+              number: {{ $.Values.env.TESTNET_RPC_GATEWAY_PORT}}
+  {{ end }}
+  {{ if eq $network "mainnet"}}
+  - hosts: 
+      - {{ $data.ingress.host }}
+    secretName: {{ $data.ingress.tls.secretName }}
+  rules:
+  - host: {{ $data.ingress.host }}
+    http:
+      paths:
+      - path: {{ $.Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-svc
+            port:
+              number: {{ $.Values.env.MAINNET_RPC_GATEWAY_PORT}}
+  {{ end }}
+{{- end }}
+{{ end }}

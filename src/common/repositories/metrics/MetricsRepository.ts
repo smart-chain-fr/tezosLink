@@ -8,7 +8,7 @@ import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
 export class RequestsByDayMetrics {
-	date_requested!: Date;
+	date!: string;
 	count!: number;
 }
 
@@ -16,6 +16,19 @@ export class CountRpcPathUsage {
 	path!: string;
 	count!: number;
 }
+
+type MetricQuery = {
+	where: {
+		projectUuid: string;
+		node?: string;
+		from?: string;
+		to?: string;
+		type?: string;
+		status?: string;
+	};
+	take?: number;
+	skip?: number;
+};
 
 @Service()
 export default class MetricsRepository extends BaseRepository {
@@ -29,14 +42,45 @@ export default class MetricsRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: Prisma.MetricFindManyArgs): Promise<MetricEntity[]> {
+	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			// Use Math.min to limit the number of rows fetched
-			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
+			const { where, skip = 0, take = 10 } = query;
+			const { projectUuid, node, from, to, type: requestType, status } = where;
 
-			// Update the query with the limited limit
-			const metrics = await this.model.findMany({ ...query, take: limit });
-			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
+			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
+			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
+			const offset = (page - 1) * limit;
+			const whereClause: Prisma.MetricWhereInput = {
+				projectUuid,
+				node,
+				dateRequested: {
+					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
+				},
+				path: requestType || undefined,
+				status: status || undefined,
+			};
+
+			const totalCount = await this.model.count({ where: whereClause });
+
+			const metrics = await this.model.findMany({
+				take: limit,
+				skip: offset,
+				where: whereClause,
+				orderBy: {
+					dateRequested: "desc",
+				},
+			});
+
+			const total = Math.ceil(totalCount / limit);
+			const metadata = {
+				count: metrics.length,
+				limit,
+				page,
+				total,
+			};
+
+			return { data: ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -59,8 +103,10 @@ export default class MetricsRepository extends BaseRepository {
 				data: {
 					path: data.path!,
 					uuid: data.uuid!,
-					remote_address: data.remote_address!,
-					date_requested: data.date_requested!,
+					remoteAddress: data.remoteAddress!,
+					dateRequested: data.dateRequested!,
+					node: data.node!,
+					status: data.status!,
 					project: {
 						connect: {
 							uuid: data.project!.uuid!,
@@ -89,8 +135,10 @@ export default class MetricsRepository extends BaseRepository {
 							data: {
 								path: data.path!,
 								uuid: data.uuid!,
-								remote_address: data.remote_address!,
-								date_requested: data.date_requested!,
+								remoteAddress: data.remoteAddress!,
+								dateRequested: data.dateRequested!,
+								node: data.node!,
+								status: data.status!,
 								project: {
 									connect: {
 										uuid: data.project!.uuid,
@@ -108,7 +156,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count Rpc path usage for a specific project
-	public async countRpcPathUsage(ProjectUuid: string, from: Date, to: Date): Promise<CountRpcPathUsage[]> {
+	public async countRpcPathUsage(ProjectUuid: string, from: string, to: string): Promise<CountRpcPathUsage[]> {
 		try {
 			const result: CountRpcPathUsage[] = [];
 			const response = await this.model.groupBy({
@@ -118,9 +166,9 @@ export default class MetricsRepository extends BaseRepository {
 				},
 				where: {
 					projectUuid: ProjectUuid,
-					date_requested: {
-						gte: from,
-						lte: to,
+					dateRequested: {
+						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 					},
 				},
 			});
@@ -137,7 +185,7 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Last requests for a specific project
-	public async findLastRequests(projectUuid: string, limit: number): Promise<MetricEntity[]> {
+	public async findAllRequestsByCriterias(projectUuid: string, limit: number): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
 			const rows = Math.min(Math.max(0, limit) || this.defaultFetchRows, this.maxFetchRows);
@@ -147,7 +195,7 @@ export default class MetricsRepository extends BaseRepository {
 				},
 				take: rows,
 				orderBy: {
-					date_requested: "desc",
+					dateRequested: "desc",
 				},
 			});
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
@@ -157,27 +205,30 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Find Requests by Day for a specific project
-	public async findRequestsByDay(projectUuid: string, from: Date, to: Date): Promise<RequestsByDayMetrics[]> {
+	public async findRequestsByDay(projectUuid: string, from?: string, to?: string): Promise<RequestsByDayMetrics[]> {
 		try {
 			const result: RequestsByDayMetrics[] = [];
 			const response = await this.model.groupBy({
-				by: ["date_requested"],
+				by: ["dateRequested"],
 				_count: {
-					date_requested: true,
+					dateRequested: true,
 				},
 				where: {
 					projectUuid: projectUuid,
-					date_requested: {
-						gte: from,
-						lte: to,
+					dateRequested: {
+						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 					},
+				},
+				orderBy: {
+					dateRequested: "desc",
 				},
 			});
 
 			response.forEach((item) => {
 				result.push({
-					date_requested: item.date_requested,
-					count: item._count.date_requested,
+					date: item.dateRequested.toISOString(),
+					count: item._count.dateRequested,
 				});
 			});
 			return ObjectHydrate.map<RequestsByDayMetrics>(RequestsByDayMetrics, result, { strategy: "exposeAll" });
@@ -187,13 +238,32 @@ export default class MetricsRepository extends BaseRepository {
 	}
 
 	// Count all metrics by criterias for a specific project
-	public async countAll(projectUuid: string): Promise<number> {
+	public async countAll(projectUuid: string, from: string, to: string): Promise<number> {
 		try {
 			return this.model.count({
 				where: {
 					projectUuid: projectUuid,
+					dateRequested: {
+						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
+					},
 				},
 			}) as Promise<number>;
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	// All requests for the world map
+	public async findAllRequestsWorldMap(): Promise<MetricEntity[]> {
+		try {
+			// Use Math.min to limit the number of rows fetched
+			const metrics = await this.model.findMany({
+				orderBy: {
+					dateRequested: "desc",
+				},
+			});
+			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -203,14 +273,27 @@ export default class MetricsRepository extends BaseRepository {
 	public async removeOldMetricsBymonths(months: number): Promise<void> {
 		try {
 			const date = new Date();
-			date.setMonth(date.getMonth() - months);
+			date.setMonth(date.getMonth() - Math.abs(months));
 			this.model.deleteMany({
 				where: {
-					date_requested: {
-						lte: date,
+					dateRequested: {
+						lte: new Date(date),
 					},
 				},
 			});
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	// Find all paths
+	public async findPathDictionary(): Promise<string[]> {
+		try {
+			const paths = await this.model.findMany({
+				distinct: ["path"],
+				select: { path: true },
+			});
+			return paths.map((path) => path.path);
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

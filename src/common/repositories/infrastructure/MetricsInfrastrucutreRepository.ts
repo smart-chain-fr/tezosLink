@@ -7,6 +7,17 @@ import BaseRepository from "@Repositories/BaseRepository";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
+type MetricQuery = {
+	where: {
+		podName: string;
+		from?: string;
+		to?: string;
+		type?: string;
+	};
+	take?: number;
+	skip?: number;
+};
+
 @Service()
 export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	constructor(private database: TezosLink) {
@@ -19,14 +30,43 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: Prisma.MetricInfrastructureFindManyArgs): Promise<MetricInfrastructureEntity[]> {
+	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			// Use Math.min to limit the number of rows fetched
-			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
+			const { where, skip = 1, take } = query;
+			const { podName, from, to, type } = where;
 
-			// Update the query with the limited limit
-			const metrics = await this.model.findMany({ ...query, take: limit });
-			return ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" });
+			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
+			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
+			const offset = (page - 1) * limit;
+
+			const whereClause: Prisma.MetricInfrastructureWhereInput = {
+				podName,
+				dateRequested: {
+					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
+					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
+				},
+				type,
+			};
+
+			const totalCount = await this.model.count({ where: whereClause });
+
+			// Update the query with the limited limit, skip and where clause
+			const metrics = await this.model.findMany({
+				take: limit,
+				skip: offset,
+				where: whereClause,
+				orderBy: {
+					dateRequested: "desc",
+				},
+			});
+			const total = Math.ceil(totalCount / limit);
+			const metadata = {
+				count: metrics.length,
+				limit,
+				page,
+				total,
+			};
+			return { data: ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
@@ -39,13 +79,12 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 			const metric = await this.model.create({
 				data: {
 					uuid: data.uuid!,
-					label: data.label!,
 					value: data.value!,
-					date_requested: data.date_requested!,
+					dateRequested: data.dateRequested!,
 					type: data.type!,
 					pod: {
 						connect: {
-							name: data.pod!.name!,
+							name: data.podName!,
 						},
 					},
 				},

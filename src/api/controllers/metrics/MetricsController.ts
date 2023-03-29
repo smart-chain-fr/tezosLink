@@ -4,49 +4,133 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import MetricInfrastructureService from "@Services/infrastructure/MetricInfrastructureService";
-import PodService from "@Services/infrastructure/PodService";
+import {  IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
+import { plainToClass } from "class-transformer";
 
+
+export class requestsQuery {
+	@IsUUID()
+	@IsNotEmpty()
+	projectUuid!: string;
+
+	@IsOptional()
+	from!: string;
+
+	@IsOptional()
+	to!: string;
+
+	@IsOptional()
+	by?: string;
+}
+/**
+ * Query for get metrics
+ * @class queryProcessFindManyQuery
+ * @extends {processFindManyQuery}
+ * */
+export class queryProcessFindManyQuery {
+	@IsUUID()
+	@IsNotEmpty()
+	projectUuid!: string;
+
+	@IsOptional()
+	@IsInt()
+	@Min(0)
+	skip?: number;
+
+	@IsOptional()
+	@IsInt()
+	@Min(1)
+	take?: number;
+}
 
 @Controller()
 @Service()
 export default class MetricsController extends ApiController {
-	constructor(private metricsService: MetricsService, private metricInfrastructureService: MetricInfrastructureService, private podService: PodService) {
+	constructor(private metricsService: MetricsService) {
 		super();
 	}
-
+	//Get metrics using a query
 	@Get("/metrics")
 	protected async get(req: Request, res: Response) {
 		const query = processFindManyQuery(req.query);
-		this.httpSuccess(res, await this.metricsService.getByCriterias(query));
+
+		const metricsQuery = plainToClass(queryProcessFindManyQuery, {
+			projectUuid: query.where ? query.where.projectUuid : null,
+			skip: query.skip,
+			take: query.take,
+		});
+
+		const errors = await validate(metricsQuery);
+		if (errors.length > 0) {
+			this.httpBadRequest(res, errors);
+			return;
+		}
+
+		const metrics = await this.metricsService.getByCriterias({
+			where: {
+				...query.where,
+				projectUuid: metricsQuery.projectUuid,
+			},
+			skip: metricsQuery.skip,
+			take: metricsQuery.take,
+			orderBy: query.orderBy,
+			include: query.include,
+		});
+
+		this.httpSuccess(res, metrics);
 	}
-	//Get requestsByDay using a query
-	@Get("/metrics/requestsbyday")
+
+	@Get("/metrics/my-requests")
 	protected async getByRequestsByDay(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
-		const metrics = await this.metricsService.getRequestsByDay(query.where.uuid, new Date(query.where.from), new Date(query.where.to));
-		if (!metrics) {
-			this.httpNotFoundRequest(res);
+		const query = plainToClass(requestsQuery, req.query);
+
+		const errors = await validate(query);
+		if (errors.length > 0) {
+			this.httpBadRequest(res, errors);
 			return;
 		}
+
+		const metrics = await this.metricsService.getRequestsByDay(query);
 		this.httpSuccess(res, metrics);
 	}
-	//Get Rpc Usage using a query
-	@Get("/metrics/rpcusage")
+
+	//Get types of requests using a query
+	@Get("/metrics/type-of-requests")
 	protected async getRpcUsage(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
-		const metrics = await this.metricsService.getCountRpcPath(query.where.uuid, new Date(query.where.from), new Date(query.where.to));
-		if (!metrics) {
+		const query = plainToClass(requestsQuery, req.query);
+		try {
+			await validateOrReject(query, { forbidUnknownValues: false });
+		} catch (error) {
+			this.httpBadRequest(res, error);
+			return;
+		}
+
+		const metrics = await this.metricsService.getCountRpcPath(query);
+		this.httpSuccess(res, metrics);
+	}
+
+	//Get count-Requests using a query
+	@Get("/metrics/count-requests")
+	protected async getCountRequests(req: Request, res: Response) {
+		const query = plainToClass(requestsQuery, req.query);
+		try {
+			await validateOrReject(query, { forbidUnknownValues: false });
+		} catch (error) {
+			this.httpBadRequest(res, error);
+			return;
+		}
+		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query);
+		if (isNaN(metrics)) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
-		this.httpSuccess(res, metrics);
+		this.httpSuccess(res, { count: metrics });
 	}
-	//Get last requests using a query
-	@Get("/metrics/lastrequests")
-	protected async getByLastRequests(req: Request, res: Response) {
-		const query = processFindManyQuery(req.query);
-		const metrics = await this.metricsService.getLastMetrics(query.where.uuid, query.where.limit);
+
+	//Get requests for the world map component using a query
+	@Get("/metrics/world-map")
+	protected async getWorldMap(req: Request, res: Response) {
+		const metrics = await this.metricsService.worldMapMetrics();
 		if (!metrics) {
 			this.httpNotFoundRequest(res);
 			return;
@@ -54,34 +138,14 @@ export default class MetricsController extends ApiController {
 		this.httpSuccess(res, metrics);
 	}
 
-	@Get("/metrics/infrastructure")
-	protected async getInfrastructureMetrics(req: Request, res: Response) {
-		const allMetrics = await this.metricInfrastructureService.scrapMetrics();
-		/* if (!allMetrics) {
+	//Get paths available in the database
+	@Get("/metrics/paths")
+	protected async getPaths(req: Request, res: Response) {
+		const paths = await this.metricsService.getPathDictionary();
+		if (!paths) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
-		const circularReplacer = () => {
-			const seen = new WeakSet();
-			return (key: any, value: object | null) => {
-				if (typeof value === "object" && value !== null) {
-					if (seen.has(value)) {
-						return;
-					}
-					seen.add(value);
-				}
-				return value;
-			};
-		};
-		const allMetricsJSON = JSON.stringify(allMetrics, circularReplacer());
-		console.log(allMetricsJSON); */
-		this.httpSuccess(res, allMetrics);
-	}
-
-	@Get("/metrics/pods")
-	protected async getInfrastructurePods(req: Request, res: Response) {
-		const allMetrics = await this.podService.scrapPods();
-		this.httpSuccess(res, allMetrics);
+		this.httpSuccess(res, paths);
 	}
 }
-

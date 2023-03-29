@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helpers.fullname" .}}-api-cm
+data:
+  API_LABEL: {{ .Values.env.API_LABEL }}
+  API_PORT: {{ quote .Values.env.API_PORT }}
+  API_ROOT_URL: {{ .Values.env.API_ROOT_URL }}
+
+  DATABASE_HOSTNAME: {{ .Values.env.DATABASE_HOSTNAME}}
+  DATABASE_PORT: {{ quote .Values.env.DATABASE_PORT }}
+  DATABASE_USER: {{ .Values.env.DATABASE_USER }}
+  DATABASE_PASSWORD: {{ .Values.env.DATABASE_PASSWORD }}
+  DATABASE_NAME: {{ .Values.env.DATABASE_NAME }}
+
+  DEV_PRISMA_STUDIO_DB_URL: "postgres://{{ $.Values.env.DATABASE_USER }}:{{ $.Values.env.DATABASE_PASSWORD }}@{{ $.Values.env.DATABASE_HOSTNAME}}:{{ $.Values.env.DATABASE_PORT }}/{{ $.Values.env.DATABASE_NAME }}"
+
+  PROMETHEUS_URL: {{ .Values.env.PROMETHEUS_URL}}
+  PROMETHEUS_NAMESPACE_TEZOSLINK: {{ .Values.env.PROMETHEUS_NAMESPACE_TEZOSLINK}}
+  PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: {{ .Values.env.PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET}}
+  PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: {{ .Values.env.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET}}
+
+

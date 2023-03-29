@@ -3,7 +3,7 @@ import MetricInfrastructureEntity from "./MetricInfrastructureEntity";
 export default class PodEntity {
 	public name!: string;
 
-	public phase!: string;
+	public namespace!: string;
 
 	public type!: string;
 

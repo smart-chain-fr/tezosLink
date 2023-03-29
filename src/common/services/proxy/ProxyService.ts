@@ -10,6 +10,7 @@ import { Service } from "typedi";
 import IsRpcPathAllowed from "./validators/IsRpcPathAllowed";
 import IsValidProject from "./validators/IsValidProject";
 import { BackendVariables } from "@Common/config/variables/Variables";
+import { NodeType } from "@Common/enums/enums";
 
 export class RpcRequest {
 	@IsNotEmpty()
@@ -24,24 +25,33 @@ export class RpcRequest {
 	@IsNotEmpty()
 	remoteAddress!: string;
 }
-
+/**
+ * @description Proxy service
+ * @class ProxyService
+ * @extends {BaseService}
+ * @implements {IProxyService}
+ */
 @Service()
 export default class ProxyService extends BaseService {
 	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository, private variables: BackendVariables) {
 		super();
 	}
-	/**
-	 * @throws {Error} if url is undefined
-	 */
+	/** healthcheck
+	 * @returns {IHttpReponse}
+	 * @memberof ProxyService
+	 * */
 	public getHttpServerResponse(): IHttpReponse {
 		return {
 			status: HttpCodes.SUCCESS,
 			reason: null,
 		} as IHttpReponse;
 	}
+
 	/**
-	 * @throws {Error} if url is undefined
-	 */
+	 * @description Get nodes status
+	 * @returns {Promise<IStatusNode>}
+	 * @memberof ProxyService
+	 * */
 	public async getNodesStatus(): Promise<IStatusNode> {
 		const archiveTestURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/chains/main/blocks/head`);
 		const rollingTestURL = new URL(`${this.variables.ROLLING_NODES_URL}/chains/main/blocks/head`);
@@ -70,18 +80,24 @@ export default class ProxyService extends BaseService {
 	}
 
 	/**
-	 *
-	 * @throws {Error} If metric cannot be created
-	 * @returns
-	 */
+	 * @description Save a metric
+	 * @param {Partial<MetricEntity>} metricEntity
+	 * @returns {Promise<MetricEntity>}
+	 * @memberof ProxyService
+	 * */
 	async saveMetric(metricEntity: Partial<MetricEntity>) {
 		const metric = await this.metricsRepository.create(metricEntity);
 		if (!metric) return null;
 		return metric;
 	}
 
-	// Proxy proxy an http request to the right repositories
-	public async proxy(request: RpcRequest): Promise<string> {
+	/**
+	 * @description Proxy a request to a node
+	 * @param {RpcRequest} request
+	 * @returns {Promise<string | number>}
+	 * @memberof ProxyService
+	 * */
+	public async proxy(request: RpcRequest): Promise<string | number> {
 		console.info(`Received proxy request for path: ${request.path}`);
 
 		const project = await this.projectRepository.findOne({ uuid: request.uuid, network: BaseService.network });
@@ -90,31 +106,40 @@ export default class ProxyService extends BaseService {
 			return Promise.reject(`Project uuid: ${request.uuid} with network: ${BaseService.network} does not exist`);
 		}
 
-		let response = "";
+		let response: string | number = "";
+		const metric = new MetricEntity();
 
 		if (this.isRollingNodeRedirection(request.path)) {
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
-			const { data } = await axios.get(rollingURL.toString());
-			response = data;
+			const { data, status } = await axios.get(rollingURL.toString());
+			status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
+			metric.node = NodeType.ROLLING;
+			response = typeof data === "object" ? data : data.toString();
 		} else {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
-			const { data } = await axios.get(archiveURL.toString());
-			response = data;
+			const { data, status } = await axios.get(archiveURL.toString());
+			status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
+			metric.node = NodeType.ARCHIVE;
+			response = typeof data === "object" ? data : data.toString();
 		}
-		// Logger les metrics
-		const metric = new MetricEntity();
-		Object.assign(metric, request, { project, dateRequested: new Date() });
 
+		Object.assign(metric, request, { project, dateRequested: new Date() });
+		// Logger les metrics
 		await this.saveMetric(metric);
 		return response;
 	}
 
+	/**
+	 * @description Check if a path is a rolling node redirection
+	 * @param {string} url
+	 * @returns {boolean}
+	 * @memberof ProxyService
+	 * */
 	isRollingNodeRedirection(url: string): boolean {
 		const pureUrl = `/${url!.trim()}`;
 		console.info(`Checking if ${pureUrl} is a rolling node redirection`);
 		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => pureUrl.includes(rollingpattern)));
 	}
 }
-

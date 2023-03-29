@@ -1,3 +1,3 @@
-import Config from "@Common/config/cron/Config";
+import Config from "./Config";
 
 export { Config };

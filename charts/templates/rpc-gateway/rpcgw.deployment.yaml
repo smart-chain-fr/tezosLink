@@ -1,0 +1,73 @@
+{{ range $network, $data := .Values.rpcgateway}}
+---
+{{- if $data.enabled}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helpers.fullname" $ }}-{{ $network }}-tzlink-rpcgateway
+  namespace: {{ include "helpers.namespace" $| quote }}
+  labels: {{ include "helpers.labels.rpcgateway" (dict "root" $ "network" $network)| nindent 4 }}
+spec:
+  replicas: {{ $data.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helpers.rpcgateway.selectorLabels" (dict "root" $ "network" $network) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helpers.rpcgateway.selectorLabels" (dict "root" $ "network" $network) | nindent 8 }}
+    spec:
+      {{ if $data.serviceAccount.create }}
+      serviceAccountName: {{ $network }}-{{ .serviceAccount.name | default "rpcgateway-sa" }}
+      {{ end }}
+      containers:
+        - name: {{ $network }}-tzlink-rpcgateway
+          image: "{{ $data.image.repository }}:{{ $data.image.tag }}"
+          imagePullPolicy: {{ $data.image.pullPolicy }}
+          resources: 
+            {{- toYaml $data.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ $network}}-{{ include "helpers.fullname" $ }}-rpcgateway-cm
+            {{ if $data.secret }}
+            - secretRef:
+                name: {{ $network }}-{{ include "helpers.fullname" $ }}-rpcgateway-secret
+            {{ end }}
+            {{ range $data.additionalSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{ end }}
+          {{- if $data.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ $data.livenessProbe.path }}
+              port: {{ $data.livenessProbe.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ $data.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $data.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ $data.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ $data.livenessProbe.failureThreshold }}
+            successThreshold: {{ $data.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if $data.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ $data.readinessProbe.path }}
+              {{ if eq $network "testnet" }}
+              port: {{ $.Values.env.TESTNET_RPC_GATEWAY_PORT }}
+              {{ end }}
+              {{ if eq $network "mainnet" }}
+              port: {{ $.Values.env.MAINNET_RPC_GATEWAY_PORT }}
+              {{ end }}
+              scheme: HTTP
+            initialDelaySeconds: {{ $data.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $data.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ $data.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ $data.readinessProbe.failureThreshold }}
+            successThreshold: {{ $data.readinessProbe.successThreshold }}
+          {{- end }}
+      {{- if $data.podSecurityContext.enabled }}
+      securityContext: {{- omit $data.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{ end }}

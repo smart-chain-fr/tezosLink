@@ -37,16 +37,16 @@ export default class ProxyController extends ApiController {
 	protected async proxy(req: Request, res: Response) {
 		const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 		try {
+			const path = req.params[0]!.replace(/[\s/\\]+$/, "");
 			const rpcRequest = ObjectHydrate.hydrate<RpcRequest>(new RpcRequest(), {
 				uuid: req.params["uuid"]!,
-				path: req.params[0]!,
+				path: path,
 				remoteAddress: (Array.isArray(ip) ? ip[0] : ip)!,
 			});
-			await validateOrReject(rpcRequest);
+			await validateOrReject(rpcRequest, { skipMissingProperties: true, whitelist: true });
 			this.httpSuccess(res, await this.proxyService.proxy(rpcRequest));
-		} catch(err) {
+		} catch (err) {
 			this.httpBadRequest(res, err);
 		}
 	}
 }
-
