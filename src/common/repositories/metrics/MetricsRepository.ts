@@ -178,7 +178,7 @@ export default class MetricsRepository extends BaseRepository {
 					count: item._count.path,
 				});
 			});
-			return ObjectHydrate.map<CountRpcPathUsage>(CountRpcPathUsage, response, { strategy: "exposeAll" });
+			return ObjectHydrate.map<CountRpcPathUsage>(CountRpcPathUsage, result, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
