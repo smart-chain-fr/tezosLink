@@ -55,6 +55,17 @@ export default () => {
 				await expect(projectsService.getByUUID(createdEntity)).resolves.toEqual(createdEntity);
 				await projectsService.delete(createdEntity);
 			});
+
+			it("can find newly created entities by prisma query", async () => {
+				const createdEntity = await projectsService.create(projectEntity);
+				await expect(projectsService.getByCriterias(
+					{
+						where: { uuid: createdEntity.uuid },
+						include: { Metrics: true }
+					}
+				)).resolves.toEqual([createdEntity]);
+				await projectsService.delete(createdEntity);
+			});
 		});
 	});
 };

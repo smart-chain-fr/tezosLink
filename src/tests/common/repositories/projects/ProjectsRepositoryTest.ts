@@ -55,6 +55,17 @@ export default () => {
 				await expect(projectsRepository.findOne(createdEntity)).resolves.toEqual(createdEntity);
 				await projectsRepository.delete(createdEntity);
 			});
+
+			it("can find newly created entities by prisma query", async () => {
+				const createdEntity = await projectsRepository.create(projectEntity);
+				await expect(projectsRepository.findMany(
+					{
+						where: { title: createdEntity.title },
+						include: { Metrics: true }
+					}
+				)).resolves.toEqual([createdEntity]);
+				await projectsRepository.delete(createdEntity);
+			});
 		});
 	});
 };
