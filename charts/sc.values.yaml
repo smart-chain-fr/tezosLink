@@ -105,8 +105,8 @@ api:
 
   livenessProbe:
     enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    path: /projects # Route of the healthcheck endpoint
+    port: 3001 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the liveness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -114,9 +114,9 @@ api:
     successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
   readinessProbe:
-    enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    enabled: true # Enables the liveness probe
+    path: /projects # Route of the healthcheck endpoint
+    port: 3001 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the readiness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -132,7 +132,7 @@ web:
 
   image:
     repository: rg.fr-par.scw.cloud/tezoslink/p1-web # Repository containing the front image
-    tag: v1.5.3  # Version of the front image
+    tag: v1.5.4  # Version of the front image
     pullPolicy: Always
 
   service:
@@ -182,8 +182,8 @@ web:
 
   livenessProbe:
     enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    path: / # Route of the healthcheck endpoint
+    port: 3000 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the liveness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -191,9 +191,9 @@ web:
     successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
   readinessProbe:
-    enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    enabled: true # Enables the liveness probe
+    path: / # Route of the healthcheck endpoint
+    port: 3000 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the readiness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -257,7 +257,7 @@ rpcgateway:
     livenessProbe:
       enabled: false # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the liveness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -265,9 +265,9 @@ rpcgateway:
       successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
     readinessProbe:
-      enabled: false # Enables the liveness probe
+      enabled: true # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the readiness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -335,7 +335,7 @@ rpcgateway:
     livenessProbe:
       enabled: false # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the liveness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -343,9 +343,9 @@ rpcgateway:
       successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
     readinessProbe:
-      enabled: false # Enables the liveness probe
+      enabled: true # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the readiness test
       timeoutSeconds: 5 # Timeout for probe responses
