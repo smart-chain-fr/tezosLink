@@ -3,7 +3,7 @@ import PodEntity from "./PodEntity";
 export default class MetricInfrastructureEntity {
 	public uuid!: string;
 
-	public podName!: string;
+	public podUid!: string;
 
 	public value!: string;
 

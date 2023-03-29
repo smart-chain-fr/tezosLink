@@ -4,9 +4,9 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import {  IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
+import { IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
 import { plainToClass } from "class-transformer";
-
+import PathService from "@Services/dictionaries/PathService";
 
 export class requestsQuery {
 	@IsUUID()
@@ -46,7 +46,7 @@ export class queryProcessFindManyQuery {
 @Controller()
 @Service()
 export default class MetricsController extends ApiController {
-	constructor(private metricsService: MetricsService) {
+	constructor(private metricsService: MetricsService, private pathService: PathService) {
 		super();
 	}
 	//Get metrics using a query
@@ -138,14 +138,14 @@ export default class MetricsController extends ApiController {
 		this.httpSuccess(res, metrics);
 	}
 
-	//Get paths available in the database
 	@Get("/metrics/paths")
 	protected async getPaths(req: Request, res: Response) {
-		const paths = await this.metricsService.getPathDictionary();
+		const paths = await this.pathService.getAllPaths();
 		if (!paths) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
-		this.httpSuccess(res, paths);
+		const pathStrings = paths.map((pathObj) => pathObj.path);
+		this.httpSuccess(res, pathStrings);
 	}
 }

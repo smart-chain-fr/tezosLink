@@ -11,6 +11,9 @@ import IsRpcPathAllowed from "./validators/IsRpcPathAllowed";
 import IsValidProject from "./validators/IsValidProject";
 import { BackendVariables } from "@Common/config/variables/Variables";
 import { NodeType } from "@Common/enums/enums";
+import { validateAddress } from "@taquito/utils";
+import PathService from "@Services/dictionaries/PathService";
+import { PathEntity } from "@Common/ressources";
 
 export class RpcRequest {
 	@IsNotEmpty()
@@ -33,7 +36,7 @@ export class RpcRequest {
  */
 @Service()
 export default class ProxyService extends BaseService {
-	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository, private variables: BackendVariables) {
+	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository, private variables: BackendVariables, private pathService: PathService) {
 		super();
 	}
 	/** healthcheck
@@ -112,18 +115,33 @@ export default class ProxyService extends BaseService {
 		if (this.isRollingNodeRedirection(request.path)) {
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
 			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
-			const { data, status } = await axios.get(rollingURL.toString());
-			status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
 			metric.node = NodeType.ROLLING;
-			response = typeof data === "object" ? data : data.toString();
+			try {
+				const { data, status } = await axios.get(rollingURL.toString());
+				status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
+				response = typeof data === "object" ? data : data.toString();
+			} catch (error) {
+				metric.status = "failed";
+				response = `This request is not available on the rolling node \n ${error}`;
+			}
 		} else {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
 			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
-			const { data, status } = await axios.get(archiveURL.toString());
-			status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
 			metric.node = NodeType.ARCHIVE;
-			response = typeof data === "object" ? data : data.toString();
+			try {
+				const { data, status } = await axios.get(archiveURL.toString());
+				status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
+				response = typeof data === "object" ? data : data.toString();
+			} catch (error) {
+				metric.status = "failed";
+				response = `This request is not available on the archive node \n ${error}`;
+			}
 		}
+
+		//save path in dictionnary
+		const path = new PathEntity();
+		path.path = this.formatPathForDictionnary(request.path);
+		await this.pathService.saveIfNotExists(path);
 
 		Object.assign(metric, request, { project, dateRequested: new Date() });
 		// Logger les metrics
@@ -141,5 +159,20 @@ export default class ProxyService extends BaseService {
 		const pureUrl = `/${url!.trim()}`;
 		console.info(`Checking if ${pureUrl} is a rolling node redirection`);
 		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => pureUrl.includes(rollingpattern)));
+	}
+
+	formatPathForDictionnary(path: string): string {
+		const addressRegex = new RegExp(/(tz[a-zA-Z0-9]{34})/g);
+		const matches = path.match(addressRegex);
+
+		if (matches !== null) {
+			// If there's at least one match, replace all addresses with <address>
+			for (const match of matches) {
+				if (validateAddress(match)) {
+					path = path.replace(match, "<address>");
+				}
+			}
+		}
+		return path;
 	}
 }

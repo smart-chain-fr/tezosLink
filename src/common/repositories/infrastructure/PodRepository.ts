@@ -21,7 +21,7 @@ export default class PodRepository extends BaseRepository {
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
 
 			// Update the query with the limited limit
-			const pods = await this.model.findMany({ ...query, take: limit, include: { MetricInfrastructure: true } });
+			const pods = await this.model.findMany({ ...query, orderBy: { createdAt: "desc" }, take: limit, include: { MetricInfrastructure: true } });
 			return ObjectHydrate.map<PodEntity>(PodEntity, pods, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -56,24 +56,23 @@ export default class PodRepository extends BaseRepository {
 		}
 	}
 
-	public async createOrUpdate(podEntity: Partial<PodEntity>): Promise<PodEntity> {
+	public async createIfNotExists(podEntity: Partial<PodEntity>): Promise<PodEntity> {
 		try {
 			const data = { ...podEntity };
 			const existingPod = await this.model.findUnique({
-				where: { name: data.name! },
+				where: { uid: data.uid! },
 			});
 			if (existingPod && existingPod.namespace === data.namespace) {
 				// The phase is already up-to-date, so return the existing entity.
 				return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), existingPod, { strategy: "exposeAll" });
 			}
-			const pod = await this.model.upsert({
-				where: { name: data.name! },
-				create: {
+			const pod = await this.model.create({
+				data: {
+					uid: data.uid!,
 					name: data.name!,
 					namespace: data.namespace!,
 					type: data.type!,
 				},
-				update: { namespace: data.namespace! },
 				include: {
 					MetricInfrastructure: true,
 				},

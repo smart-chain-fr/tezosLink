@@ -285,16 +285,4 @@ export default class MetricsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-	// Find all paths
-	public async findPathDictionary(): Promise<string[]> {
-		try {
-			const paths = await this.model.findMany({
-				distinct: ["path"],
-				select: { path: true },
-			});
-			return paths.map((path) => path.path);
-		} catch (error) {
-			throw new ORMBadQueryError((error as Error).message, error as Error);
-		}
-	}
 }

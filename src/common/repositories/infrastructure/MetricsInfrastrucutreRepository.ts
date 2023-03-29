@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 
 type MetricQuery = {
 	where: {
-		podName: string;
+		podUid: string;
 		from?: string;
 		to?: string;
 		type?: string;
@@ -33,14 +33,14 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 1, take } = query;
-			const { podName, from, to, type } = where;
+			const { podUid, from, to, type } = where;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
 			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
 			const offset = (page - 1) * limit;
 
 			const whereClause: Prisma.MetricInfrastructureWhereInput = {
-				podName,
+				podUid,
 				dateRequested: {
 					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
 					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
@@ -84,7 +84,7 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 					type: data.type!,
 					pod: {
 						connect: {
-							name: data.podName!,
+							uid: data.podUid!,
 						},
 					},
 				},

@@ -120,18 +120,18 @@ export default class PodService extends BaseService {
 
 		const allPods = pods.reduce((acc, val) => acc.concat(val), []);
 		if (!allPods) {
-			return Promise.reject(new Error("Cannot get pods from prometheus"));
+			return Promise.reject("Cannot get pods from prometheus");
 		}
 
 		console.info("Saving pods to database ...");
-		await Promise.all(allPods.map((pod) => this.saveOrUpdatePod(pod)));
+		await Promise.all(allPods.map((pod) => this.saveIfNotExists(pod)));
 
 		console.info("Scraping metrics from prometheus ...");
 		const podsInDb = await this.PodRepository.findPodsInDatabase(NaN);
 		await Promise.all(
 			podsInDb.map((pod) => {
 				const namespace = pod.namespace;
-				return this.metricInfrastructureService.scrapMetricsByPodAndNamespace(pod.name, namespace);
+				return this.metricInfrastructureService.scrapMetricsByPodAndNamespace(pod, namespace);
 			}),
 		);
 
@@ -153,10 +153,8 @@ export default class PodService extends BaseService {
 	 * @returns {Promise<PodEntity>}
 	 * @memberof PodService
 	 * */
-	private async saveOrUpdatePod(podEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
-		const pod = await this.PodRepository.createOrUpdate(podEntity);
-		if (!pod) return Promise.reject(new Error("Cannot create infrastructure metric"));
-		return pod;
+	private async saveIfNotExists(podEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
+		return await this.PodRepository.createIfNotExists(podEntity);
 	}
 
 	/**
@@ -177,10 +175,17 @@ export default class PodService extends BaseService {
 			.filter((pod) => pod.value[1] === "1")
 			.map((pod) => {
 				const podEntity = new PodEntity();
+				podEntity.uid = pod.metric.uid;
 				podEntity.name = pod.metric.pod;
 				podEntity.namespace = pod.metric.namespace;
 				const match = pod.metric.pod.match(podRegex);
-				podEntity.type = match ? match[1]! : "Unknown";
+				if (pod.metric.namespace === this.variables.PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET) {
+					podEntity.type = match ? "mainnet-" + match[1]! : "Unknown";
+				} else if (pod.metric.namespace === this.variables.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET) {
+					podEntity.type = match ? "testnet-" + match[1]! : "Unknown";
+				} else {
+					podEntity.type = match ? match[1]! : "Unknown";
+				}
 				return podEntity;
 			});
 
