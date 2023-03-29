@@ -45,7 +45,7 @@ env: # Environment variables injected through the config maps, if needed they ca
   PROMETHEUS_NAMESPACE_TEZOSLINK: namespace # Kubernetes namespace where TezosLink is deployed
   PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: namespace # Kubernetes namespace where TezosK8s is deployed
   PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: namespace # Kubernetes namespace where TezosK8s is deployed
-  
+
 api: 
 
   enabled: true # Enables the API service
@@ -69,6 +69,7 @@ api:
     enabled: false # Enables ingress creation
     host: # URL of the api ingress
     tls:
+      enabled: false # Enable TLS block
       secretName: # Name of the secret that contains or will contain the certificate
     annotations: {} # Annotations of the ingress
     labels: {} # Labels of the ingress
@@ -145,6 +146,7 @@ web:
     enabled: false # Enables ingress creation
     host: # URL of the web ingress
     tls:
+      enabled: false # Enable TLS block
       secretName: # Name of the secret that contains or will contain the certificate
     annotations: {} # Annotations of the ingress
     labels: {} # Labels of the ingress
@@ -225,6 +227,7 @@ rpcgateway:
       enabled: false # Enables ingress creation
       host:  # URL of the testnet rpc gateway
       tls:
+        enabled: false # Enable TLS block
         secretName: # Name of the secret that contains or will contain the certificate
       annotations: {} # Annotations of the ingress
       labels: {} # Labels of the ingress
@@ -298,6 +301,7 @@ rpcgateway:
       enabled: false # Enables ingress creation
       host: # URL of the mainnet rpc gateway
       tls:
+        enabled: false # Enable TLS block
         secretName: # Name of the secret that contains or will contain the certificate
       annotations: {} # Annotations of the ingress
       labels: {} # Labels of the ingress

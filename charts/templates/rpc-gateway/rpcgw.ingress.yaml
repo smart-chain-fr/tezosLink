@@ -11,11 +11,13 @@ metadata:
   labels:
     {{ toYaml $data.ingress.labels | nindent 4 }}
 spec:
-  tls:
   {{ if eq $network "testnet"}}
+  {{ if $data.ingress.tls.enabled}}
+  tls:
   - hosts: 
       - {{ $data.ingress.host }}
     secretName: {{ $data.ingress.tls.secretName }}
+  {{ end }}
   rules:
   - host: {{ $data.ingress.host }}
     http:
@@ -29,9 +31,12 @@ spec:
               number: {{ $.Values.env.TESTNET_RPC_GATEWAY_PORT}}
   {{ end }}
   {{ if eq $network "mainnet"}}
+  {{ if $data.ingress.tls.enabled}}
+  tls:
   - hosts: 
       - {{ $data.ingress.host }}
     secretName: {{ $data.ingress.tls.secretName }}
+  {{ end }}
   rules:
   - host: {{ $data.ingress.host }}
     http:

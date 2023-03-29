@@ -69,6 +69,7 @@ api:
     enabled: true # Enables ingress creation
     host: "api.stg.tzlink.smart-chain.fr"
     tls:
+      enabled: true
       secretName: api-tls # Name of the secret that contains or will contain the certificate
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -151,6 +152,7 @@ web:
     enabled: true # Enables ingress creation
     host: web.stg.tzlink.smart-chain.fr
     tls:
+      enabled: true
       secretName: web-tls # Name of the secret that contains or will contain the certificate
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -166,7 +168,6 @@ web:
 
   resources:
     limits:  # CPU and memory limits
-      cpu: 100m
       memory: 256Mi
     requests: # CPU and memory requests
       cpu: 100m
@@ -237,6 +238,7 @@ rpcgateway:
       enabled: true # Enables ingress creation
       host: "testnet.rpc.stg.tzlink.smart-chain.fr"
       tls:
+        enabled: true
         secretName: testnet-rpc-tls # Name of the secret that contains or will contain the certificate
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -314,6 +316,7 @@ rpcgateway:
       enabled: true # Enables ingress creation
       host: "mainnet.rpc.stg.tzlink.smart-chain.fr"
       tls:
+        enabled: true
         secretName: mainnet-rpc-tls # Name of the secret that contains or will contain the certificate
       annotations: 
         cert-manager.io/cluster-issuer: letsencrypt-prod

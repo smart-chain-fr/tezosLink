@@ -9,10 +9,12 @@ metadata:
   labels:
 {{ toYaml .Values.web.ingress.labels | indent 4 }}
 spec:
+  {{ if .Values.web.ingress.tls.enabled}}
   tls:
   - hosts: 
       - {{ .Values.web.ingress.host }}
     secretName: {{ .Values.web.ingress.tls.secretName }}
+  {{ end }}
   rules:
   - host: {{ .Values.web.ingress.host }}
     http:
