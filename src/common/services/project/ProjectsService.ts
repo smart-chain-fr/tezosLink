@@ -13,7 +13,7 @@ export default class ProjectsService extends BaseService {
 	/**
 	 * @throws {Error} If projects are undefined
 	 */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<ProjectEntity[]> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<ProjectEntity[]> {
 		return this.projectRepository.findMany(query);
 	}
 	/**
