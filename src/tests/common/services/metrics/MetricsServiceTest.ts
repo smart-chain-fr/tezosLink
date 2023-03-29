@@ -3,10 +3,12 @@ import { afterAll, beforeAll, describe, it } from "@jest/globals";
 
 import { v4 as uuidv4 } from "uuid";
 
-import ObjectHydrate from "@Common/helpers/ObjectHydrate"
+import { CountRpcPathUsage } from "@Common/repositories/metrics/MetricsRepository";
+
 import MetricEntity from "@Entities/metrics/MetricEntity"
-import ProjectEntity from "@Entities/projects/ProjectEntity"
 import MetricsService from "@Services/metric/MetricsService";
+import ObjectHydrate from "@Common/helpers/ObjectHydrate"
+import ProjectEntity from "@Entities/projects/ProjectEntity"
 import ProjectsService from "@Services/project/ProjectsService";
 
 export default () => {
@@ -140,6 +142,18 @@ export default () => {
 			it("has the right metrics count after one insertion", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
 				await expect(metricsService.getCountAllMetricsByCriterias(createdEntity)).resolves.toBe(1);
+				await metricsService.delete(createdEntity);
+			});
+
+			it("has the right rpc path count after one insertion", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				const expectedRpcPathUsage =
+					ObjectHydrate.hydrate(
+						new CountRpcPathUsage(), { path: createdEntity.path!, count: 1 }
+					)
+				await expect(metricsService.getCountRpcPath(
+					{ projectUuid: createdEntity.projectUuid! }
+				)).resolves.toEqual([expectedRpcPathUsage]);
 				await metricsService.delete(createdEntity);
 			});
 		});
