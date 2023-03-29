@@ -60,7 +60,7 @@ export default () => {
 				const createdEntity = await projectsRepository.create(projectEntity);
 				await expect(projectsRepository.findMany(
 					{
-						where: { title: createdEntity.title },
+						where: { uuid: createdEntity.uuid },
 						include: { Metrics: true }
 					}
 				)).resolves.toEqual([createdEntity]);

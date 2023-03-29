@@ -1,6 +1,5 @@
 import { Container } from "typedi";
-//import { afterAll, beforeAll, describe, it } from "@jest/globals";
-import { afterAll, beforeAll, describe } from "@jest/globals";
+import { afterAll, beforeAll, describe, it } from "@jest/globals";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -79,9 +78,25 @@ export default () => {
 				await metricsService.delete(createdEntity);
 			});
 
+			it("can find newly created entities by criteria", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getByCriterias(
+					{ where: createdEntity }
+				)).resolves.toMatchObject({ data: [ createdEntity ] });
+				await metricsService.delete(createdEntity);
+			});
+
 			it("can get the last metric", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
 				await expect(metricsService.getLastMetrics(projectEntity.uuid!, 1)).resolves.toHaveLength(1);
+				await metricsService.delete(createdEntity);
+			});
+
+			it("can get a metric by criteria", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getByCriterias(
+					{ where: createdEntity, take: 1 }
+				)).resolves.toMatchObject({ data: [ createdEntity ] });
 				await metricsService.delete(createdEntity);
 			});
 
@@ -91,9 +106,25 @@ export default () => {
 				await metricsService.delete(createdEntity);
 			});
 
+			it("is safe to ask for zero metrics by criteria", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getByCriterias(
+					{ where: createdEntity, take: 0 }
+				)).resolves.toMatchObject({ data: [ createdEntity ] });
+				await metricsService.delete(createdEntity);
+			});
+
 			it("is safe to ask for a negative number of last metrics", async () => {
 				const createdEntity = await metricsService.create(metricEntity);
 				await expect(metricsService.getLastMetrics(projectEntity.uuid!, -1)).resolves.toMatchObject([createdEntity]);
+				await metricsService.delete(createdEntity);
+			});
+
+			it("is safe to ask for a negative number of metrics by criteria", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getByCriterias(
+					{ where: createdEntity, take: -1 }
+				)).resolves.toMatchObject({ data: [ createdEntity ] });
 				await metricsService.delete(createdEntity);
 			});
 
@@ -106,11 +137,11 @@ export default () => {
 				await expect(metricsService.getCountAllMetricsByCriterias(badMetricEntity)).resolves.toBe(0);
 			});
 
-			//it("has the right metrics count after one insertion", async () => {
-			//	const createdEntity = await metricsService.create(metricEntity);
-			//	await expect(metricsService.getCountAllMetricsByCriterias(...createdEntity)).resolves.toBe(1);
-			//	await metricsService.delete(createdEntity);
-			//});
+			it("has the right metrics count after one insertion", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getCountAllMetricsByCriterias(createdEntity)).resolves.toBe(1);
+				await metricsService.delete(createdEntity);
+			});
 		});
 	});
 };
