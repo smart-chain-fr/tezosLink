@@ -42,10 +42,10 @@ export default class MetricsRepository extends BaseRepository {
 		return this.database.getClient();
 	}
 
-	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
+	public async findMany(query: Partial<MetricQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 0, take = 10 } = query;
-			const { projectUuid, node, from, to, type: requestType, status } = where;
+			const { projectUuid, node, from, to, type: requestType, status } = where!;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
 			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page

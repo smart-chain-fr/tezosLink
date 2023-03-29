@@ -34,7 +34,7 @@ export default class MetricsService extends BaseService {
 	 * @returns {Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }>}
 	 * @memberof MetricsService
 	 * */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricRepository.findMany(query);
 	}
 
