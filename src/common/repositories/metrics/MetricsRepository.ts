@@ -274,7 +274,7 @@ export default class MetricsRepository extends BaseRepository {
 		try {
 			const date = new Date();
 			date.setMonth(date.getMonth() - Math.abs(months));
-			this.model.deleteMany({
+			await this.model.deleteMany({
 				where: {
 					dateRequested: {
 						lte: new Date(date),
