@@ -124,4 +124,17 @@ export default class MetricsInfrastructureService extends BaseService {
 		}
 		return response.data;
 	}
+
+	/**
+	 *
+	 * @throws {Error} If metricInfrastructure cannot be deleted
+	 * @returns
+	 */
+	public async delete(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<void> {
+		try {
+			await this.metricInfrastructureRepository.delete(metricInfrastructureEntity);
+		} catch (error) {
+			throw new Error("Cannot delete project");
+		}
+	}
 }

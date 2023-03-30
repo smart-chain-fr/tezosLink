@@ -94,4 +94,16 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+
+	public async delete(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: metricInfrastructureEntity.uuid,
+				},
+			});
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
 }
