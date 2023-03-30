@@ -46,6 +46,13 @@ env: # Environment variables injected through the config maps, if needed they ca
   PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: namespace # Kubernetes namespace where TezosK8s is deployed
   PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: namespace # Kubernetes namespace where TezosK8s is deployed
 
+common:
+  ingress:
+    enabled: false # Enables the creation of an ingress for all the services
+    tls: false # Enables the TLS block of the ingress
+    annotations: {} # Annotations for the ingress
+    labels: {} # Labels for the ingress
+
 api: 
 
   enabled: true # Enables the API service

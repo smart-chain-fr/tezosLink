@@ -2,7 +2,7 @@
 Tezos-link
 ===========
 
-A Helm chart to deploy an management dashboard for Tezos Nodes
+A Helm chart to deploy a management dashboard for Tezos Nodes
 
 
 ## Configuration
@@ -45,6 +45,10 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `env.PROMETHEUS_NAMESPACE_TEZOSLINK` | Kubernetes namespace where TezosLink is deployed | `"namespace"` |
 | `env.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET` | Kubernetes namespace where TezosK8s is deployed | `"namespace"` |
 | `env.PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET` | Kubernetes namespace where TezosK8s is deployed | `"namespace"` |
+| `common.ingress.enabled` | Enables the creation of an ingress for all the services | `false` |
+| `common.ingress.tls` | Enables the TLS block of the ingress | `false` |
+| `common.ingress.annotations` | Annotations for the ingress | `{}` |
+| `common.ingress.labels` | Labels for the ingress | `{}` |
 | `api.enabled` | Enables the API service | `true` |
 | `api.replicas` | Number of pods replicas desired for the API service | `1` |
 | `api.image.repository` | Repository containing the API image | `"rg.fr-par.scw.cloud/tezoslink/p1-api"` |
@@ -57,6 +61,7 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `api.service.annotations` | Service annotations | `{}` |
 | `api.ingress.enabled` | Enables ingress creation | `false` |
 | `api.ingress.host` | URL of the api ingress | `null` |
+| `api.ingress.tls.enabled` | Enable TLS block | `false` |
 | `api.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `api.ingress.annotations` | Annotations of the ingress | `{}` |
 | `api.ingress.labels` | Labels of the ingress | `{}` |
@@ -103,6 +108,7 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `web.serviceAccount.name` | Default name: front-sa | `""` |
 | `web.ingress.enabled` | Enables ingress creation | `false` |
 | `web.ingress.host` | URL of the web ingress | `null` |
+| `web.ingress.tls.enabled` | Enable TLS block | `false` |
 | `web.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `web.ingress.annotations` | Annotations of the ingress | `{}` |
 | `web.ingress.labels` | Labels of the ingress | `{}` |
@@ -149,6 +155,7 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `rpcgateway.testnet.service.annotations` | Service annotations | `{}` |
 | `rpcgateway.testnet.ingress.enabled` | Enables ingress creation | `false` |
 | `rpcgateway.testnet.ingress.host` | URL of the testnet rpc gateway | `null` |
+| `rpcgateway.testnet.ingress.tls.enabled` | Enable TLS block | `false` |
 | `rpcgateway.testnet.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `rpcgateway.testnet.ingress.annotations` | Annotations of the ingress | `{}` |
 | `rpcgateway.testnet.ingress.labels` | Labels of the ingress | `{}` |
@@ -193,6 +200,7 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `rpcgateway.mainnet.service.annotations` | Service annotations | `{}` |
 | `rpcgateway.mainnet.ingress.enabled` | Enables ingress creation | `false` |
 | `rpcgateway.mainnet.ingress.host` | URL of the mainnet rpc gateway | `null` |
+| `rpcgateway.mainnet.ingress.tls.enabled` | Enable TLS block | `false` |
 | `rpcgateway.mainnet.ingress.tls.secretName` | Name of the secret that contains or will contain the certificate | `null` |
 | `rpcgateway.mainnet.ingress.annotations` | Annotations of the ingress | `{}` |
 | `rpcgateway.mainnet.ingress.labels` | Labels of the ingress | `{}` |
