@@ -1,11 +1,11 @@
-import { PathEntity } from "@Common/ressources";
-import PathRepository from "@Repositories/dictionnaries/PathRepository";
+import { TypeOfRequestEntity } from "@Common/ressources";
+import TypeOfRequestRepository from "@Repositories/dictionnaries/TypeOfRequetsRepository";
 import BaseService from "@Services/BaseService";
 import { Service } from "typedi";
 
 @Service()
 export default class PathService extends BaseService {
-	constructor(private pathRepository: PathRepository) {
+	constructor(private pathRepository: TypeOfRequestRepository) {
 		super();
 	}
 
@@ -14,7 +14,7 @@ export default class PathService extends BaseService {
 	 * @returns {Promise<PathEntity[]>}
 	 * @memberof PathService
 	 * */
-	public async getAllPaths(): Promise<PathEntity[]> {
+	public async getAllPaths(): Promise<TypeOfRequestEntity[]> {
 		return await this.pathRepository.findAll();
 	}
 	/**
@@ -23,7 +23,7 @@ export default class PathService extends BaseService {
 	 * @returns {Promise<PathEntity>}
 	 * @memberof PathService
 	 * */
-	public async saveIfNotExists(pathEntity: Partial<PathEntity>): Promise<Partial<PathEntity>> {
+	public async saveIfNotExists(pathEntity: Partial<TypeOfRequestEntity>): Promise<Partial<TypeOfRequestEntity>> {
 		return await this.pathRepository.createIfNotExists(pathEntity);
 	}
 }

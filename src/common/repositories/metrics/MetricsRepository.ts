@@ -4,6 +4,7 @@ import { MetricEntity } from "@Common/ressources";
 import { ORMBadQueryError } from "@Common/system/database/exceptions/ORMBadQueryError";
 import { type Prisma } from "@prisma/client";
 import BaseRepository from "@Repositories/BaseRepository";
+import TypeOfRequestRepository from "@Repositories/dictionnaries/TypeOfRequetsRepository";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 
@@ -32,7 +33,7 @@ type MetricQuery = {
 
 @Service()
 export default class MetricsRepository extends BaseRepository {
-	constructor(private database: TezosLink) {
+	constructor(private database: TezosLink, private typeOfRequestRepository: TypeOfRequestRepository) {
 		super();
 	}
 	protected get model() {
@@ -44,7 +45,7 @@ export default class MetricsRepository extends BaseRepository {
 
 	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			const { where, skip = 0, take = 10 } = query;
+			const { where, skip = 0, take  } = query;
 			const { projectUuid, node, from, to, type: requestType, status } = where;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
@@ -70,14 +71,16 @@ export default class MetricsRepository extends BaseRepository {
 				orderBy: {
 					dateRequested: "desc",
 				},
+				include: {
+					typeOfRequest: true,
+				},
 			});
 
-			const total = Math.ceil(totalCount / limit);
 			const metadata = {
 				count: metrics.length,
 				limit,
 				page,
-				total,
+				total: Math.ceil(totalCount),
 			};
 
 			return { data: ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" }), metadata };
@@ -107,6 +110,11 @@ export default class MetricsRepository extends BaseRepository {
 					dateRequested: data.dateRequested!,
 					node: data.node!,
 					status: data.status!,
+					typeOfRequest: {
+						connect: {
+							uuid: data.typeOfRequest!.uuid!,
+						},
+					},
 					project: {
 						connect: {
 							uuid: data.project!.uuid!,
@@ -139,6 +147,11 @@ export default class MetricsRepository extends BaseRepository {
 								dateRequested: data.dateRequested!,
 								node: data.node!,
 								status: data.status!,
+								typeOfRequest: {
+									connect: {
+										uuid: data.typeOfRequest!.uuid!,
+									},
+								},
 								project: {
 									connect: {
 										uuid: data.project!.uuid,
@@ -160,9 +173,9 @@ export default class MetricsRepository extends BaseRepository {
 		try {
 			const result: CountRpcPathUsage[] = [];
 			const response = await this.model.groupBy({
-				by: ["path"],
+				by: ["typeOfRequestUuid"],
 				_count: {
-					path: true,
+					typeOfRequestUuid: true,
 				},
 				where: {
 					projectUuid: ProjectUuid,
@@ -172,13 +185,15 @@ export default class MetricsRepository extends BaseRepository {
 					},
 				},
 			});
-			response.forEach((item) => {
+
+			for (const item of response) {
+				const path = await this.typeOfRequestRepository.findOneByUuid(item.typeOfRequestUuid);
 				result.push({
-					path: item.path,
-					count: item._count.path,
+					path: path!.path,
+					count: item._count.typeOfRequestUuid,
 				});
-			});
-			return ObjectHydrate.map<CountRpcPathUsage>(CountRpcPathUsage, response, { strategy: "exposeAll" });
+			}
+			return ObjectHydrate.map<CountRpcPathUsage>(CountRpcPathUsage, result, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

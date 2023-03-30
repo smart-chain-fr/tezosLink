@@ -85,7 +85,7 @@ export default class MetricsService extends BaseService {
 
 		const formattedResults: RequestsByDayMetrics[] = results.reduce((acc: any, curr) => {
 			const currentDate = new Date(curr.date).toISOString();
-			const date = by === "hour" ? currentDate.substring(0, 13) + ":00:00.941Z" : currentDate.substring(0, 10) + "T00:00:00.941Z";
+			const date = by === "hour" ? currentDate.substring(0, 13) + ":00:00.000Z" : currentDate.substring(0, 10) + "T00:00:00.000Z";
 			const existing: any = acc.find((item: any) => item.date === date);
 
 			if (existing) {

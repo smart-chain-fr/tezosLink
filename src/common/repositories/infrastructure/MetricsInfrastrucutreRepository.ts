@@ -32,7 +32,7 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 
 	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			const { where, skip = 1, take } = query;
+			const { where, skip = 0, take } = query;
 			const { podUid, from, to, type } = where;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
@@ -59,12 +59,12 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 					dateRequested: "desc",
 				},
 			});
-			const total = Math.ceil(totalCount / limit);
+
 			const metadata = {
 				count: metrics.length,
 				limit,
 				page,
-				total,
+				total: Math.ceil(totalCount),
 			};
 			return { data: ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {

@@ -1,4 +1,6 @@
-export default class PathEntity {
+export default class TypeOfRequestEntity {
+	public uuid!: string;
+	
 	public path!: string;
 
 	public createdAt?: Date;

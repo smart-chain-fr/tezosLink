@@ -28,6 +28,8 @@ model Metric {
   node  String @db.VarChar(255)
   project   Project  @relation(fields: [projectUuid], references: [uuid])
   projectUuid String 
+  typeOfRequest  TypeOfRequest @relation(fields: [typeOfRequestUuid], references: [uuid])
+  typeOfRequestUuid String 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("app_metrics")
@@ -56,9 +58,11 @@ model MetricInfrastructure {
   @@map("app_metrics_infrastructure")
 }
 
-model PathDictionnary {
+model TypeOfRequest {
+  uuid      String  @unique @db.VarChar(255) @id
   path      String  @unique @db.VarChar(255)
+  Metrics Metric[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@map("app_path_dictionnary")
+  @@map("app_types_of_request")
 }

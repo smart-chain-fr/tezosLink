@@ -13,7 +13,7 @@ import { BackendVariables } from "@Common/config/variables/Variables";
 import { NodeType } from "@Common/enums/enums";
 import { validateAddress } from "@taquito/utils";
 import PathService from "@Services/dictionaries/PathService";
-import { PathEntity } from "@Common/ressources";
+import { TypeOfRequestEntity } from "@Common/ressources";
 
 export class RpcRequest {
 	@IsNotEmpty()
@@ -122,7 +122,7 @@ export default class ProxyService extends BaseService {
 				response = typeof data === "object" ? data : data.toString();
 			} catch (error) {
 				metric.status = "failed";
-				response = `This request is not available on the rolling node \n ${error}`;
+				response = `This request is not available on the rolling node \n`;
 			}
 		} else {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
@@ -134,14 +134,15 @@ export default class ProxyService extends BaseService {
 				response = typeof data === "object" ? data : data.toString();
 			} catch (error) {
 				metric.status = "failed";
-				response = `This request is not available on the archive node \n ${error}`;
+				response = `This request is not available on the archive node \n`;
 			}
 		}
 
 		//save path in dictionnary
-		const path = new PathEntity();
-		path.path = this.formatPathForDictionnary(request.path);
-		await this.pathService.saveIfNotExists(path);
+		const path = new TypeOfRequestEntity();
+		path.path = this.extractAndFormatTypeOfRequest(request.path);
+		const typeOfRequest = (await this.pathService.saveIfNotExists(path)) as TypeOfRequestEntity;
+		metric.typeOfRequest = typeOfRequest;
 
 		Object.assign(metric, request, { project, dateRequested: new Date() });
 		// Logger les metrics
@@ -161,7 +162,7 @@ export default class ProxyService extends BaseService {
 		return Boolean(BaseService.rollingPatterns.find((rollingpattern) => pureUrl.includes(rollingpattern)));
 	}
 
-	formatPathForDictionnary(path: string): string {
+	extractAndFormatTypeOfRequest(path: string): string {
 		const addressRegex = new RegExp(/(tz[a-zA-Z0-9]{34})/g);
 		const matches = path.match(addressRegex);
 
