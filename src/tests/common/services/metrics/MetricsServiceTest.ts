@@ -11,6 +11,24 @@ import ObjectHydrate from "@Common/helpers/ObjectHydrate"
 import ProjectEntity from "@Entities/projects/ProjectEntity"
 import ProjectsService from "@Services/project/ProjectsService";
 
+function newMetricEntity(projectEntity: Partial<ProjectEntity>): MetricEntity {
+	return ObjectHydrate.hydrate(new MetricEntity(),
+		{ uuid: uuidv4()
+		, path: "path"
+		, remoteAddress: "remoteAddress"
+		, dateRequested: new Date()
+		, node: "node"
+		, status: "status"
+		, projectUuid: projectEntity.uuid!
+		, project: projectEntity as ProjectEntity
+	 	}
+	);
+}
+
+function adjustDate(date: Date, miliseconds: number): Date {
+	return new Date(date.getTime() + miliseconds);
+}
+
 export default () => {
 	describe("MetricsService", () => {
 		let projectsService: ProjectsService;
@@ -31,19 +49,7 @@ export default () => {
 
 		beforeAll(async () => {
 			metricsService = await Container.get(MetricsService);
-
-			metricEntity =
-				ObjectHydrate.hydrate(new MetricEntity(),
-					{ uuid: uuidv4()
-					, path: "path"
-					, remoteAddress: "remoteAddress"
-					, dateRequested: new Date()
-					, node: "node"
-					, status: "status"
-					, projectUuid: projectEntity.uuid
-					, project: projectEntity as ProjectEntity
-				 	}
-				);
+			metricEntity = newMetricEntity(projectEntity as ProjectEntity);
 		});
 
 		afterAll(async () => {
@@ -154,6 +160,41 @@ export default () => {
 				await expect(metricsService.getCountRpcPath(
 					{ projectUuid: createdEntity.projectUuid! }
 				)).resolves.toEqual([expectedRpcPathUsage]);
+				await metricsService.delete(createdEntity);
+			});
+
+			it("gives empty group metrics requested by day after zero insertion", async () => {
+				await expect(metricsService.getRequestsByDay(
+					{ projectUuid: projectEntity.uuid! }
+				)).resolves.toEqual([]);
+			});
+
+			it("gives valid group metrics by day after one insertion", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getRequestsByDay(
+					{ projectUuid: createdEntity.projectUuid! }
+				)).resolves.toMatchObject([{ count: 1 }]);
+				await metricsService.delete(createdEntity);
+			});
+
+			it("gives valid group metrics by day after two insertions", async () => {
+				const createdEntity1 = await metricsService.create(newMetricEntity(projectEntity));
+				const createdEntity2 = await metricsService.create(newMetricEntity(projectEntity));
+				await expect(metricsService.getRequestsByDay(
+					{ projectUuid: projectEntity.uuid! }
+				)).resolves.toMatchObject([{ count: 2 }]);
+				await metricsService.delete(createdEntity1);
+				await metricsService.delete(createdEntity2);
+			});
+
+			it("gives empty group metrics requested by day with out-of-range constraints", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getRequestsByDay(
+					{ projectUuid: createdEntity.projectUuid!, from: adjustDate(metricEntity.dateRequested, 1).toISOString() }
+				)).resolves.toMatchObject([]);
+				await expect(metricsService.getRequestsByDay(
+					{ projectUuid: createdEntity.projectUuid!, to: adjustDate(metricEntity.dateRequested, -1).toISOString() }
+				)).resolves.toMatchObject([]);
 				await metricsService.delete(createdEntity);
 			});
 		});
