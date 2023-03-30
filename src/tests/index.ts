@@ -1,3 +1,4 @@
+import MetricInfrastructureServiceTest from "@Tests/common/services/infrastructure/MetricInfrastructureServiceTest";
 import MetricsServiceTest from "@Tests/common/services/metrics/MetricsServiceTest";
 import ObjectHydrateTest from "@Tests/common/helpers/ObjectHydrateTest";
 import PodServiceTest from "@Tests/common/services/infrastructure/PodServiceTest";
@@ -7,7 +8,8 @@ import ProjectsServiceTest from "@Tests/common/services/projects/ProjectsService
 import VariablesTest from "@Tests/common/config/variables/VariablesTest";
 
 export default
-	[ MetricsServiceTest
+	[ MetricInfrastructureServiceTest
+	, MetricsServiceTest
 	, ObjectHydrateTest
 	, PodServiceTest
 	, ProjectEntityTest
