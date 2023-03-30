@@ -11,18 +11,23 @@ import ObjectHydrate from "@Common/helpers/ObjectHydrate"
 import ProjectEntity from "@Entities/projects/ProjectEntity"
 import ProjectsService from "@Services/project/ProjectsService";
 
-function newMetricEntity(projectEntity: Partial<ProjectEntity>): MetricEntity {
-	return ObjectHydrate.hydrate(new MetricEntity(),
-		{ uuid: uuidv4()
-		, path: "path"
-		, remoteAddress: "remoteAddress"
-		, dateRequested: new Date()
-		, node: "node"
-		, status: "status"
-		, projectUuid: projectEntity.uuid!
-		, project: projectEntity as ProjectEntity
-	 	}
-	);
+function newMetricEntity(projectEntity: Partial<ProjectEntity>, metricEntity?: Partial<MetricEntity>): MetricEntity {
+	let newEntity = ObjectHydrate.hydrate(new MetricEntity(),
+			{ uuid: uuidv4()
+			, path: "path"
+			, remoteAddress: "remoteAddress"
+			, dateRequested: new Date()
+			, node: "node"
+			, status: "status"
+			, projectUuid: projectEntity.uuid!
+			, project: projectEntity as ProjectEntity
+			});
+
+	if (metricEntity) {
+		ObjectHydrate.hydrate(newEntity, metricEntity);
+	}
+
+	return newEntity;
 }
 
 function adjustDate(date: Date, miliseconds: number): Date {
@@ -215,6 +220,34 @@ export default () => {
 				await expect(metricsService.getByCriterias(
 					{ where: createdEntity }
 				)).resolves.toMatchObject({ data: [] });
+			});
+
+			it("gives a valid path dictionary after one insertion", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.getPathDictionary()).resolves.toEqual([metricEntity.path]);
+				await metricsService.delete(createdEntity);
+			});
+
+			it("gives a valid path dictionary with multiple path occurence", async () => {
+				const createdEntity1 = await metricsService.create(newMetricEntity(projectEntity));
+				const createdEntity2 = await metricsService.create(newMetricEntity(projectEntity));
+				await expect(metricsService.getPathDictionary()).resolves.toEqual([metricEntity.path]);
+				await metricsService.delete(createdEntity1);
+				await metricsService.delete(createdEntity2);
+			});
+
+			it("gives a valid path dictionary with multiple path occurence", async () => {
+				const createdEntity1 = await metricsService.create(
+					newMetricEntity(projectEntity, { path: "path1" })
+				);
+				const createdEntity2 = await metricsService.create(
+					newMetricEntity(projectEntity, { path: "path2" })
+				);
+				expect((await metricsService.getPathDictionary()).sort()).toEqual(
+					[createdEntity1.path, createdEntity2.path].sort()
+				);
+				await metricsService.delete(createdEntity1);
+				await metricsService.delete(createdEntity2);
 			});
 		});
 	});
