@@ -46,6 +46,17 @@ env: # Environment variables injected through the config maps
   PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: tzk8s-testnet
   PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: poc-tzk8s
 
+common:
+  ingress:
+    enabled: true # Enables the creation of an ingress for all the services
+    tls: true # Enables the TLS block of the ingress
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    labels: {} # Labels for the ingress
+
 api: 
 
   enabled: true # Enables the API service
@@ -71,12 +82,6 @@ api:
     tls:
       enabled: true
       secretName: api-tls # Name of the secret that contains or will contain the certificate
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    labels: {} # Labels of the ingress
 
   serviceAccount:
     create: false # Create a service account for the API
@@ -154,12 +159,6 @@ web:
     tls:
       enabled: true
       secretName: web-tls # Name of the secret that contains or will contain the certificate
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    labels: {} # Labels of the ingress
 
   secret: []  # Secrets to be injected as environment variables
     # SECRET_KEY: c2VjcmV0Cg==
@@ -240,12 +239,6 @@ rpcgateway:
       tls:
         enabled: true
         secretName: testnet-rpc-tls # Name of the secret that contains or will contain the certificate
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-      labels: {} # Labels of the ingress
     
     podSecurityContext:
       enabled: true # Enables the pod security context 
@@ -318,12 +311,6 @@ rpcgateway:
       tls:
         enabled: true
         secretName: mainnet-rpc-tls # Name of the secret that contains or will contain the certificate
-      annotations: 
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-      labels: {} # Labels of the ingress
     
     podSecurityContext:
       enabled: true # Enables the pod security context 
