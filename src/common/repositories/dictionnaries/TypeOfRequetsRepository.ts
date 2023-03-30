@@ -16,7 +16,11 @@ export default class TypeOfRequestRepository extends BaseRepository {
 		return this.database.getClient().typeOfRequest;
 	}
 
-	//Find one path
+	/**
+	 * @param uuid
+	 * @returns TypeOfRequestEntity
+	 * @memberof TypeOfRequestRepository
+	 * */
 	public async findOneByUuid(uuid: string): Promise<TypeOfRequestEntity | null> {
 		try {
 			const pathEntity = await this.model.findUnique({
@@ -28,10 +32,12 @@ export default class TypeOfRequestRepository extends BaseRepository {
 		}
 	}
 
-	// Find all paths
+	/**
+	 *
+	 * @returns TypeOfRequestEntity[]
+	 */
 	public async findAll(): Promise<TypeOfRequestEntity[]> {
 		try {
-			// Use Math.min to limit the number of rows fetched
 			const paths = await this.model.findMany({
 				select: { path: true },
 				orderBy: { path: "asc" },
@@ -41,7 +47,11 @@ export default class TypeOfRequestRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	/**
+	 *
+	 * @param typeOfRequestEntity
+	 * @returns  TypeOfRequestEntity
+	 */
 	public async createIfNotExists(typeOfRequestEntity: Partial<TypeOfRequestEntity>): Promise<TypeOfRequestEntity> {
 		try {
 			const data = { ...typeOfRequestEntity };
@@ -49,7 +59,6 @@ export default class TypeOfRequestRepository extends BaseRepository {
 				where: { path: data.path! },
 			});
 			if (existingPath) {
-				// The phase is already up-to-date, so return the existing entity.
 				return ObjectHydrate.hydrate<TypeOfRequestEntity>(new TypeOfRequestEntity(), existingPath, { strategy: "exposeAll" });
 			}
 			const uuid = uuidv4();

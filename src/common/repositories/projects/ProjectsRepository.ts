@@ -15,7 +15,12 @@ export default class ProjectsRepository extends BaseRepository {
 	protected get model() {
 		return this.database.getClient().project;
 	}
-
+	/**
+	 * Find projects by query
+	 * @param query
+	 * @returns {Promise<ProjectEntity[]>}
+	 * @memberof ProjectsRepository
+	 * */
 	public async findMany(query: Prisma.ProjectFindManyArgs): Promise<ProjectEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
@@ -28,7 +33,12 @@ export default class ProjectsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	/**
+	 * Find one project by entity
+	 * @param projectEntity
+	 * @returns {Promise<ProjectEntity>}
+	 * @memberof ProjectsRepository
+	 * */
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		try {
 			const project = (await this.model.findFirst({
@@ -39,7 +49,12 @@ export default class ProjectsRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	/**
+	 * Create a project
+	 * @param projectEntity
+	 * @returns {Promise<ProjectEntity>}
+	 * @memberof ProjectsRepository
+	 * */
 	public async create(projectEntity: Partial<ProjectEntity>): Promise<ProjectEntity> {
 		try {
 			const data = { ...projectEntity };

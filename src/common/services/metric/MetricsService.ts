@@ -101,16 +101,6 @@ export default class MetricsService extends BaseService {
 	}
 
 	/**
-	 * Remove metrics older than 3 months
-	 * @returns {Promise<void>}
-	 * @memberof MetricsService
-	 * */
-	public async removeThreeMontsOldMetrics(): Promise<void> {
-		const months = 3;
-		await this.metricRepository.removeOldMetricsBymonths(months);
-	}
-
-	/**
 	 * World map metrics
 	 * @returns {Promise<{ data: { country: string; count: number }[] }>}
 	 * @memberof MetricsService

@@ -42,10 +42,15 @@ export default class MetricsRepository extends BaseRepository {
 	protected get instanceDb() {
 		return this.database.getClient();
 	}
-
+	/**
+	 * Find all metrics by query
+	 * @param query
+	 * @returns {Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			const { where, skip = 0, take  } = query;
+			const { where, skip = 0, take } = query;
 			const { projectUuid, node, from, to, type: requestType, status } = where;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
@@ -89,6 +94,12 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
+	/**
+	 * Find one metric by query
+	 * @param metricEntity
+	 * @returns {Promise<Partial<MetricEntity> | null>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async findOne(metricEntity: Partial<MetricEntity>): Promise<Partial<MetricEntity> | null> {
 		try {
 			const metric = await this.model.findUnique({ where: metricEntity });
@@ -98,6 +109,12 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
+	/**
+	 * Create one metric
+	 * @param metricEntity
+	 * @returns {Promise<MetricEntity>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async create(metricEntity: Partial<MetricEntity>): Promise<MetricEntity> {
 		try {
 			const data = { ...metricEntity };
@@ -128,7 +145,11 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
-	// Create many metrics in bulk
+	/** Create many metrics
+	 * @param metricEntity
+	 * @returns {Promise<MetricEntity[]>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async createMany(metricEntity: Partial<MetricEntity[]>): Promise<MetricEntity[]> {
 		try {
 			const result: MetricEntity[] = [];
@@ -168,8 +189,15 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
-	// Count Rpc path usage for a specific project
-	public async countRpcPathUsage(ProjectUuid: string, from: string, to: string): Promise<CountRpcPathUsage[]> {
+	/**
+	 * Get the count of metrics by project
+	 * @param projectUuid
+	 * @param from
+	 * @param to
+	 * @returns {Promise<CountRpcPathUsage[]>}
+	 * @throws {ORMBadQueryError}
+	 */
+	public async countRpcPathUsage(projectUuid: string, from: string, to: string): Promise<CountRpcPathUsage[]> {
 		try {
 			const result: CountRpcPathUsage[] = [];
 			const response = await this.model.groupBy({
@@ -178,7 +206,7 @@ export default class MetricsRepository extends BaseRepository {
 					typeOfRequestUuid: true,
 				},
 				where: {
-					projectUuid: ProjectUuid,
+					projectUuid,
 					dateRequested: {
 						gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
 						lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
@@ -199,7 +227,13 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
-	// Last requests for a specific project
+	/**
+	 * Find all requests by criterias
+	 * @param projectUuid
+	 * @param limit
+	 * @returns {Promise<MetricEntity[]>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async findAllRequestsByCriterias(projectUuid: string, limit: number): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
@@ -219,7 +253,13 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
-	// Find Requests by Day for a specific project
+	/** Find requests by day
+	 * @param projectUuid
+	 * @param from
+	 * @param to
+	 * @returns {Promise<RequestsByDayMetrics[]>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async findRequestsByDay(projectUuid: string, from?: string, to?: string): Promise<RequestsByDayMetrics[]> {
 		try {
 			const result: RequestsByDayMetrics[] = [];
@@ -252,7 +292,13 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
-	// Count all metrics by criterias for a specific project
+	/** Count all requests
+	 * @param projectUuid
+	 * @param from
+	 * @param to
+	 * @returns {Promise<number>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async countAll(projectUuid: string, from: string, to: string): Promise<number> {
 		try {
 			return this.model.count({
@@ -269,7 +315,10 @@ export default class MetricsRepository extends BaseRepository {
 		}
 	}
 
-	// All requests for the world map
+	/** World map requests
+	 * @returns {Promise<MetricEntity[]>}
+	 * @throws {ORMBadQueryError}
+	 */
 	public async findAllRequestsWorldMap(): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
@@ -279,23 +328,6 @@ export default class MetricsRepository extends BaseRepository {
 				},
 			});
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
-		} catch (error) {
-			throw new ORMBadQueryError((error as Error).message, error as Error);
-		}
-	}
-
-	// Remove Three months old metrics
-	public async removeOldMetricsBymonths(months: number): Promise<void> {
-		try {
-			const date = new Date();
-			date.setMonth(date.getMonth() - Math.abs(months));
-			this.model.deleteMany({
-				where: {
-					dateRequested: {
-						lte: new Date(date),
-					},
-				},
-			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

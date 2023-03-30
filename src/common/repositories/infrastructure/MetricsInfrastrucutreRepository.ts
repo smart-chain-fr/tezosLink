@@ -29,7 +29,11 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	protected get instanceDb() {
 		return this.database.getClient();
 	}
-
+	/**
+	 *
+	 * @param query
+	 * @returns
+	 */
 	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 0, take } = query;
@@ -71,7 +75,12 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	/**
+	 * @param metricInfrastructureEntity
+	 * @returns MetricInfrastructureEntity
+	 * @throws ORMBadQueryError
+	 * @description Create a new metric
+	 */
 	public async create(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<MetricInfrastructureEntity> {
 		try {
 			const data = { ...metricInfrastructureEntity };

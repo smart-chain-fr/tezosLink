@@ -14,7 +14,11 @@ export default class PodRepository extends BaseRepository {
 	protected get model() {
 		return this.database.getClient().pod;
 	}
-	/** Find all pods by query */
+	/** Find pods by query
+	 * @param query
+	 * @returns {Promise<PodEntity[]>}
+	 * @memberof PodRepository
+	 * */
 	public async findManyByQuery(query: Prisma.PodFindManyArgs): Promise<PodEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
@@ -27,7 +31,11 @@ export default class PodRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	/** Find one pod by entity
+	 * @param podEntity
+	 * @returns {Promise<PodEntity>}
+	 * @memberof PodRepository
+	 * */
 	public async findOne(podEntity: Partial<PodEntity>): Promise<PodEntity> {
 		try {
 			const pod = (await this.model.findFirst({
@@ -42,7 +50,11 @@ export default class PodRepository extends BaseRepository {
 		}
 	}
 
-	// pods by running phase
+	/**
+	 * Find pods in database
+	 * @param limit
+	 * @returns
+	 */
 	public async findPodsInDatabase(limit: number): Promise<PodEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
@@ -56,6 +68,12 @@ export default class PodRepository extends BaseRepository {
 		}
 	}
 
+	/**
+	 * create pod if not exists
+	 * @param podEntity
+	 * @returns {Promise<PodEntity>}
+	 * @memberof PodRepository
+	 * */
 	public async createIfNotExists(podEntity: Partial<PodEntity>): Promise<PodEntity> {
 		try {
 			const data = { ...podEntity };
