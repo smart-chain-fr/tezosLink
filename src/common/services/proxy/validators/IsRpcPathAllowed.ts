@@ -14,7 +14,7 @@ export default class IsRpcPathAllowed implements ValidatorConstraintInterface {
 
 function isAllowed(path: string): boolean {
 	const pureUrl = `/${path!.trim()}`;
-
+	if (pureUrl === "/") return false;
 	for (const whitelistPath of BaseService.whitelisted) {
 		if (pureUrl.startsWith(whitelistPath)) {
 			return true;

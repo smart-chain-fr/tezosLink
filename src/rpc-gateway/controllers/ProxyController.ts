@@ -42,12 +42,20 @@ export default class ProxyController extends ApiController {
 			path: path,
 			remoteAddress: (Array.isArray(ip) ? ip[0] : ip)!,
 		});
-		try {
-			await validateOrReject(rpcRequest, { skipMissingProperties: true, whitelist: true });
-			this.httpSuccess(res, await this.proxyService.proxy(rpcRequest, true));
-		} catch (err) {
-			await this.proxyService.proxy(rpcRequest, false);
-			this.httpBadRequest(res, err);
-		}
+
+		// Define a function that proxies the request and handles errors
+		const proxyRequest = async (rpcRequest: RpcRequest) => {
+			try {
+				await validateOrReject(rpcRequest, { skipMissingProperties: true, whitelist: true });
+				const result = await this.proxyService.proxy(rpcRequest, true);
+				this.httpSuccess(res, result);
+			} catch (err) {
+				if (rpcRequest.path.length != 0) await this.proxyService.proxy(rpcRequest, false);
+				this.httpBadRequest(res, err);
+			}
+		};
+
+		// Call the proxyRequest function
+		await proxyRequest(rpcRequest);
 	}
 }
