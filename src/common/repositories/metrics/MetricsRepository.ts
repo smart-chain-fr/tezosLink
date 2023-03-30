@@ -58,7 +58,7 @@ export default class MetricsRepository extends BaseRepository {
 					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
 					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 				},
-				path: requestType || undefined,
+				typeOfRequestUuid: requestType || undefined,
 				status: status || undefined,
 			};
 

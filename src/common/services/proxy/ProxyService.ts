@@ -28,6 +28,12 @@ export class RpcRequest {
 	@IsNotEmpty()
 	remoteAddress!: string;
 }
+export enum EStatus {
+	successful = "successful",
+	failed = "failed",
+	blacklisted = "blacklisted",
+}
+
 /**
  * @description Proxy service
  * @class ProxyService
@@ -100,7 +106,7 @@ export default class ProxyService extends BaseService {
 	 * @returns {Promise<string | number>}
 	 * @memberof ProxyService
 	 * */
-	public async proxy(request: RpcRequest): Promise<string | number> {
+	public async proxy(request: RpcRequest, whitelisted: boolean): Promise<string | number> {
 		console.info(`Received proxy request for path: ${request.path}`);
 
 		const project = await this.projectRepository.findOne({ uuid: request.uuid, network: BaseService.network });
@@ -110,7 +116,23 @@ export default class ProxyService extends BaseService {
 		}
 
 		let response: string | number = "";
+
 		const metric = new MetricEntity();
+
+		//save path in dictionnary
+		const path = new TypeOfRequestEntity();
+		path.path = this.extractAndFormatTypeOfRequest(request.path);
+		const typeOfRequest = (await this.pathService.saveIfNotExists(path)) as TypeOfRequestEntity;
+		metric.typeOfRequest = typeOfRequest;
+
+		if (!whitelisted) {
+			metric.status = EStatus.blacklisted;
+			metric.node = NodeType.NONE;
+			Object.assign(metric, request, { project, dateRequested: new Date() });
+			// Logger les metrics
+			await this.saveMetric(metric);
+			return response;
+		}
 
 		if (this.isRollingNodeRedirection(request.path)) {
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
@@ -118,11 +140,12 @@ export default class ProxyService extends BaseService {
 			metric.node = NodeType.ROLLING;
 			try {
 				const { data, status } = await axios.get(rollingURL.toString());
-				status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
+				status !== HttpCodes.SUCCESS ? (metric.status = EStatus.failed) : (metric.status = EStatus.successful);
 				response = typeof data === "object" ? data : data.toString();
 			} catch (error) {
-				metric.status = "failed";
-				response = `This request is not available on the rolling node \n`;
+				console.error(`Error while forwarding request to rolling node: ${error}`);
+				metric.status = EStatus.failed;
+				response = `This request has failed or is not available on the rolling node`;
 			}
 		} else {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
@@ -130,19 +153,14 @@ export default class ProxyService extends BaseService {
 			metric.node = NodeType.ARCHIVE;
 			try {
 				const { data, status } = await axios.get(archiveURL.toString());
-				status !== HttpCodes.SUCCESS ? (metric.status = "failed") : (metric.status = "successful");
+				status !== HttpCodes.SUCCESS ? (metric.status = EStatus.failed) : (metric.status = EStatus.failed);
 				response = typeof data === "object" ? data : data.toString();
 			} catch (error) {
-				metric.status = "failed";
-				response = `This request is not available on the archive node \n`;
+				console.error(`Error while forwarding request to archive node: ${error}`);
+				metric.status = EStatus.failed;
+				response = `This request has failed or is not available on the archive node`;
 			}
 		}
-
-		//save path in dictionnary
-		const path = new TypeOfRequestEntity();
-		path.path = this.extractAndFormatTypeOfRequest(request.path);
-		const typeOfRequest = (await this.pathService.saveIfNotExists(path)) as TypeOfRequestEntity;
-		metric.typeOfRequest = typeOfRequest;
 
 		Object.assign(metric, request, { project, dateRequested: new Date() });
 		// Logger les metrics
