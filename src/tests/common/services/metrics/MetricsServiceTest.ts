@@ -49,7 +49,7 @@ export default () => {
 
 		beforeAll(async () => {
 			metricsService = await Container.get(MetricsService);
-			metricEntity = newMetricEntity(projectEntity as ProjectEntity);
+			metricEntity = newMetricEntity(projectEntity);
 		});
 
 		afterAll(async () => {
@@ -196,6 +196,25 @@ export default () => {
 					{ projectUuid: createdEntity.projectUuid!, to: adjustDate(metricEntity.dateRequested, -1).toISOString() }
 				)).resolves.toMatchObject([]);
 				await metricsService.delete(createdEntity);
+			});
+
+			it("can find newly created entity after removeThreeMontsOldMetrics", async () => {
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.removeThreeMontsOldMetrics()).resolves.toBeUndefined();
+				await expect(metricsService.getByCriterias(
+					{ where: createdEntity }
+				)).resolves.toMatchObject({ data: [ createdEntity ] });
+				await metricsService.delete(createdEntity);
+			});
+
+			it("cannot find an old entity after removeThreeMontsOldMetrics", async () => {
+				let metricEntity = newMetricEntity(projectEntity);
+				metricEntity.dateRequested.setMonth(metricEntity.dateRequested.getMonth() - 4);
+				const createdEntity = await metricsService.create(metricEntity);
+				await expect(metricsService.removeThreeMontsOldMetrics()).resolves.toBeUndefined();
+				await expect(metricsService.getByCriterias(
+					{ where: createdEntity }
+				)).resolves.toMatchObject({ data: [] });
 			});
 		});
 	});
