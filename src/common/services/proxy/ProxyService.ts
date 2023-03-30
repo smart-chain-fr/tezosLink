@@ -12,7 +12,7 @@ import IsValidProject from "./validators/IsValidProject";
 import { BackendVariables } from "@Common/config/variables/Variables";
 import { NodeType } from "@Common/enums/enums";
 import { validateAddress } from "@taquito/utils";
-import PathService from "@Services/dictionaries/PathService";
+import TypeOfRequestService from "@Services/dictionaries/PathService";
 import { TypeOfRequestEntity } from "@Common/ressources";
 
 export class RpcRequest {
@@ -42,7 +42,7 @@ export enum EStatus {
  */
 @Service()
 export default class ProxyService extends BaseService {
-	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository, private variables: BackendVariables, private pathService: PathService) {
+	constructor(private metricsRepository: MetricsRepository, private projectRepository: ProjectsRepository, private variables: BackendVariables, private pathService: TypeOfRequestService) {
 		super();
 	}
 	/** healthcheck

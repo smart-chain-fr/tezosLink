@@ -39,7 +39,7 @@ export default class TypeOfRequestRepository extends BaseRepository {
 	public async findAll(): Promise<TypeOfRequestEntity[]> {
 		try {
 			const paths = await this.model.findMany({
-				select: { path: true },
+				select: { uuid: true, path: true },
 				orderBy: { path: "asc" },
 			});
 			return ObjectHydrate.map<TypeOfRequestEntity>(TypeOfRequestEntity, paths, { strategy: "exposeAll" });

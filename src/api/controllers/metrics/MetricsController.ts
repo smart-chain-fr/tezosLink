@@ -6,7 +6,6 @@ import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
 import { IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
 import { plainToClass } from "class-transformer";
-import PathService from "@Services/dictionaries/PathService";
 
 export class requestsQuery {
 	@IsUUID()
@@ -46,7 +45,7 @@ export class queryProcessFindManyQuery {
 @Controller()
 @Service()
 export default class MetricsController extends ApiController {
-	constructor(private metricsService: MetricsService, private pathService: PathService) {
+	constructor(private metricsService: MetricsService) {
 		super();
 	}
 	//Get metrics using a query
@@ -120,7 +119,7 @@ export default class MetricsController extends ApiController {
 			return;
 		}
 		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query);
-		if (isNaN(metrics)) {
+		if (isNaN(metrics) || metrics === null) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
@@ -131,21 +130,10 @@ export default class MetricsController extends ApiController {
 	@Get("/metrics/world-map")
 	protected async getWorldMap(req: Request, res: Response) {
 		const metrics = await this.metricsService.worldMapMetrics();
-		if (!metrics) {
+		if (!metrics || metrics.data.length === 0) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
 		this.httpSuccess(res, metrics);
-	}
-
-	@Get("/metrics/paths")
-	protected async getPaths(req: Request, res: Response) {
-		const paths = await this.pathService.getAllPaths();
-		if (!paths) {
-			this.httpNotFoundRequest(res);
-			return;
-		}
-		const pathStrings = paths.map((pathObj) => pathObj.path);
-		this.httpSuccess(res, pathStrings);
 	}
 }

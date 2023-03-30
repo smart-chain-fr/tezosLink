@@ -4,26 +4,26 @@ import BaseService from "@Services/BaseService";
 import { Service } from "typedi";
 
 @Service()
-export default class PathService extends BaseService {
-	constructor(private pathRepository: TypeOfRequestRepository) {
+export default class TypeOfRequestService extends BaseService {
+	constructor(private typeOfRequestRepository: TypeOfRequestRepository) {
 		super();
 	}
 
 	/**
 	 * Get pods by criterias
-	 * @returns {Promise<PathEntity[]>}
+	 * @returns {Promise<TypeOfRequestEntity[]>}
 	 * @memberof PathService
 	 * */
 	public async getAllPaths(): Promise<TypeOfRequestEntity[]> {
-		return await this.pathRepository.findAll();
+		return await this.typeOfRequestRepository.findAll();
 	}
 	/**
 	 * Save or update pod in database
-	 * @param {PathEntity} pathEntity
-	 * @returns {Promise<PathEntity>}
+	 * @param {TypeOfRequestEntity} typeOfRequestEntity
+	 * @returns {Promise<TypeOfRequestEntity>}
 	 * @memberof PathService
 	 * */
-	public async saveIfNotExists(pathEntity: Partial<TypeOfRequestEntity>): Promise<Partial<TypeOfRequestEntity>> {
-		return await this.pathRepository.createIfNotExists(pathEntity);
+	public async saveIfNotExists(typeOfRequestEntity: Partial<TypeOfRequestEntity>): Promise<Partial<TypeOfRequestEntity>> {
+		return await this.typeOfRequestRepository.createIfNotExists(typeOfRequestEntity);
 	}
 }
