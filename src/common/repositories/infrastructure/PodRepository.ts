@@ -31,7 +31,10 @@ export default class PodRepository extends BaseRepository {
 	public async findOne(podEntity: Partial<PodEntity>): Promise<PodEntity> {
 		try {
 			const pod = (await this.model.findFirst({
-				where: podEntity,
+				where: {
+					...podEntity,
+					MetricInfrastructure: { every: {} },
+				},
 				include: {
 					MetricInfrastructure: true,
 				},
