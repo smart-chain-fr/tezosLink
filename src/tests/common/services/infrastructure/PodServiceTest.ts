@@ -61,6 +61,14 @@ export default () => {
 				await podService.delete(createdEntity);
 			});
 
+			it("can find newly created entities with getOnePodAndMetrics", async () => {
+				const createdEntity = await podService.saveOrUpdatePod(podEntity);
+				await expect(
+					podService.getOnePodAndMetrics(createdEntity)
+				).resolves.toMatchObject(createdEntity);
+				await podService.delete(createdEntity);
+			});
+
 			it("updates only the namespace property on existing entities name", async () => {
 				const newEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
