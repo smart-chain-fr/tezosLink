@@ -144,7 +144,7 @@ export default class PodService extends BaseService {
 	 * @returns {Promise<PodEntity[]>}
 	 * @memberof PodService
 	 * */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<PodEntity[]> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<PodEntity[]> {
 		return await this.PodRepository.findManyByQuery(query);
 	}
 	/**

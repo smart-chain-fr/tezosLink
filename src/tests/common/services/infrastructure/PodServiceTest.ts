@@ -39,6 +39,28 @@ export default () => {
 		});
 
 		describe("⤞ Postcondition tests", () => {
+			it("cannot find non-existing entities by criteria", async () => {
+				await expect(podService.getByCriterias(
+					{ where: { name: podEntity.name! }
+					, include: { MetricInfrastructure: true }
+					}
+				)).resolves.toEqual([]);
+			});
+
+			it("cannot find a single entities in an empty table", async () => {
+				await expect(podService.getOnePodAndMetrics(podEntity)).resolves.toBeNull();
+			});
+
+			it("can find newly created entities by criteria", async () => {
+				const createdEntity = await podService.saveOrUpdatePod(podEntity);
+				await expect(podService.getByCriterias(
+					{ where: { name: createdEntity.name! }
+					, include: { MetricInfrastructure: true }
+					}
+				)).resolves.toMatchObject([ createdEntity ]);
+				await podService.delete(createdEntity);
+			});
+
 			it("updates only the namespace property on existing entities name", async () => {
 				const newEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
