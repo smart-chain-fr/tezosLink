@@ -11,6 +11,7 @@ env: # Environment variables injected through the config maps, if needed they ca
   DATABASE_USER: postgres # Database user
   DATABASE_PASSWORD: postgres # Database user password
   DATABASE_NAME: tezoslink # Database name
+  DEV_PRISMA_STUDIO_DB_URL: # Connexion string for Prisma
 
   WEB_LABEL: web
   WEB_PORT: 3000 # Port of the frontend, only used to setup the server

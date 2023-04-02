@@ -18,6 +18,7 @@ The following table lists the configurable parameters of the Tezos-link chart an
 | `env.DATABASE_USER` | Database user | `"postgres"` |
 | `env.DATABASE_PASSWORD` | Database user password | `"postgres"` |
 | `env.DATABASE_NAME` | Database name | `"tezoslink"` |
+| `env.DEV_PRISMA_STUDIO_DB_URL` | Connexion string for Prisma | `null` |
 | `env.WEB_LABEL` |  | `"web"` |
 | `env.WEB_PORT` | Port of the frontend, only used to setup the server | `3000` |
 | `env.WEB_ROOT_URL` | Root URL of the frontend | `"/"` |
