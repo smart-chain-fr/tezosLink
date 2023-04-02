@@ -14,6 +14,12 @@ from its ashes with an upgrade. It come along with a new dashboard with some key
 
 ### For a deployment on Cloud
 
+You need: Kubernetes
+
+Here are some official guides to get started with Kubernetes on Azure, AWS, GCP:
+  - [AWS](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+  - [Azure](https://learn.microsoft.com/en-gb/azure/aks/)
+  - [GCP](https://cloud.google.com/kubernetes-engine/docs)
 #### Hardware
 (à completer à la fin du projet)
 
@@ -36,6 +42,8 @@ The installation of TezosLink is composed of several different Helm charts :
 - [Bitnami PostgreSQL](https://artifacthub.io/packages/helm/bitnami/postgresql)
 - [Tezos-link Helm charts ](https://github.com/smart-chain-fr/tezosLink/tree/dev/charts)
 - [Bitnami Prometheus](https://artifacthub.io/packages/helm/bitnami/kube-prometheus)
+
+For Postgres, a managed Postgresql instance can also be used.
 
 ### Release version
 
@@ -151,7 +159,9 @@ helm upgrade -i my-repo charts/tezos --version <refere to the release version se
     --set protocols[0].command="PtLimaPt" `
     ...
 ```
+### Tezos-link Kubernetes resource map
 
+![Kubernetes resources](images/helm-chart-resources.png)
 ### Tezos-link installation
 
 1. Connect to your kubernetes cluster via kubectl command
