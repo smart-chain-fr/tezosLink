@@ -136,7 +136,7 @@ web:
   replicas: 1 # Number of pods replicas desired for the front service 
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-web # Repository containing the front image
+    repository: rg.fr-par.scw.cloud/tezoslink/web # Repository containing the front image
     tag: v1.5.4  # Version of the front image
     pullPolicy: Always
 
