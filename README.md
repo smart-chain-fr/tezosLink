@@ -28,16 +28,16 @@ The repository is currently following this organization:
 
 ```
 src
-├── api          # api source code
-├── common       # packaging
-├── entries      # entrie
-├── rpc-gateway  # proxy source code
-└──  test        # test-specific files
+├── api          # api source code (rest api)
+├── common       # common files across services
+├── entries      # entry points
+├── rpc-gateway  # rpc-gateway source code (proxy)
+└── test        # test-specific files (e.g. mocks)
 ```
 
 ## Run services locally on the machine with mockup blockchain node
 
-> Blockchain nodes are mocked up for development environment the be as lightweight as possible. 
+> Blockchain nodes are mocked up for development environment the be as lightweight as possible.
 
 ### Requirements
 
@@ -46,4 +46,41 @@ src
 - `Npm` (setup with 8.19.2)
 - `Typescript` (setup with 4.9.4)
 - `Node.js` (setup with 16.18.0)
+
+### How to
+
+To run services locally on the machine, you will need to run those commands :
+
+#### Api
+
+```bash
+$> npm install
+$> npm run api:dev
+```
+
+It will run:
+
+- `tzlink-api`
+- `postgres:11`
+
+#### Rpc-gateway
+
+```bash
+$> npm run rpc-gateway:dev
+```
+
+It will run:
+
+- `tzlink-rpc-gateway`
+
+#### Cronjob
+
+```bash
+$> npm run cron:dev
+```
+
+It will run:
+
+- `tzlink-cron`
+
 

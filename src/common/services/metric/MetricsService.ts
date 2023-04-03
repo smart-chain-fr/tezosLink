@@ -110,7 +110,8 @@ export default class MetricsService extends BaseService {
 		const countries: { [key: string]: number } = {}; // map each country to its count
 
 		metrics.forEach((element) => {
-			const ip = element.remoteAddress;
+			const ipList = element.remoteAddress;
+			const ip = ipList.includes(",") ? ipList.split(",")[0]!.toString() : ipList; // get the first ip
 			const geo = geoip.lookup(ip);
 			const country = geo?.country; // get the country from the geo lookup result
 			if (country) {
