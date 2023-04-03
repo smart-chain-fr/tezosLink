@@ -62,8 +62,8 @@ export default class ProxyService extends BaseService {
 	 * @memberof ProxyService
 	 * */
 	public async getNodesStatus(): Promise<IStatusNode> {
-		const archiveTestURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/chains/main/blocks/head`);
-		const rollingTestURL = new URL(`${this.variables.ROLLING_NODES_URL}/chains/main/blocks/head`);
+		const archiveTestURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/chains/main/blocks`);
+		const rollingTestURL = new URL(`${this.variables.ROLLING_NODES_URL}/chains/main/blocks`);
 
 		const archive_node = {
 			status: HttpCodes.INTERNAL_ERROR,

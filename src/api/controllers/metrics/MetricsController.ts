@@ -130,7 +130,7 @@ export default class MetricsController extends ApiController {
 	@Get("/metrics/world-map")
 	protected async getWorldMap(req: Request, res: Response) {
 		const metrics = await this.metricsService.worldMapMetrics();
-		if (!metrics || metrics.data.length === 0) {
+		if (!metrics) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
