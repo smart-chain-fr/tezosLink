@@ -67,12 +67,12 @@ export default class PodService extends BaseService {
 			case "testnet-archive-node":
 				namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET;
 				runningQuery = `${prometheusUrl}/api/v1/query?query=sum(kube_pod_container_status_ready{namespace="${namespace}", container="octez-node", pod=~"archive-node-.*"})`;
-				totalQuery = `${prometheusUrl}/api/v1/query?query=kube_statefulset_status_replicas{statefulset="archive-node-testnet", namespace="${namespace}"}`;
+				totalQuery = `${prometheusUrl}/api/v1/query?query=kube_statefulset_status_replicas{statefulset="archive-node", namespace="${namespace}"}`;
 				break;
 			case "testnet-rolling-node":
 				namespace = this.variables.PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET;
 				runningQuery = `${prometheusUrl}/api/v1/query?query=sum(kube_pod_container_status_ready{namespace="${namespace}", container="octez-node", pod=~"rolling-node-.*"})`;
-				totalQuery = `${prometheusUrl}/api/v1/query?query=kube_statefulset_status_replicas{statefulset="rolling-node-testnet", namespace="${namespace}"}`;
+				totalQuery = `${prometheusUrl}/api/v1/query?query=kube_statefulset_status_replicas{statefulset="rolling-node", namespace="${namespace}"}`;
 				break;
 			default:
 				return { total: 0, running: 0 };
