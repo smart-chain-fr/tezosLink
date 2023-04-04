@@ -28,13 +28,16 @@ model Metric {
   node  String @db.VarChar(255)
   project   Project  @relation(fields: [projectUuid], references: [uuid])
   projectUuid String 
+  typeOfRequest  TypeOfRequest @relation(fields: [typeOfRequestUuid], references: [uuid])
+  typeOfRequestUuid String 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("app_metrics")
 }
 
 model Pod {
-  name      String  @unique @db.VarChar(255)
+  uid      String  @unique @db.VarChar(255) @id
+  name      String   @db.VarChar(255)
   namespace  String @db.VarChar(255)
   type  String @db.VarChar(255)
   createdAt DateTime @default(now())
@@ -48,9 +51,18 @@ model MetricInfrastructure {
   value  String @db.VarChar(255)
   dateRequested  DateTime @db.Timestamp()
   type  String @db.VarChar(255)
-  pod   Pod  @relation(fields: [podName], references: [name])
-  podName  String @db.VarChar(255)
+  pod   Pod  @relation(fields: [podUid], references: [uid])
+  podUid String @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("app_metrics_infrastructure")
+}
+
+model TypeOfRequest {
+  uuid      String  @unique @db.VarChar(255) @id
+  path      String  @unique @db.VarChar(255)
+  Metrics Metric[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("app_types_of_request")
 }

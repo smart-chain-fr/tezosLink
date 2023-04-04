@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 
 type MetricQuery = {
 	where: {
-		podName: string;
+		podUid: string;
 		from?: string;
 		to?: string;
 		type?: string;
@@ -29,18 +29,22 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	protected get instanceDb() {
 		return this.database.getClient();
 	}
-
+	/**
+	 *
+	 * @param query
+	 * @returns
+	 */
 	public async findMany(query: Partial<MetricQuery>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
-			const { where, skip = 1, take } = query;
-			const { podName, from, to, type } = where!;
+			const { where, skip = 0, take } = query;
+			const { podUid, from, to, type } = where;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
 			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
 			const offset = (page - 1) * limit;
 
 			const whereClause: Prisma.MetricInfrastructureWhereInput = {
-				podName,
+				podUid,
 				dateRequested: {
 					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
 					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
@@ -59,19 +63,23 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 					dateRequested: "desc",
 				},
 			});
-			const total = Math.ceil(totalCount / limit);
 			const metadata = {
 				count: metrics.length,
 				limit,
 				page,
-				total,
+				total: Math.ceil(totalCount),
 			};
 			return { data: ObjectHydrate.map<MetricInfrastructureEntity>(MetricInfrastructureEntity, metrics, { strategy: "exposeAll" }), metadata };
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
-
+	/**
+	 * @param metricInfrastructureEntity
+	 * @returns MetricInfrastructureEntity
+	 * @throws ORMBadQueryError
+	 * @description Create a new metric
+	 */
 	public async create(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<MetricInfrastructureEntity> {
 		try {
 			const data = { ...metricInfrastructureEntity };
@@ -84,7 +92,7 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 					type: data.type!,
 					pod: {
 						connect: {
-							name: data.podName!,
+							uid: data.podUid!,
 						},
 					},
 				},

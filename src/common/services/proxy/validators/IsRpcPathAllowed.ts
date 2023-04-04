@@ -14,18 +14,18 @@ export default class IsRpcPathAllowed implements ValidatorConstraintInterface {
 
 function isAllowed(path: string): boolean {
 	const pureUrl = `/${path!.trim()}`;
-	let nonWhitelistedPart = "";
+	if (pureUrl === "/") return false;
 	for (const whitelistPath of BaseService.whitelisted) {
-		if (pureUrl.includes(whitelistPath)) {
-			nonWhitelistedPart = pureUrl.slice(pureUrl.indexOf(whitelistPath) + whitelistPath.length);
-			break;
+		if (pureUrl.startsWith(whitelistPath)) {
+			return true;
 		}
 	}
+
 	for (const blacklistPath of BaseService.blacklisted) {
-		if (nonWhitelistedPart.includes(blacklistPath) || pureUrl.includes(blacklistPath)) {
+		if (pureUrl.includes(blacklistPath)) {
 			return false;
 		}
 	}
-	return true;
-}
 
+	return false;
+}

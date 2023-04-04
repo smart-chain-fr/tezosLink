@@ -5,15 +5,5 @@ metadata:
 data:
 
   NEXT_PUBLIC_API_URL: {{ printf "https://%s%s" .Values.env.API_HOSTNAME .Values.env.API_ROOT_URL}}  
-
-  {{ if .Values.env.MAINNET_RPC_GATEWAY_PORT}}
-  NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL: {{ printf "https://%s:%v%s" .Values.env.MAINNET_RPC_GATEWAY_HOSTNAME .Values.env.MAINNET_RPC_GATEWAY_PORT .Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}
-  {{ else }}
   NEXT_PUBLIC_RPC_GATEWAY_MAINNET_URL: {{ printf "https://%s%s" .Values.env.MAINNET_RPC_GATEWAY_HOSTNAME .Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}
-  {{ end }}
-
-  {{ if .Values.env.TESTNET_RPC_GATEWAY_PORT}}
-  NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: {{ printf "https://%s:%v%s" .Values.env.TESTNET_RPC_GATEWAY_HOSTNAME .Values.env.TESTNET_RPC_GATEWAY_PORT .Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}
-  {{ else}}
   NEXT_PUBLIC_RPC_GATEWAY_TESTNET_URL: {{ printf "https://%s%s" .Values.env.TESTNET_RPC_GATEWAY_HOSTNAME .Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}
-  {{ end }}

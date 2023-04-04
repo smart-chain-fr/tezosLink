@@ -1,5 +1,5 @@
 import { BackendVariables } from "@Common/config/variables/Variables";
-import { MetricInfrastructureEntity } from "@Common/ressources";
+import { MetricInfrastructureEntity, PodEntity } from "@Common/ressources";
 import HttpCodes from "@Common/system/controller-pattern/HttpCodes";
 import MetricsInfrastrucutreRepository from "@Repositories/infrastructure/MetricsInfrastrucutreRepository";
 import BaseService from "@Services/BaseService";
@@ -59,16 +59,16 @@ export default class MetricsInfrastructureService extends BaseService {
 	 * @returns {Promise<void>}
 	 * @memberof MetricsInfrastructureService
 	 * */
-	public async scrapMetricsByPodAndNamespace(pod: string, namespace: string): Promise<void> {
+	public async scrapMetricsByPodAndNamespace(pod: PodEntity, namespace: string): Promise<void> {
 		const metricQueries: MetricQuery[] = [
-			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_LIMIT },
-			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="cpu"}`, type: MetricType.CPU_REQUESTED },
-			{ query: `rate(container_cpu_usage_seconds_total{namespace="${namespace}",pod="${pod}"}[1m])`, type: MetricType.CPU_USAGE },
-			{ query: `container_memory_working_set_bytes{namespace="${namespace}",pod="${pod}"}`, type: MetricType.RAM_USAGE },
-			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod}",resource="memory"}`, type: MetricType.RAM_LIMIT },
-			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod}",resource="memory"}`, type: MetricType.RAM_REQUESTED },
-			{ query: `rate(container_network_receive_bytes_total{namespace="${namespace}",pod="${pod}"}[1m])`, type: MetricType.NETWORK_RECEIVE },
-			{ query: `rate(container_network_transmit_bytes_total{namespace="${namespace}",pod="${pod}"}[1m])`, type: MetricType.NETWORK_TRANSMIT },
+			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod.name}",resource="cpu"}`, type: MetricType.CPU_LIMIT },
+			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod.name}",resource="cpu"}`, type: MetricType.CPU_REQUESTED },
+			{ query: `rate(container_cpu_usage_seconds_total{namespace="${namespace}",pod="${pod.name}"}[1m])`, type: MetricType.CPU_USAGE },
+			{ query: `container_memory_working_set_bytes{namespace="${namespace}",pod="${pod.name}"}`, type: MetricType.RAM_USAGE },
+			{ query: `kube_pod_container_resource_limits{namespace="${namespace}",pod="${pod.name}",resource="memory"}`, type: MetricType.RAM_LIMIT },
+			{ query: `kube_pod_container_resource_requests{namespace="${namespace}",pod="${pod.name}",resource="memory"}`, type: MetricType.RAM_REQUESTED },
+			{ query: `rate(container_network_receive_bytes_total{namespace="${namespace}",pod="${pod.name}"}[1m])`, type: MetricType.NETWORK_RECEIVE },
+			{ query: `rate(container_network_transmit_bytes_total{namespace="${namespace}",pod="${pod.name}"}[1m])`, type: MetricType.NETWORK_TRANSMIT },
 		];
 
 		try {
@@ -85,7 +85,7 @@ export default class MetricsInfrastructureService extends BaseService {
 					.filter((metric) => metric.value !== undefined)
 					.map((metric) => {
 						const metricEntity: Partial<MetricInfrastructureEntity> = {
-							podName: pod,
+							podUid: pod.uid,
 							value: metric.value!,
 							dateRequested: new Date(),
 							type: metric.type!,

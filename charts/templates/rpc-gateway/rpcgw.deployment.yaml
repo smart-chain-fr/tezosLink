@@ -40,7 +40,12 @@ spec:
           {{- if $data.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ $data.livenessProbe.path }}
+              {{ if eq $network "testnet"}}
+              path: {{$.Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}{{ $data.livenessProbe.path }}
+              {{ end }}
+              {{ if eq $network "mainnet"}}
+              path: {{$.Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}{{ $data.livenessProbe.path }}
+              {{end}}
               port: {{ $data.livenessProbe.port }}
               scheme: HTTP
             initialDelaySeconds: {{ $data.livenessProbe.initialDelaySeconds }}
@@ -52,13 +57,13 @@ spec:
           {{- if $data.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ $data.readinessProbe.path }}
-              {{ if eq $network "testnet" }}
-              port: {{ $.Values.env.TESTNET_RPC_GATEWAY_PORT }}
+              {{ if eq $network "testnet"}}
+              path: {{$.Values.env.TESTNET_RPC_GATEWAY_ROOT_URL}}{{ $data.readinessProbe.path }}
               {{ end }}
-              {{ if eq $network "mainnet" }}
-              port: {{ $.Values.env.MAINNET_RPC_GATEWAY_PORT }}
-              {{ end }}
+              {{ if eq $network "mainnet"}}
+              path: {{$.Values.env.MAINNET_RPC_GATEWAY_ROOT_URL}}{{ $data.readinessProbe.path }}
+              {{end}}
+              port: {{ $data.readinessProbe.port }}
               scheme: HTTP
             initialDelaySeconds: {{ $data.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ $data.readinessProbe.periodSeconds }}

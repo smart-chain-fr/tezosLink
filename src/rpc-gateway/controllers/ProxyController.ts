@@ -36,17 +36,26 @@ export default class ProxyController extends ApiController {
 	@Get("/:uuid/*")
 	protected async proxy(req: Request, res: Response) {
 		const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-		try {
-			const path = req.params[0]!.replace(/[\s/\\]+$/, "");
-			const rpcRequest = ObjectHydrate.hydrate<RpcRequest>(new RpcRequest(), {
-				uuid: req.params["uuid"]!,
-				path: path,
-				remoteAddress: (Array.isArray(ip) ? ip[0] : ip)!,
-			});
-			await validateOrReject(rpcRequest, { skipMissingProperties: true, whitelist: true });
-			this.httpSuccess(res, await this.proxyService.proxy(rpcRequest));
-		} catch (err) {
-			this.httpBadRequest(res, err);
-		}
+		const path = req.params[0]!.replace(/[\s/\\]+$/, "");
+		const rpcRequest = ObjectHydrate.hydrate<RpcRequest>(new RpcRequest(), {
+			uuid: req.params["uuid"]!,
+			path: path,
+			remoteAddress: (Array.isArray(ip) ? ip[0] : ip)!,
+		});
+
+		// Define a function that proxies the request and handles errors
+		const proxyRequest = async (rpcRequest: RpcRequest) => {
+			try {
+				await validateOrReject(rpcRequest, { skipMissingProperties: true, whitelist: true });
+				const result = await this.proxyService.proxy(rpcRequest, true);
+				this.httpSuccess(res, result);
+			} catch (err) {
+				if (rpcRequest.path.length != 0) await this.proxyService.proxy(rpcRequest, false);
+				this.httpBadRequest(res, err);
+			}
+		};
+
+		// Call the proxyRequest function
+		await proxyRequest(rpcRequest);
 	}
 }

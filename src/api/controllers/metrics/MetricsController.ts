@@ -4,9 +4,8 @@ import { Service } from "typedi";
 import { processFindManyQuery } from "prisma-query";
 import ApiController from "@Common/system/controller-pattern/ApiController";
 import MetricsService from "@Services/metric/MetricsService";
-import {  IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
+import { IsInt, IsOptional, IsUUID, Min, validate, validateOrReject, IsNotEmpty } from "class-validator";
 import { plainToClass } from "class-transformer";
-
 
 export class requestsQuery {
 	@IsUUID()
@@ -120,7 +119,7 @@ export default class MetricsController extends ApiController {
 			return;
 		}
 		const metrics = await this.metricsService.getCountAllMetricsByCriterias(query);
-		if (isNaN(metrics)) {
+		if (isNaN(metrics) || metrics === null) {
 			this.httpNotFoundRequest(res);
 			return;
 		}
@@ -136,16 +135,5 @@ export default class MetricsController extends ApiController {
 			return;
 		}
 		this.httpSuccess(res, metrics);
-	}
-
-	//Get paths available in the database
-	@Get("/metrics/paths")
-	protected async getPaths(req: Request, res: Response) {
-		const paths = await this.metricsService.getPathDictionary();
-		if (!paths) {
-			this.httpNotFoundRequest(res);
-			return;
-		}
-		this.httpSuccess(res, paths);
 	}
 }

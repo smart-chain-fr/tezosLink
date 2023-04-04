@@ -1,6 +1,8 @@
 import MetricInfrastructureEntity from "./MetricInfrastructureEntity";
 
 export default class PodEntity {
+	public uid!: string;
+	
 	public name!: string;
 
 	public namespace!: string;

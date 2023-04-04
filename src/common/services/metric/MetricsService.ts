@@ -85,7 +85,7 @@ export default class MetricsService extends BaseService {
 
 		const formattedResults: RequestsByDayMetrics[] = results.reduce((acc: any, curr) => {
 			const currentDate = new Date(curr.date).toISOString();
-			const date = by === "hour" ? currentDate.substring(0, 13) + ":00:00.941Z" : currentDate.substring(0, 10) + "T00:00:00.941Z";
+			const date = by === "hour" ? currentDate.substring(0, 13) + ":00:00.000Z" : currentDate.substring(0, 10) + "T00:00:00.000Z";
 			const existing: any = acc.find((item: any) => item.date === date);
 
 			if (existing) {
@@ -101,16 +101,6 @@ export default class MetricsService extends BaseService {
 	}
 
 	/**
-	 * Remove metrics older than 3 months
-	 * @returns {Promise<void>}
-	 * @memberof MetricsService
-	 * */
-	public async removeThreeMontsOldMetrics(): Promise<void> {
-		const months = 3;
-		await this.metricRepository.removeOldMetricsBymonths(months);
-	}
-
-	/**
 	 * World map metrics
 	 * @returns {Promise<{ data: { country: string; count: number }[] }>}
 	 * @memberof MetricsService
@@ -120,7 +110,8 @@ export default class MetricsService extends BaseService {
 		const countries: { [key: string]: number } = {}; // map each country to its count
 
 		metrics.forEach((element) => {
-			const ip = element.remoteAddress;
+			const ipList = element.remoteAddress;
+			const ip = ipList.includes(",") ? ipList.split(",")[0]!.toString() : ipList; // get the first ip
 			const geo = geoip.lookup(ip);
 			const country = geo?.country; // get the country from the geo lookup result
 			if (country) {
@@ -131,6 +122,7 @@ export default class MetricsService extends BaseService {
 		const data = Object.entries(countries).map(([country, count]) => ({ country, count }));
 		return { data };
 	}
+
 	/**
 	 * Get path dictionary
 	 * @returns {Promise<string[]>}
@@ -149,7 +141,6 @@ export default class MetricsService extends BaseService {
 	public async getLastMetrics(uuid: string, limit: number): Promise<MetricEntity[]> {
 		return await this.metricRepository.findAllRequestsByCriterias(uuid, limit);
 	}
-
 
 	/**
 	 *

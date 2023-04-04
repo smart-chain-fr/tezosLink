@@ -38,18 +38,18 @@ spec:
           {{- if .Values.api.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.api.livenessProbe.path }}
+              path: {{ .Values.env.API_ROOT_URL }}{{ .Values.api.livenessProbe.path }}
               port: {{ .Values.env.API_PORT }}
             initialDelaySeconds: {{ .Values.api.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.api.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.api.readinessProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.api.readinessProbe.failureThreshold }}
-            successThreshold: {{ .Values.api.readinessProbe.successThreshold }}
+            periodSeconds: {{ .Values.api.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.api.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.api.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.api.livenessProbe.successThreshold }}
           {{- end }}
           {{- if .Values.api.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.api.readinessProbe.path }}
+              path: {{ .Values.env.API_ROOT_URL }}{{ .Values.api.readinessProbe.path }}
               port: {{ .Values.env.API_PORT }}
             initialDelaySeconds: {{ .Values.api.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.api.readinessProbe.periodSeconds }}

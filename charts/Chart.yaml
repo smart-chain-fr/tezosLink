@@ -1,6 +1,6 @@
 apiVersion: v2
 name: tezos-link
-description: A Helm chart to deploy an management dashboard for Tezos Nodes
+description: A Helm chart to deploy a management dashboard for Tezos Nodes
 
 # A chart can be either an 'application' or a 'library' chart.
 #

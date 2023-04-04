@@ -1,3 +1,4 @@
+import TypeOfRequestEntity from "../dictionaries/TypeOfRequestEntity";
 import ProjectEntity from "../projects/ProjectEntity";
 
 export default class MetricEntity {
@@ -16,6 +17,10 @@ export default class MetricEntity {
 	public projectUuid!: string;
 
 	public project!: ProjectEntity;
+
+	public typeOfRequestUuid!: string;
+
+	public typeOfRequest!: TypeOfRequestEntity;
 
 	public createdAt?: Date;
 

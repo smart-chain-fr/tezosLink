@@ -46,6 +46,17 @@ env: # Environment variables injected through the config maps
   PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET: tzk8s-testnet
   PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET: poc-tzk8s
 
+common:
+  ingress:
+    enabled: true # Enables the creation of an ingress for all the services
+    tls: true # Enables the TLS block of the ingress
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    labels: {} # Labels for the ingress
+
 api: 
 
   enabled: true # Enables the API service
@@ -69,20 +80,15 @@ api:
     enabled: true # Enables ingress creation
     host: "api.stg.tzlink.smart-chain.fr"
     tls:
+      enabled: true
       secretName: api-tls # Name of the secret that contains or will contain the certificate
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    labels: {} # Labels of the ingress
 
   serviceAccount:
     create: false # Create a service account for the API
     annotations: {} # Annotations of the API service account
     name: "" # Default name: api-sa
 
-  secret: []  # Secrets to be injected as environment variables
+  secret: []  # Secrets to be injected as environment variables as string (not base64)
     # SECRET_KEY: c2VjcmV0Cg==
 
   additionalSecrets: [] # Additional secrets to mount as environment variables
@@ -104,8 +110,8 @@ api:
 
   livenessProbe:
     enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    path: /projects # Route of the healthcheck endpoint
+    port: 3001 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the liveness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -113,9 +119,9 @@ api:
     successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
   readinessProbe:
-    enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    enabled: true # Enables the liveness probe
+    path: /projects # Route of the healthcheck endpoint
+    port: 3001 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the readiness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -130,8 +136,8 @@ web:
   replicas: 1 # Number of pods replicas desired for the front service 
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-web # Repository containing the front image
-    tag: v1.5.3  # Version of the front image
+    repository: rg.fr-par.scw.cloud/tezoslink/web # Repository containing the front image
+    tag: v1.5.4  # Version of the front image
     pullPolicy: Always
 
   service:
@@ -151,22 +157,16 @@ web:
     enabled: true # Enables ingress creation
     host: web.stg.tzlink.smart-chain.fr
     tls:
+      enabled: true
       secretName: web-tls # Name of the secret that contains or will contain the certificate
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    labels: {} # Labels of the ingress
 
-  secret: []  # Secrets to be injected as environment variables
+  secret: []  # Secrets to be injected as environment variables as string (not base64)
     # SECRET_KEY: c2VjcmV0Cg==
 
   additionalSecrets: [] # Additional secrets to mount as environment variables
 
   resources:
     limits:  # CPU and memory limits
-      cpu: 100m
       memory: 256Mi
     requests: # CPU and memory requests
       cpu: 100m
@@ -181,8 +181,8 @@ web:
 
   livenessProbe:
     enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    path: / # Route of the healthcheck endpoint
+    port: 3000 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the liveness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -190,9 +190,9 @@ web:
     successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
   readinessProbe:
-    enabled: false # Enables the liveness probe
-    path: /health # Route of the healthcheck endpoint
-    port: 8001 # Port of the healthcheck endpoint
+    enabled: true # Enables the liveness probe
+    path: / # Route of the healthcheck endpoint
+    port: 3000 # Port of the healthcheck endpoint
     initialDelaySeconds: 5 # Initial delay before starting the healthcheck
     periodSeconds: 10 # Frequency of the readiness test
     timeoutSeconds: 5 # Timeout for probe responses
@@ -215,7 +215,7 @@ rpcgateway:
       tag: v1.5.0  # Version of the rpc gateway image
       pullPolicy: Always
     
-    secret: []  # Secrets to be injected as environment variables
+    secret: []  # Secrets to be injected as environment variables as string (not base64)
       # SECRET_KEY: c2VjcmV0Cg==
 
     additionalSecrets: [] # Additional secrets to mount as environment variables
@@ -237,13 +237,8 @@ rpcgateway:
       enabled: true # Enables ingress creation
       host: "testnet.rpc.stg.tzlink.smart-chain.fr"
       tls:
+        enabled: true
         secretName: testnet-rpc-tls # Name of the secret that contains or will contain the certificate
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-      labels: {} # Labels of the ingress
     
     podSecurityContext:
       enabled: true # Enables the pod security context 
@@ -255,7 +250,7 @@ rpcgateway:
     livenessProbe:
       enabled: false # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the liveness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -263,9 +258,9 @@ rpcgateway:
       successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
     readinessProbe:
-      enabled: false # Enables the liveness probe
+      enabled: true # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the readiness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -292,7 +287,7 @@ rpcgateway:
       pullPolicy: Always
 
     
-    secret: []  # Secrets to be injected as environment variables
+    secret: []  # Secrets to be injected as environment variables as string (not base64)
       # SECRET_KEY: c2VjcmV0Cg==
 
     additionalSecrets: [] # Additional secrets to mount as environment variables
@@ -314,13 +309,8 @@ rpcgateway:
       enabled: true # Enables ingress creation
       host: "mainnet.rpc.stg.tzlink.smart-chain.fr"
       tls:
+        enabled: true
         secretName: mainnet-rpc-tls # Name of the secret that contains or will contain the certificate
-      annotations: 
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-      labels: {} # Labels of the ingress
     
     podSecurityContext:
       enabled: true # Enables the pod security context 
@@ -332,7 +322,7 @@ rpcgateway:
     livenessProbe:
       enabled: false # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the liveness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -340,9 +330,9 @@ rpcgateway:
       successThreshold: 1 # The number of consecutive success results needed to switch probe status to “Success”
 
     readinessProbe:
-      enabled: false # Enables the liveness probe
+      enabled: true # Enables the liveness probe
       path: /health # Route of the healthcheck endpoint
-      port: 8001 # Port of the healthcheck endpoint
+      port: 3002 # Port of the healthcheck endpoint
       initialDelaySeconds: 5 # Initial delay before starting the healthcheck
       periodSeconds: 10 # Frequency of the readiness test
       timeoutSeconds: 5 # Timeout for probe responses
@@ -372,7 +362,7 @@ cron:
       memory: 128Mi
 
   
-  secret: []  # Secrets to be injected as environment variables
+  secret: []  # Secrets to be injected as environment variables as string (not base64)
     # SECRET_KEY: c2VjcmV0Cg==
 
   additionalSecrets: [] # Additional secrets to mount as environment variables
