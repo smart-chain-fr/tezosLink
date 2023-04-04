@@ -13,7 +13,7 @@ export default () => {
 
 		const podEntity: PodEntity =
 			ObjectHydrate.hydrate(new PodEntity(),
-				{ name: "name", namespace: "namespace", type: "type" }
+				{ uid: uuidv4(), name: "name", namespace: "namespace", type: "type" }
 			);
 
 		beforeAll(async () => {
@@ -30,9 +30,9 @@ export default () => {
 			it("can create entities", async () => {
 				const newEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
-						{ name: uuidv4(), namespace: "namespace", type: "type" }
+						{ uid: uuidv4(), name: "name", namespace: "namespace", type: "type" }
 					);
-				const createdEntity = await podService.saveOrUpdatePod(newEntity);
+				const createdEntity = await podService.saveIfNotExists(newEntity);
 				expect(createdEntity).toBeDefined();
 				await podService.delete(createdEntity);
 			});
@@ -52,36 +52,32 @@ export default () => {
 			});
 
 			it("can find newly created entities by criteria", async () => {
-				const createdEntity = await podService.saveOrUpdatePod(podEntity);
+				const createdEntity = await podService.saveIfNotExists(podEntity);
 				await expect(podService.getByCriterias(
-					{ where: { name: createdEntity.name! }
-					, include: { MetricInfrastructure: true }
-					}
-				)).resolves.toMatchObject([ createdEntity ]);
+					{ where: { uid: createdEntity.uid! } }
+				)).resolves.toEqual([ createdEntity ]);
 				await podService.delete(createdEntity);
 			});
 
 			it("can find newly created entities with getOnePodAndMetrics", async () => {
-				const createdEntity = await podService.saveOrUpdatePod(podEntity);
+				const createdEntity = await podService.saveIfNotExists(podEntity);
 				await expect(
 					podService.getOnePodAndMetrics(createdEntity)
 				).resolves.toMatchObject(createdEntity);
 				await podService.delete(createdEntity);
 			});
 
-			it("updates only the namespace property on existing entities name", async () => {
+			it("cannot save an existing entities", async () => {
 				const newEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
-						{ name: uuidv4(), namespace: "namespace", type: "type" }
+						{ uid: uuidv4(), name: "name", namespace: "namespace", type: "type" }
 					);
 				const updatedEntity =
 					ObjectHydrate.hydrate(new PodEntity(),
 						{ ...newEntity, namespace: "other_namespace", type: "other_type" }
 					)
-				await podService.saveOrUpdatePod(newEntity);
-				await expect(podService.saveOrUpdatePod(updatedEntity)).resolves.toMatchObject(
-					{ ...newEntity, namespace: updatedEntity.namespace }
-				);
+				await podService.saveIfNotExists(newEntity);
+				await expect(podService.saveIfNotExists(updatedEntity)).rejects.toBeInstanceOf(Error);
 				await podService.delete(newEntity);
 			});
 		});

@@ -26,4 +26,17 @@ export default class TypeOfRequestService extends BaseService {
 	public async saveIfNotExists(typeOfRequestEntity: Partial<TypeOfRequestEntity>): Promise<Partial<TypeOfRequestEntity>> {
 		return await this.typeOfRequestRepository.createIfNotExists(typeOfRequestEntity);
 	}
+
+	/**
+	 *
+	 * @throws {Error} If TypeOfRequestEntity cannot be deleted
+	 * @returns
+	 */
+	public async delete(typeOfRequestEntity: Partial<TypeOfRequestEntity>): Promise<void> {
+		try {
+			await this.typeOfRequestRepository.delete(typeOfRequestEntity);
+		} catch (error) {
+			throw new Error("Cannot delete TypeOfRequestEntity");
+		}
+	}
 }

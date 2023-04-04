@@ -153,7 +153,7 @@ export default class PodService extends BaseService {
 	 * @returns {Promise<PodEntity>}
 	 * @memberof PodService
 	 * */
-	private async saveIfNotExists(podEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
+	public async saveIfNotExists(podEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
 		return await this.PodRepository.createIfNotExists(podEntity);
 	}
 

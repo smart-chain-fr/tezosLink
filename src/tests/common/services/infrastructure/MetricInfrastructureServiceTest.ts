@@ -20,9 +20,9 @@ export default () => {
 		beforeAll(async () => {
 			podService = await Container.get(PodService);
 
-			podEntity = await podService.saveOrUpdatePod(
+			podEntity = await podService.saveIfNotExists(
 				ObjectHydrate.hydrate(new PodEntity(),
-					{ name: "name", namespace: "namespace", type: "type" }
+					{ uid: uuidv4(), name: "name", namespace: "namespace", type: "type" }
 				)
 			);
 		});
@@ -32,7 +32,7 @@ export default () => {
 			metricInfrastructureEntity =
 				ObjectHydrate.hydrate(new MetricInfrastructureEntity(),
 					{ uuid: uuidv4()
-					, podName: podEntity.name
+					, podUid: podEntity.uid
 					, value: "value"
 					, dateRequested: new Date()
 					, type: "type"
