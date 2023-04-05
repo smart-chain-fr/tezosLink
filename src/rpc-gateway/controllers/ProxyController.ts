@@ -35,12 +35,13 @@ export default class ProxyController extends ApiController {
 
 	@Get("/:uuid/*")
 	protected async proxy(req: Request, res: Response) {
-		const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+		const remoteAddress = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+		const ip = Array.isArray(remoteAddress) ? remoteAddress[0] : remoteAddress?.split(",")[0];
 		const path = req.params[0]!.replace(/[\s/\\]+$/, "");
 		const rpcRequest = ObjectHydrate.hydrate<RpcRequest>(new RpcRequest(), {
 			uuid: req.params["uuid"]!,
 			path: path,
-			remoteAddress: (Array.isArray(ip) ? ip[0] : ip)!,
+			remoteAddress: ip ? ip : "",
 		});
 
 		// Define a function that proxies the request and handles errors

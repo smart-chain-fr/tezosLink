@@ -136,9 +136,11 @@ export default class ProxyService extends BaseService {
 
 		if (this.isRollingNodeRedirection(request.path)) {
 			console.info("Forwarding request directly to rolling node (as a reverse proxy)");
-			const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}/${request.path}`);
-			metric.node = NodeType.ROLLING;
 			try {
+				const rollingPort = this.variables.ROLLING_NODES_PORT ? `:${this.variables.ROLLING_NODES_PORT}` : "";
+				const rollingURL = new URL(`${this.variables.ROLLING_NODES_URL}${rollingPort}/${request.path}`);
+				metric.node = NodeType.ROLLING;
+
 				const { data, status } = await axios.get(rollingURL.toString());
 				status !== HttpCodes.SUCCESS ? (metric.status = EStatus.failed) : (metric.status = EStatus.successful);
 				response = typeof data === "object" ? data : data.toString();
@@ -149,11 +151,13 @@ export default class ProxyService extends BaseService {
 			}
 		} else {
 			console.info("Forwarding request directly to archive node (as a reverse proxy)");
-			const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}/${request.path}`);
-			metric.node = NodeType.ARCHIVE;
 			try {
+				const archivePort = this.variables.ARCHIVE_NODES_PORT ? `:${this.variables.ARCHIVE_NODES_PORT}` : "";
+				const archiveURL = new URL(`${this.variables.ARCHIVE_NODES_URL}${archivePort}/${request.path}`);
+				metric.node = NodeType.ARCHIVE;
+
 				const { data, status } = await axios.get(archiveURL.toString());
-				status !== HttpCodes.SUCCESS ? (metric.status = EStatus.failed) : (metric.status = EStatus.failed);
+				status !== HttpCodes.SUCCESS ? (metric.status = EStatus.failed) : (metric.status = EStatus.successful);
 				response = typeof data === "object" ? data : data.toString();
 			} catch (error) {
 				console.error(`Error while forwarding request to archive node: ${error}`);
@@ -165,6 +169,7 @@ export default class ProxyService extends BaseService {
 		Object.assign(metric, request, { project, dateRequested: new Date() });
 		// Logger les metrics
 		await this.saveMetric(metric);
+		console.info(`Proxy request for path: ${request.path} has been successfully processed`);
 		return response;
 	}
 

@@ -3,7 +3,7 @@ import { MetricEntity } from "@Common/ressources";
 import BaseService from "@Services/BaseService";
 import { type processFindManyQuery } from "prisma-query";
 import { Service } from "typedi";
-import * as geoip from "geoip-lite";
+import geoip from "fast-geoip";
 
 type queryParameters = {
 	projectUuid: string;
@@ -107,19 +107,18 @@ export default class MetricsService extends BaseService {
 	 * */
 	public async worldMapMetrics(): Promise<{ data: { country: string; count: number }[] }> {
 		const metrics = await this.metricRepository.findAllRequestsWorldMap();
-		const countries: { [key: string]: number } = {}; // map each country to its count
-
-		metrics.forEach((element) => {
-			const ipList = element.remoteAddress;
+		const countries: { [key: string]: number } = {};
+		for (const metric of metrics) {
+			const ipList = metric.remoteAddress;
 			const ip = ipList.includes(",") ? ipList.split(",")[0]!.toString() : ipList; // get the first ip
-			const geo = geoip.lookup(ip);
-			const country = geo?.country; // get the country from the geo lookup result
+			const geo = geoip.lookup(ip); // lookup the ip
+			const country = await geo.then((result) => result?.country); // get the country from the geo lookup result
 			if (country) {
 				countries[country] = (countries[country] || 0) + 1; // increment the count for the country
 			}
-		});
+		}
 
-		const data = Object.entries(countries).map(([country, count]) => ({ country, count }));
+		const data = Object.entries(countries).map(([country, count]) => ({ country, count })); // map each country to its count
 		return { data };
 	}
 }

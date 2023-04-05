@@ -50,6 +50,25 @@ export default class PodRepository extends BaseRepository {
 		}
 	}
 
+	/** Find one pod by Name
+	 * @param podName
+	 * @returns {Promise<PodEntity>}
+	 * @memberof PodRepository
+	 * */
+	 public async findOneByName(podName: string): Promise<PodEntity> {
+		try {
+			const pod = (await this.model.findFirst({
+				where: { name: podName },
+				include: {
+					MetricInfrastructure: false,
+				},
+			})) as PodEntity;
+			return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), pod, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
 	/**
 	 * Find pods in database
 	 * @param limit

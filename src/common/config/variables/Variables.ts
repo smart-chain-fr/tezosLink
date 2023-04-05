@@ -40,13 +40,13 @@ export class BackendVariables {
 	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly ARCHIVE_NODES_URL!: string;
 
-	@IsNotEmpty({ groups: ["rpc_gateway"] })
+	@IsOptional({ groups: ["rpc_gateway"] })
 	public readonly ARCHIVE_NODES_PORT!: string;
 
 	@IsNotEmpty({ groups: ["rpc_gateway"] })
 	public readonly ROLLING_NODES_URL!: string;
 
-	@IsNotEmpty({ groups: ["rpc_gateway"] })
+	@IsOptional({ groups: ["rpc_gateway"] })
 	public readonly ROLLING_NODES_PORT!: string;
 
 	@IsNotEmpty({ groups: ["rpc_gateway"] })
@@ -63,8 +63,6 @@ export class BackendVariables {
 
 	@IsNotEmpty({ groups: ["api"] })
 	public readonly PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET!: string;
-
-	public readonly NODE_ENV = process.env.NODE_ENV;
 
 	public constructor() {
 		dotenv.config();

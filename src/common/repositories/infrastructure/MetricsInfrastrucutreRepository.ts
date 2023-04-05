@@ -6,10 +6,11 @@ import { type Prisma } from "@prisma/client";
 import BaseRepository from "@Repositories/BaseRepository";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
+import PodRepository from "./PodRepository";
 
 type MetricQuery = {
 	where: {
-		podUid: string;
+		podName: string;
 		from?: string;
 		to?: string;
 		type?: string;
@@ -20,7 +21,7 @@ type MetricQuery = {
 
 @Service()
 export default class MetricsInfrastrucutreRepository extends BaseRepository {
-	constructor(private database: TezosLink) {
+	constructor(private database: TezosLink, private podRepository: PodRepository) {
 		super();
 	}
 	protected get model() {
@@ -37,21 +38,22 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 0, take } = query;
-			const { podUid, from, to, type } = where;
+			const { podName, from, to, type } = where;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
 			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
 			const offset = (page - 1) * limit;
 
+			const pod = await this.podRepository.findOneByName(podName);
+			if (!pod) return { data: [], metadata: { count: 0, limit, page, total: 0 } };
 			const whereClause: Prisma.MetricInfrastructureWhereInput = {
-				podUid,
+				podUid: pod.uid,
 				dateRequested: {
 					gte: from ? (Date.parse(from) ? new Date(from).toISOString() : new Date(parseInt(from)).toISOString()) : undefined,
 					lte: to ? (Date.parse(to) ? new Date(to).toISOString() : new Date(parseInt(to)).toISOString()) : undefined,
 				},
 				type,
 			};
-
 			const totalCount = await this.model.count({ where: whereClause });
 
 			// Update the query with the limited limit, skip and where clause
