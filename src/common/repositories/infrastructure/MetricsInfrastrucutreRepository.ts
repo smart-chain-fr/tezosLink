@@ -38,7 +38,7 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	public async findMany(query: Partial<MetricQuery>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 0, take } = query;
-			const { podName, from, to, type } = where;
+			const { podName, from, to, type } = where!;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
 			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
