@@ -74,4 +74,16 @@ export default class TypeOfRequestRepository extends BaseRepository {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}
 	}
+
+	public async delete(typeOfRequestEntity: Partial<TypeOfRequestEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: typeOfRequestEntity.uuid,
+				},
+			});
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
 }

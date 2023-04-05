@@ -25,7 +25,7 @@ export default class PodRepository extends BaseRepository {
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
 
 			// Update the query with the limited limit
-			const pods = await this.model.findMany({ ...query, orderBy: { createdAt: "desc" }, take: limit, include: { MetricInfrastructure: false } });
+			const pods = await this.model.findMany({ ...query, orderBy: { createdAt: "desc" }, take: limit, include: { MetricInfrastructure: true } });
 			return ObjectHydrate.map<PodEntity>(PodEntity, pods, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
@@ -39,7 +39,10 @@ export default class PodRepository extends BaseRepository {
 	public async findOne(podEntity: Partial<PodEntity>): Promise<PodEntity> {
 		try {
 			const pod = (await this.model.findFirst({
-				where: podEntity,
+				where: {
+					...podEntity,
+					MetricInfrastructure: { every: {} },
+				},
 				include: {
 					MetricInfrastructure: true,
 				},
@@ -116,6 +119,19 @@ export default class PodRepository extends BaseRepository {
 			});
 
 			return ObjectHydrate.hydrate<PodEntity>(new PodEntity(), pod, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	// Delete pods by name
+	public async delete(podEntity: Partial<PodEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uid: podEntity.uid!,
+				},
+			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

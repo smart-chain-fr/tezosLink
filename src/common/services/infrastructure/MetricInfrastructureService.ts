@@ -49,7 +49,7 @@ export default class MetricsInfrastructureService extends BaseService {
 	 * @returns {Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }>}
 	 * @memberof MetricsInfrastructureService
 	 * */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricInfrastructureRepository.findMany(query);
 	}
 	/**
@@ -104,7 +104,7 @@ export default class MetricsInfrastructureService extends BaseService {
 	 * @returns {Promise<Partial<MetricInfrastructureEntity>>}
 	 * @memberof MetricsInfrastructureService
 	 * */
-	private async saveMetric(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<Partial<MetricInfrastructureEntity>> {
+	public async saveMetric(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<Partial<MetricInfrastructureEntity>> {
 		const metric = await this.metricInfrastructureRepository.create(metricInfrastructureEntity);
 		if (!metric) return Promise.reject(new Error("Cannot create infrastructure metric"));
 		return metric;
@@ -123,5 +123,18 @@ export default class MetricsInfrastructureService extends BaseService {
 			throw new Error(`Cannot get prometheus query result: ${response.status}`);
 		}
 		return response.data;
+	}
+
+	/**
+	 *
+	 * @throws {Error} If metricInfrastructure cannot be deleted
+	 * @returns
+	 */
+	public async delete(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<void> {
+		try {
+			await this.metricInfrastructureRepository.delete(metricInfrastructureEntity);
+		} catch (error) {
+			throw new Error("Cannot delete project");
+		}
 	}
 }

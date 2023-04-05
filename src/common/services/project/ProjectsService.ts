@@ -21,9 +21,10 @@ export default class ProjectsService extends BaseService {
 	 * @returns {Promise<ProjectEntity[]>}
 	 * @memberof ProjectsService
 	 * */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<ProjectEntity[]> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<ProjectEntity[]> {
 		return this.projectRepository.findMany(query);
 	}
+
 	/**
 	 * Get project by uuid
 	 * @param {Partial<ProjectEntity>} projectEntity
@@ -33,6 +34,7 @@ export default class ProjectsService extends BaseService {
 	public async getByUUID(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		return await this.projectRepository.findOne(projectEntity);
 	}
+
 	/**
 	 * Create a project
 	 * @param {Partial<ProjectEntity>} projectEntity
@@ -41,5 +43,18 @@ export default class ProjectsService extends BaseService {
 	 * */
 	public async create(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		return await this.projectRepository.create(projectEntity);
+	}
+
+	/**
+	 *
+	 * @throws {Error} If project cannot be deleted
+	 * @returns
+	 */
+	public async delete(projectEntity: Partial<ProjectEntity>): Promise<void> {
+		try {
+			await this.projectRepository.delete(projectEntity);
+		} catch (error) {
+			throw new Error("Cannot delete project");
+		}
 	}
 }

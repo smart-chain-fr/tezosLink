@@ -17,4 +17,3 @@ export default class MetricInfrastructureEntity {
 
 	public updatedAt?: Date;
 }
-

@@ -35,7 +35,7 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 	 * @param query
 	 * @returns
 	 */
-	public async findMany(query: MetricQuery): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
+	public async findMany(query: Partial<MetricQuery>): Promise<{ data: MetricInfrastructureEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 0, take } = query;
 			const { podName, from, to, type } = where;
@@ -65,7 +65,6 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 					dateRequested: "desc",
 				},
 			});
-
 			const metadata = {
 				count: metrics.length,
 				limit,
@@ -101,6 +100,18 @@ export default class MetricsInfrastrucutreRepository extends BaseRepository {
 				},
 			});
 			return ObjectHydrate.hydrate<MetricInfrastructureEntity>(new MetricInfrastructureEntity(), metric, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	public async delete(metricInfrastructureEntity: Partial<MetricInfrastructureEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: metricInfrastructureEntity.uuid,
+				},
+			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

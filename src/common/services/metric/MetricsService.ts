@@ -34,7 +34,7 @@ export default class MetricsService extends BaseService {
 	 * @returns {Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }>}
 	 * @memberof MetricsService
 	 * */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		return await this.metricRepository.findMany(query);
 	}
 
@@ -65,9 +65,9 @@ export default class MetricsService extends BaseService {
 	 * @returns {Promise<number>}
 	 * @memberof MetricsService
 	 * */
-	public async getCountAllMetricsByCriterias(query: queryParameters): Promise<number> {
+	public async getCountAllMetricsByCriterias(query: Partial<queryParameters>): Promise<number> {
 		const { projectUuid, from, to } = query;
-		const count = await this.metricRepository.countAll(projectUuid, from!, to!);
+		const count = await this.metricRepository.countAll(projectUuid!, from!, to!);
 		if (isNaN(count)) Promise.reject("Cannot get count of metrics");
 		return count;
 	}
@@ -120,5 +120,37 @@ export default class MetricsService extends BaseService {
 
 		const data = Object.entries(countries).map(([country, count]) => ({ country, count })); // map each country to its count
 		return { data };
+	}
+
+	/**
+	 * Get path dictionary
+	 * @returns {Promise<string[]>}
+	 * @memberof MetricsService
+	 * */
+	public async getPathDictionary(): Promise<string[]> {
+		const paths = await this.metricRepository.findPathDictionary();
+		return paths;
+	}
+
+	/**
+	 *
+	 * @throws {Error} If metric is undefined
+	 * @returns
+	 */
+	public async getLastMetrics(uuid: string, limit: number): Promise<MetricEntity[]> {
+		return await this.metricRepository.findAllRequestsByCriterias(uuid, limit);
+	}
+
+	/**
+	 *
+	 * @throws {Error} If metric cannot be deleted
+	 * @returns
+	 */
+	public async delete(metricEntity: Partial<MetricEntity>): Promise<void> {
+		try {
+			await this.metricRepository.delete(metricEntity);
+		} catch (error) {
+			throw new Error("Cannot delete metric");
+		}
 	}
 }

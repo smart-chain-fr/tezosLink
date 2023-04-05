@@ -48,10 +48,10 @@ export default class MetricsRepository extends BaseRepository {
 	 * @returns {Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }>}
 	 * @throws {ORMBadQueryError}
 	 */
-	public async findMany(query: MetricQuery): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
+	public async findMany(query: Partial<MetricQuery>): Promise<{ data: MetricEntity[]; metadata: { count: number; limit: number; page: number; total: number } }> {
 		try {
 			const { where, skip = 0, take } = query;
-			const { projectUuid, node, from, to, type: requestType, status } = where;
+			const { projectUuid, node, from, to, type: requestType, status } = where!;
 
 			const page = Math.max(1, Math.floor(Number(skip) / (take || 10)) + 1);
 			const limit = take ? Math.min(Math.max(1, Number(take)), this.defaultFetchRows) : this.defaultFetchRows; // Set a maximum limit of 100 records per page
@@ -237,7 +237,7 @@ export default class MetricsRepository extends BaseRepository {
 	public async findAllRequestsByCriterias(projectUuid: string, limit: number): Promise<MetricEntity[]> {
 		try {
 			// Use Math.min to limit the number of rows fetched
-			const rows = Math.min(limit || this.defaultFetchRows, this.maxFetchRows);
+			const rows = Math.min(Math.max(0, limit) || this.defaultFetchRows, this.maxFetchRows);
 			const metrics = await this.model.findMany({
 				where: {
 					projectUuid: projectUuid,
@@ -328,6 +328,32 @@ export default class MetricsRepository extends BaseRepository {
 				},
 			});
 			return ObjectHydrate.map<MetricEntity>(MetricEntity, metrics, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	// Find all paths
+	public async findPathDictionary(): Promise<string[]> {
+		try {
+			const paths = await this.model.findMany({
+				distinct: ["path"],
+				select: { path: true },
+			});
+			return paths.map((path) => path.path);
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	// Delete metrics by UUID
+	public async delete(metricEntity: Partial<MetricEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: metricEntity.uuid,
+				},
+			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

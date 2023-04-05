@@ -42,7 +42,13 @@ export default class ProjectsRepository extends BaseRepository {
 	public async findOne(projectEntity: Partial<ProjectEntity>): Promise<Partial<ProjectEntity>> {
 		try {
 			const project = (await this.model.findFirst({
-				where: projectEntity,
+				where: {
+					...projectEntity,
+					Metrics: { every: {} },
+				},
+				include: {
+					Metrics: true,
+				},
 			})) as ProjectEntity;
 			return ObjectHydrate.hydrate<ProjectEntity>(new ProjectEntity(), project, { strategy: "exposeAll" });
 		} catch (error) {
@@ -71,6 +77,18 @@ export default class ProjectsRepository extends BaseRepository {
 				},
 			})) as ProjectEntity;
 			return ObjectHydrate.hydrate<ProjectEntity>(new ProjectEntity(), project, { strategy: "exposeAll" });
+		} catch (error) {
+			throw new ORMBadQueryError((error as Error).message, error as Error);
+		}
+	}
+
+	public async delete(projectEntity: Partial<ProjectEntity>): Promise<void> {
+		try {
+			await this.model.delete({
+				where: {
+					uuid: projectEntity.uuid,
+				},
+			});
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
 		}

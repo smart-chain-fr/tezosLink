@@ -93,4 +93,3 @@ export class BackendVariables {
 		return this;
 	}
 }
-

@@ -21,10 +21,13 @@ export default class TezosLink {
 		return this.dbProvider.getClient();
 	}
 
+	public async disconnect(): Promise<void> {
+		await this.dbProvider.disconnect();
+	}
+
 	private getDatabaseName(): string {
 		const name = this.variables.DATABASE_NAME;
 		if (!name) throw new Error("Database name is undefined!. Add name of db in the url.");
 		return name;
 	}
 }
-

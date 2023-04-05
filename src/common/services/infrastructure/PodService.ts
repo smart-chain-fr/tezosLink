@@ -144,7 +144,7 @@ export default class PodService extends BaseService {
 	 * @returns {Promise<PodEntity[]>}
 	 * @memberof PodService
 	 * */
-	public async getByCriterias(query: ReturnType<typeof processFindManyQuery>): Promise<PodEntity[]> {
+	public async getByCriterias(query: Partial<ReturnType<typeof processFindManyQuery>>): Promise<PodEntity[]> {
 		return await this.PodRepository.findManyByQuery(query);
 	}
 	/**
@@ -153,7 +153,7 @@ export default class PodService extends BaseService {
 	 * @returns {Promise<PodEntity>}
 	 * @memberof PodService
 	 * */
-	private async saveIfNotExists(podEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
+	public async saveIfNotExists(podEntity: Partial<PodEntity>): Promise<Partial<PodEntity>> {
 		return await this.PodRepository.createIfNotExists(podEntity);
 	}
 
@@ -190,5 +190,18 @@ export default class PodService extends BaseService {
 			});
 
 		return pods;
+	}
+
+	/**
+	 *
+	 * @throws {Error} If pod cannot be deleted
+	 * @returns
+	 */
+	public async delete(podEntity: Partial<PodEntity>): Promise<void> {
+		try {
+			await this.PodRepository.delete(podEntity);
+		} catch (error) {
+			throw new Error("Cannot delete pod");
+		}
 	}
 }
