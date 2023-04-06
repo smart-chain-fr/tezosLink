@@ -25,7 +25,7 @@ export default class PodRepository extends BaseRepository {
 			const limit = Math.min(query.take || this.defaultFetchRows, this.maxFetchRows);
 
 			// Update the query with the limited limit
-			const pods = await this.model.findMany({ ...query, orderBy: { createdAt: "desc" }, take: limit, include: { MetricInfrastructure: true } });
+			const pods = await this.model.findMany({ ...query, orderBy: { createdAt: "desc" }, take: limit, include: { MetricInfrastructure: false } });
 			return ObjectHydrate.map<PodEntity>(PodEntity, pods, { strategy: "exposeAll" });
 		} catch (error) {
 			throw new ORMBadQueryError((error as Error).message, error as Error);
