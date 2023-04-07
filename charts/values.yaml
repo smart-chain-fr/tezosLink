@@ -61,8 +61,8 @@ api:
   replicas: 1 # Number of pods replicas desired for the API service 
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-api # Repository containing the API image
-    tag: v1.3.10 # Version of the API image
+    repository: rg.fr-par.scw.cloud/tezoslink/api # Repository containing the API image
+    tag: v1.5.2 # Version of the API image
     pullPolicy: Always 
 
   service:
@@ -133,8 +133,8 @@ web:
   replicas: 1 # Number of pods replicas desired for the front service 
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-frontend # Repository containing the front image
-    tag: v1.3.25  # Version of the front image
+    repository: rg.fr-par.scw.cloud/tezoslink/web # Repository containing the front image
+    tag: v1.5.4  # Version of the front image
     pullPolicy: Always
 
   service:
@@ -209,8 +209,8 @@ rpcgateway:
     network: "TESTNET" # Name of the testnet network
 
     image:
-      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy # Repository containing the rpc gateway image
-      tag: v1.3.9  # Version of the rpc gateway image
+      repository: rg.fr-par.scw.cloud/tezoslink/proxy # Repository containing the rpc gateway image
+      tag: v1.5.0  # Version of the rpc gateway image
       pullPolicy: IfNotPresent
     
     secret: []  # Secrets to be injected as environment variables
@@ -282,8 +282,8 @@ rpcgateway:
     network: "MAINNET" # Name of the mainnet network
 
     image:
-      repository: rg.fr-par.scw.cloud/tezoslink/p1-proxy # Repository containing the rpcgateway image
-      tag: v1.3.9 # Version of the rpc gateway image
+      repository: rg.fr-par.scw.cloud/tezoslink/proxy # Repository containing the rpcgateway image
+      tag: v1.5.0 # Version of the rpc gateway image
       pullPolicy: IfNotPresent
 
     
@@ -351,8 +351,8 @@ cron:
   enabled: true
 
   image:
-    repository: rg.fr-par.scw.cloud/tezoslink/p1-cron # Repository containing the rpcgateway image
-    tag: v1.4.0 # Version of the rpc gateway image
+    repository: rg.fr-par.scw.cloud/tezoslink/cron # Repository containing the rpcgateway image
+    tag: v1.5.2 # Version of the rpc gateway image
     pullPolicy: Always
 
   resources:
