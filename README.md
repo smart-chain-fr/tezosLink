@@ -1,6 +1,7 @@
 # Tezos Link
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/octo-technology/tezos-link)](https://goreportcard.com/report/github.com/octo-technology/tezos-link)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Tezos link is a gateway to access to the Tezos network aiming to improve developer experience when developing Tezos dApps.
 
@@ -11,7 +12,13 @@ Tezos link is a gateway to access to the Tezos network aiming to improve develop
 - [Tests all services](#tests-all-services)
 - [Services](#services)
   - [API](#api)
-  - [Proxy](#proxy)
+  - [Proxy/Rpc-Gateway](#proxy)
+    - [Changing Whitelisted and Blacklisted Paths and Rolling Patterns](#changing-whitelisted-and-blacklisted-paths-and-rolling-patterns)
+      - [Whitelisted Paths](#whitelisted-paths)
+      - [Blacklisted Paths](#blacklisted-paths)
+      - [Rolling Patterns](#rolling-patterns)
+  - [Cronjob](#cronjob)
+- [License](#license)
 
 # Project Organization
 
@@ -135,9 +142,9 @@ REST API to manage projects and get project's metrics.
 - `PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET` (default: `tezos_k8s_mainnet`)
 - `PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET` (default: `tezos_k8s_testnet`)
 
-### Proxy
+### Proxy / Rpc-Gateway
 
-- HTTP proxy in front of the nodes to handle CORS and rate limiting
+- HTTP proxy in front of the nodes to handle CORS and rate limiting.
 
 
 #### Dependencies
@@ -160,3 +167,61 @@ REST API to manage projects and get project's metrics.
 - `RPC_GATEWAY_LABEL` (default: `TezosLink RPC Gateway`)
 - `RPC_GATEWAY_PORT` (default: `3002`)
 - `RPC_GATEWAY_ROOT_URL` (default: `/rpc`)
+
+### Changing Whitelisted and Blacklisted Paths and Rolling Patterns
+
+The gateway's BaseService provides whitelisting and blacklisting of incoming requests based on specific paths. It also includes rolling patterns that define which endpoints should be distributed across multiple nodes in the network. These values can be modified in the `BaseService.ts` file located in the `src/common/services/` directory.
+
+
+### Whitelisted Paths
+
+Whitelisted paths are requests that are allowed to pass through the proxy. By default, the `whitelisted` array in `BaseService.ts` contains `"/chains/main/blocks"` and `"/chains/main/blocks/head"`.
+
+To change the whitelisted paths, simply modify the `whitelisted` array in `BaseService.ts` to include the desired paths.
+
+### Blacklisted Paths
+
+Blacklisted paths are requests that are blocked from passing through the proxy. By default, the `blacklisted` array in `BaseService.ts` contains `"/context/contracts"`, `"/monitor"`, and `"/network"`.
+
+To change the blacklisted paths, simply modify the `blacklisted` array in `BaseService.ts` to include the desired paths.
+
+### Rolling Patterns
+
+Rolling patterns are paths that are allowed to bypass the rate limiting mechanism, which helps to prevent API overloading. By default, the `rollingPatterns` array in `BaseService.ts` contains `"/head"` and `"/injection/operation"`.
+
+To change the rolling patterns, simply modify the `rollingPatterns` array in `BaseService.ts` to include the desired patterns.
+
+```typescript
+public static readonly whitelisted: string[] = [...];
+public static readonly blacklisted: string[] = [...];
+public static readonly rollingPatterns: string[] = [...];
+```
+
+### Cronjob
+
+Cronjob to scrape metrics from Prometheus and store them in the database.
+to configure the cronjob, you can use the config file located in `src/common/config/cron/Config.ts`.
+
+#### Environment variables 
+
+##### Database
+
+- `DATABASE_HOSTNAME` (default: `localhost`)
+- `DATABASE_PORT` (default: `5432`)
+- `DATABASE_USER` (default: `user`)
+- `DATABASE_PASSWORD` (default: `pass`)
+- `DATABASE_NAME` (default: `tezoslink`)
+- `DEV_PRISMA_STUDIO_DB_URL` (default: `postgres://user:pass@localhost:5432/tezoslink`), 'prisma studio' needs this variable to execute migrations on the database
+
+##### Prometheus
+ 
+- `PROMETHEUS_URL`  (default: `http://localhost:9090`)
+- `PROMETHEUS_NAMESPACE_TEZOSLINK`  (default: `tezoslink`)
+- `PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET` (default: `tezos_k8s_mainnet`)
+- `PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET` (default: `tezos_k8s_testnet`)
+
+## License
+
+This project is licensed under the MIT License. 
+
+
