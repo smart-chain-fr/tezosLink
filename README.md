@@ -18,6 +18,7 @@ Tezos link is a gateway to access to the Tezos network aiming to improve develop
       - [Blacklisted Paths](#blacklisted-paths)
       - [Rolling Patterns](#rolling-patterns)
   - [Cronjob](#cronjob)
+  - [Frontend](#frontend)
 - [License](#license)
 
 # Project Organization
@@ -219,6 +220,12 @@ to configure the cronjob, you can use the config file located in `src/common/con
 - `PROMETHEUS_NAMESPACE_TEZOSLINK`  (default: `tezoslink`)
 - `PROMETHEUS_NAMESPACE_TEZOS_K8S_MAINNET` (default: `tezos_k8s_mainnet`)
 - `PROMETHEUS_NAMESPACE_TEZOS_K8S_TESTNET` (default: `tezos_k8s_testnet`)
+
+### Frontend
+
+Frontend application to display projects and metrics is located in the following repository:
+[Frontend repository](https://github.com/smart-chain-fr/tezosLink-front)
+
 
 ## License
 
