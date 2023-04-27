@@ -1,0 +1,78 @@
+{
+  "name": "tezoslink",
+  "version": "1.0.0",
+  "description": "tezosLink project",
+  "_moduleAliases": {
+    "@Api": "./dist/api",
+    "@RpcGateway": "./dist/rpc-gateway",
+    "@Common": "./dist/common",
+    "@Services": "./dist/common/services",
+    "@Repositories": "./dist/common/repositories",
+    "@Entries": "./dist/common/entries",
+    "@Config": "./dist/common/config",
+    "@Entities": "./dist/common/entities",
+    "@System": "./dist/common/system",
+    "@ControllerPattern": "./dist/common/system/controller-pattern"
+  },
+  "scripts": {
+    "build": "tsc",
+    "api:start": "prisma migrate deploy && node ./dist/entries/Api.js",
+    "rpc-gateway:start": "prisma migrate deploy && node ./dist/entries/RpcGateway.js",
+    "dev": "nodemon -V",
+    "rpc-gateway:dev": "prisma migrate dev && nodemon -V --exec 'tsc && npm run rpc-gateway:start'",
+    "api:dev": "prisma migrate dev && nodemon -V --exec 'tsc && npm run api:start'",
+    "build:test": "tsc && mocha ./dist/entries/Test.js",
+    "format": "prettier --write src",
+    "cron:start": "node ./dist/entries/Crons.js",
+    "cron:dev": "nodemon -V --exec 'tsc && npm run cron:start'",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smart-chain-fr/tezosLink.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smart-chain-fr/tezosLink/issues"
+  },
+  "homepage": "https://github.com/smart-chain-fr/tezosLink#readme",
+  "dependencies": {
+    "@prisma/client": "^4.9.0",
+    "@taquito/utils": "^16.0.0",
+    "axios": "^1.3.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fast-geoip": "^1.1.88",
+    "module-alias": "^2.2.2",
+    "node-schedule": "^2.1.1",
+    "prisma": "^4.9.0",
+    "prisma-query": "^2.0.0",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.1",
+    "typedi": "^0.10.0",
+    "typescript": "^4.9.4",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.0",
+    "@types/geoip-lite": "^1.4.1",
+    "@types/node": "^18.11.18",
+    "@types/node-schedule": "^2.1.0",
+    "@types/uuid": "^9.0.0",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.20",
+    "ts-jest": "^29.0.5"
+  },
+  "prisma": {
+    "schema": "src/common/databases/schema.prisma"
+  }
+}

@@ -1,0 +1,10 @@
+# Install dependencies only when needed
+FROM node:19-alpine AS deps 
+
+WORKDIR tezosLink
+
+COPY . .
+RUN npm i
+RUN npm run build
+CMD ["npm", "run", "web:start"]
+EXPOSE 3000

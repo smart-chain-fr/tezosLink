@@ -1,0 +1,84 @@
+{{- if .Values.common.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "helpers.fullname" . }}-ing
+  namespace: {{ include "helpers.namespace" . | quote }}
+  annotations: 
+{{ toYaml .Values.common.ingress.annotations | indent 4 }}
+  labels:
+{{ toYaml .Values.common.ingress.labels | indent 4 }}
+spec:
+{{ if .Values.common.ingress.tls}}
+  tls:
+  {{ if and .Values.api.ingress.enabled .Values.api.ingress.tls.enabled}}
+  - hosts: 
+      - {{ .Values.api.ingress.host }}
+    secretName: {{ .Values.api.ingress.tls.secretName }}
+  {{ end}}
+  {{ if and .Values.web.ingress.enabled .Values.web.ingress.tls.enabled}}
+  - hosts: 
+      - {{ .Values.web.ingress.host }}
+    secretName: {{ .Values.web.ingress.tls.secretName }}
+  {{ end}}  
+  {{ if and .Values.rpcgateway.mainnet.ingress.enabled .Values.rpcgateway.mainnet.ingress.tls.enabled}}
+  - hosts: 
+      - {{ .Values.rpcgateway.mainnet.ingress.host }}
+    secretName: {{ .Values.rpcgateway.mainnet.ingress.tls.secretName }}
+  {{ end}} 
+  {{ if and .Values.rpcgateway.testnet.ingress.enabled .Values.rpcgateway.testnet.ingress.tls.enabled}}
+  - hosts: 
+      - {{ .Values.rpcgateway.testnet.ingress.host }}
+    secretName: {{ .Values.rpcgateway.testnet.ingress.tls.secretName }}
+  {{ end}} 
+{{ end}}
+  rules:
+  {{ if .Values.api.ingress.enabled}}
+  - host: {{ .Values.api.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.env.API_ROOT_URL }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "helpers.fullname" . }}-api-svc
+            port:
+              number: {{ .Values.env.API_PORT}}
+  {{ end }}
+  {{ if .Values.web.ingress.enabled}}
+  - host: {{ .Values.web.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.env.WEB_ROOT_URL }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "helpers.fullname" . }}-web-svc
+            port:
+              number: {{ .Values.env.WEB_PORT}}
+  {{ end }}
+  {{ if .Values.rpcgateway.mainnet.ingress.enabled}}
+  - host: {{ .Values.rpcgateway.mainnet.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.env.MAINNET_RPC_GATEWAY_ROOT_URL }}
+        pathType: Prefix
+        backend:
+          service:
+            name: mainnet-{{ include "helpers.fullname" . }}-rpcgateway-svc
+            port:
+              number: {{ .Values.env.MAINNET_RPC_GATEWAY_PORT}}
+  {{ end }}
+  {{ if .Values.rpcgateway.testnet.ingress.enabled}}
+  - host: {{ .Values.rpcgateway.testnet.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.env.TESTNET_RPC_GATEWAY_ROOT_URL }}
+        pathType: Prefix
+        backend:
+          service:
+            name: testnet-{{ include "helpers.fullname" . }}-rpcgateway-svc
+            port:
+              number: {{ .Values.env.TESTNET_RPC_GATEWAY_PORT}}
+  {{ end }}
+{{- end -}}

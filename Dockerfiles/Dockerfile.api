@@ -1,0 +1,40 @@
+# Install dependencies only when needed
+FROM node:19-alpine AS deps
+
+WORKDIR tezosLink
+
+COPY package.json ./
+COPY src/common/databases/schema.prisma ./src/common/databases/schema.prisma
+RUN npx prisma generate 
+
+RUN npm install --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM node:19-alpine AS builder
+
+WORKDIR tezosLink
+
+COPY . .
+COPY --from=deps tezosLink/node_modules ./node_modules
+RUN npx prisma generate
+RUN npm run build
+
+# Production image, copy all the files and run next
+FROM node:19-alpine AS production
+
+WORKDIR tezosLink
+
+RUN adduser -D tezoslinkuser --uid 10000 && chown -R tezoslinkuser .
+
+RUN mkdir src && mkdir src/common && mkdir src/common/databases
+
+COPY --from=builder --chown=tezoslinkuser tezosLink/node_modules ./node_modules
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/api ./dist/api
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/entries ./dist/entries
+COPY --from=builder --chown=tezoslinkuser tezosLink/dist/common ./dist/common
+COPY --from=builder --chown=tezoslinkuser tezosLink/src/common/databases/ ./src/common/databases/
+COPY --from=builder --chown=tezoslinkuser tezosLink/package.json ./package.json
+USER tezoslinkuser
+
+CMD ["npm", "run", "api:start"]
+EXPOSE 3001
