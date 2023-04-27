@@ -31,14 +31,14 @@ env: # Environment variables injected through the config maps
   TESTNET_RPC_GATEWAY_PORT: 3002
   TESTNET_RPC_GATEWAY_ROOT_URL: "/rpc"
 
-  MAINNET_ARCHIVE_NODES_URL: mainnet-archive-link.smart-node.com # URL or IP address of the mainnet archive node
+  MAINNET_ARCHIVE_NODES_URL: https://mainnet-archive.smart-node.com # URL or IP address of the mainnet archive node
   MAINNET_ARCHIVE_NODES_PORT: 443 # Port of the mainnet archive node
-  MAINNET_ROLLING_NODES_URL:  mainnet-rolling-link.smart-node.com # URL or IP address of the mainnet rolling node
+  MAINNET_ROLLING_NODES_URL:  https://mainnet-rolling.smart-node.com # URL or IP address of the mainnet rolling node
   MAINNET_ROLLING_NODES_PORT: 443 # Port of the mainnet rolling node
 
-  TESTNET_ARCHIVE_NODES_URL: ghostnet-archive-link.smart-node.com # URL or IP address of the testnet archive node
+  TESTNET_ARCHIVE_NODES_URL: https://ghostnet-archive.smart-node.com # URL or IP address of the testnet archive node
   TESTNET_ARCHIVE_NODES_PORT: 443 # Port of the testnet archive node
-  TESTNET_ROLLING_NODES_URL: ghostnet-rolling-link.smart-node.com # URL or IP address of the testnet rolling node
+  TESTNET_ROLLING_NODES_URL: https://ghostnet-rolling.smart-node.com # URL or IP address of the testnet rolling node
   TESTNET_ROLLING_NODES_PORT: 443 # Port of the testnet rolling node
 
   PROMETHEUS_URL: http://kube-prometheus-prometheus.kube-prometheus.svc.cluster.local:9090
